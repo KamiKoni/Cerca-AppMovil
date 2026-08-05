@@ -1,0 +1,20 @@
+{
+  "name": "@cerca/contract",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts",
+    "verify": "bash ../../scripts/verify.sh"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "zod": "^3.0.0",
+    "eslint": "^8.0.0",
+    "eslint-plugin-import": "^2.0.0"
+  }
+}

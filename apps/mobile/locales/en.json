@@ -1,0 +1,18 @@
+{
+  "signIn": {
+    "title": "Sign in",
+    "description": "Enter your account details to continue.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "loading": "Signing in..."
+  },
+  "error": {
+    "money": {
+      "nonnegative": "error.money.nonnegative"
+    },
+    "currency": {
+      "required": "error.currency.required"
+    }
+  }
+}

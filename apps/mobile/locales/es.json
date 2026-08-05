@@ -1,0 +1,18 @@
+{
+  "signIn": {
+    "title": "Iniciar sesión",
+    "description": "Introduce tus datos para continuar.",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "submit": "Iniciar sesión",
+    "loading": "Iniciando sesión..."
+  },
+  "error": {
+    "money": {
+      "nonnegative": "error.money.nonnegative"
+    },
+    "currency": {
+      "required": "error.currency.required"
+    }
+  }
+}
