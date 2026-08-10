@@ -1,0 +1,65 @@
+{
+  "items": [
+    {
+      "id": "fdd0a862-3858-460f-8fd9-0e465694ad93",
+      "ownerId": "27639491-27a4-4b5a-8c0c-c749817b5953",
+      "categoryId": "650f5ee5-3bfa-4b30-9a0a-8d4763715346",
+      "title": "Aire acondicionado — servicio profesional",
+      "description": "Servicio de aire acondicionado con experiencia y garantía.",
+      "pricing": {
+        "model": "quote"
+      },
+      "priceFrom": null,
+      "status": "published",
+      "ratingAvg": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-08-10T13:19:08.884Z"
+    },
+    {
+      "id": "fc42d410-51e5-4955-ba4a-be5c72d61aac",
+      "ownerId": "27639491-27a4-4b5a-8c0c-c749817b5953",
+      "categoryId": "3a9fc5a0-f136-4863-99e4-6226ac2b383d",
+      "title": "Manicure — servicio profesional",
+      "description": "Servicio de manicure con experiencia y garantía.",
+      "pricing": {
+        "model": "fixed",
+        "price": {
+          "amountMinor": 48000,
+          "currency": "COP"
+        }
+      },
+      "priceFrom": {
+        "amountMinor": 48000,
+        "currency": "COP"
+      },
+      "status": "published",
+      "ratingAvg": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-08-10T13:19:08.884Z"
+    },
+    {
+      "id": "fa3355cd-fb90-4e50-9cb8-5d421e2f2e14",
+      "ownerId": "27639491-27a4-4b5a-8c0c-c749817b5953",
+      "categoryId": "07343780-2936-49d8-8e87-bc595cca6510",
+      "title": "Diseño gráfico — servicio profesional",
+      "description": "Servicio de diseño gráfico con experiencia y garantía.",
+      "pricing": {
+        "model": "hourly",
+        "hourlyRate": {
+          "amountMinor": 27000,
+          "currency": "COP"
+        },
+        "minimumHours": 2
+      },
+      "priceFrom": {
+        "amountMinor": 27000,
+        "currency": "COP"
+      },
+      "status": "published",
+      "ratingAvg": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-08-10T13:19:08.884Z"
+    }
+  ],
+  "nextCursor": "eyJjcmVhdGVkQXQiOiIyMDI2LTA4LTEwVDEzOjE5OjA4Ljg4NFoiLCJpZCI6ImZhMzM1NWNkLWZiOTAtNGU1MC05Y2I4LTVkNDIxZTJmMmUxNCJ9"
+}
