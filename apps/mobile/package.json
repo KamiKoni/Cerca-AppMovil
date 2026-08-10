@@ -9,7 +9,7 @@
     "verify": "bash ../../scripts/verify.sh"
   },
   "dependencies": {
-    "@cerca/contract": "workspace:packages/contract",
+    "@cerca/contract": "workspace:*",
     "expo": "^57.0.0",
     "expo-router": "^2.0.0",
     "react": "^18.3.0",
