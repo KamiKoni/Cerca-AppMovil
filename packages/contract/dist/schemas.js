@@ -20,13 +20,14 @@ exports.pricingQuote = zod_1.z.object({
     startingFrom: exports.moneySchema.optional(),
 });
 exports.pricingSchema = zod_1.z.union([exports.pricingFixed, exports.pricingHourly, exports.pricingQuote]);
-exports.listingStatusSchema = zod_1.z.discriminatedUnion('kind', [
-    zod_1.z.object({ kind: zod_1.z.literal('draft') }),
-    zod_1.z.object({ kind: zod_1.z.literal('published'), publishedAt: zod_1.z.string() }),
-    zod_1.z.object({ kind: zod_1.z.literal('paused') }),
-    zod_1.z.object({ kind: zod_1.z.literal('under_review'), reportId: zod_1.z.string() }),
-    zod_1.z.object({ kind: zod_1.z.literal('removed'), removedBy: zod_1.z.string(), reason: zod_1.z.string() }),
-]);
+/**
+ * The wire format the API actually sends: a flat string, not a tagged union.
+ *
+ * `status.ts` keeps the richer `ListingStatus` union that the domain policies
+ * reason about. These are two different things — transport and domain — and
+ * conflating them is what made every listing response fail to parse.
+ */
+exports.listingStatusSchema = zod_1.z.enum(['draft', 'published', 'paused', 'under_review', 'removed']);
 exports.bookingStatusSchema = zod_1.z.discriminatedUnion('kind', [
     zod_1.z.object({ kind: zod_1.z.literal('requested'), requestedAt: zod_1.z.string() }),
     zod_1.z.object({ kind: zod_1.z.literal('accepted'), acceptedAt: zod_1.z.string(), scheduledFor: zod_1.z.string() }),
@@ -46,27 +47,41 @@ exports.authSignInSchema = zod_1.z.object({
 });
 exports.categorySchema = zod_1.z.object({
     id: zod_1.z.string(),
+    slug: zod_1.z.string(),
     name: zod_1.z.string(),
 });
 exports.categoriesSchema = zod_1.z.array(exports.categorySchema);
+/**
+ * A row in the search results. Deliberately narrower than the detail: search
+ * returns 2000 rows and does not carry `description` or `pricing`, only the
+ * denormalized `priceFrom` the server can sort by.
+ *
+ * `priceFrom` is nullable and not optional — a `quote` listing with no floor has
+ * no sortable price, and the server sends an explicit null for it.
+ */
 exports.listingSummarySchema = zod_1.z.object({
     id: zod_1.z.string(),
     title: zod_1.z.string(),
-    description: zod_1.z.string().optional(),
     categoryId: zod_1.z.string(),
-    ownerId: zod_1.z.string(),
-    price: exports.pricingSchema,
-    distanceMeters: zod_1.z.number().nonnegative(),
-    isFavorite: zod_1.z.boolean().optional(),
+    priceFrom: exports.moneySchema.nullable(),
     status: exports.listingStatusSchema,
-    rating: zod_1.z.number().min(0).max(5).optional(),
-    reviewCount: zod_1.z.number().int().nonnegative().optional(),
+    ratingAvg: zod_1.z.number(),
+    ratingCount: zod_1.z.number().int().nonnegative(),
+    distanceMeters: zod_1.z.number(),
 });
-exports.listingDetailSchema = exports.listingSummarySchema.extend({
-    photos: zod_1.z.array(zod_1.z.string()).optional(),
-    location: zod_1.z.object({ lat: zod_1.z.number(), lng: zod_1.z.number() }),
-    createdAt: zod_1.z.string().optional(),
-    description: zod_1.z.string().optional(),
+/** The single-listing response. Carries `pricing`, which search omits. */
+exports.listingDetailSchema = zod_1.z.object({
+    id: zod_1.z.string(),
+    ownerId: zod_1.z.string(),
+    categoryId: zod_1.z.string(),
+    title: zod_1.z.string(),
+    description: zod_1.z.string(),
+    pricing: exports.pricingSchema,
+    priceFrom: exports.moneySchema.nullable(),
+    status: exports.listingStatusSchema,
+    ratingAvg: zod_1.z.number(),
+    ratingCount: zod_1.z.number().int().nonnegative(),
+    createdAt: zod_1.z.string(),
 });
 exports.listingsSearchResponseSchema = zod_1.z.object({
     items: zod_1.z.array(exports.listingSummarySchema),
