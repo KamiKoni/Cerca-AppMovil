@@ -7,7 +7,25 @@
     "submit": "Sign in",
     "loading": "Signing in..."
   },
+  "search": {
+    "title": "Search",
+    "placeholder": "What do you need?",
+    "empty": "No services found nearby."
+  },
+  "listing": {
+    "title": "Service",
+    "perHour": "/hour",
+    "minimum": "minimum",
+    "from": "From",
+    "onQuote": "Price on request",
+    "noReviews": "No reviews yet",
+    "notFound": "This service is no longer available."
+  },
   "error": {
+    "network": "Could not reach the server. Check that you are on the same Wi-Fi and that the API is running.",
+    "badCredentials": "Wrong email or password.",
+    "validation": "Please check the details you entered.",
+    "unknown": "Something went wrong. Please try again.",
     "money": {
       "nonnegative": "error.money.nonnegative"
     },
