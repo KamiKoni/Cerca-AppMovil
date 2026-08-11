@@ -163,49 +163,14 @@ export declare const pricingSchema: z.ZodUnion<[z.ZodObject<{
         amountMinor: number;
     } | undefined;
 }>]>;
-export declare const listingStatusSchema: z.ZodDiscriminatedUnion<"kind", [z.ZodObject<{
-    kind: z.ZodLiteral<"draft">;
-}, "strip", z.ZodTypeAny, {
-    kind: "draft";
-}, {
-    kind: "draft";
-}>, z.ZodObject<{
-    kind: z.ZodLiteral<"published">;
-    publishedAt: z.ZodString;
-}, "strip", z.ZodTypeAny, {
-    kind: "published";
-    publishedAt: string;
-}, {
-    kind: "published";
-    publishedAt: string;
-}>, z.ZodObject<{
-    kind: z.ZodLiteral<"paused">;
-}, "strip", z.ZodTypeAny, {
-    kind: "paused";
-}, {
-    kind: "paused";
-}>, z.ZodObject<{
-    kind: z.ZodLiteral<"under_review">;
-    reportId: z.ZodString;
-}, "strip", z.ZodTypeAny, {
-    kind: "under_review";
-    reportId: string;
-}, {
-    kind: "under_review";
-    reportId: string;
-}>, z.ZodObject<{
-    kind: z.ZodLiteral<"removed">;
-    removedBy: z.ZodString;
-    reason: z.ZodString;
-}, "strip", z.ZodTypeAny, {
-    reason: string;
-    kind: "removed";
-    removedBy: string;
-}, {
-    reason: string;
-    kind: "removed";
-    removedBy: string;
-}>]>;
+/**
+ * The wire format the API actually sends: a flat string, not a tagged union.
+ *
+ * `status.ts` keeps the richer `ListingStatus` union that the domain policies
+ * reason about. These are two different things — transport and domain — and
+ * conflating them is what made every listing response fail to parse.
+ */
+export declare const listingStatusSchema: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
 export declare const bookingStatusSchema: z.ZodDiscriminatedUnion<"kind", [z.ZodObject<{
     kind: z.ZodLiteral<"requested">;
     requestedAt: z.ZodString;
@@ -306,250 +271,89 @@ export declare const authSignInSchema: z.ZodObject<{
 }>;
 export declare const categorySchema: z.ZodObject<{
     id: z.ZodString;
+    slug: z.ZodString;
     name: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     id: string;
+    slug: string;
     name: string;
 }, {
     id: string;
+    slug: string;
     name: string;
 }>;
 export declare const categoriesSchema: z.ZodArray<z.ZodObject<{
     id: z.ZodString;
+    slug: z.ZodString;
     name: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     id: string;
+    slug: string;
     name: string;
 }, {
     id: string;
+    slug: string;
     name: string;
 }>, "many">;
+/**
+ * A row in the search results. Deliberately narrower than the detail: search
+ * returns 2000 rows and does not carry `description` or `pricing`, only the
+ * denormalized `priceFrom` the server can sort by.
+ *
+ * `priceFrom` is nullable and not optional — a `quote` listing with no floor has
+ * no sortable price, and the server sends an explicit null for it.
+ */
 export declare const listingSummarySchema: z.ZodObject<{
     id: z.ZodString;
     title: z.ZodString;
-    description: z.ZodOptional<z.ZodString>;
     categoryId: z.ZodString;
-    ownerId: z.ZodString;
-    price: z.ZodUnion<[z.ZodObject<{
-        model: z.ZodLiteral<"fixed">;
-        price: z.ZodObject<{
-            amountMinor: z.ZodNumber;
-            currency: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            currency: string;
-            amountMinor: number;
-        }, {
-            currency: string;
-            amountMinor: number;
-        }>;
+    priceFrom: z.ZodNullable<z.ZodObject<{
+        amountMinor: z.ZodNumber;
+        currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        model: "fixed";
-        price: {
-            currency: string;
-            amountMinor: number;
-        };
+        currency: string;
+        amountMinor: number;
     }, {
-        model: "fixed";
-        price: {
-            currency: string;
-            amountMinor: number;
-        };
-    }>, z.ZodObject<{
-        model: z.ZodLiteral<"hourly">;
-        hourlyRate: z.ZodObject<{
-            amountMinor: z.ZodNumber;
-            currency: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            currency: string;
-            amountMinor: number;
-        }, {
-            currency: string;
-            amountMinor: number;
-        }>;
-        minimumHours: z.ZodNumber;
-    }, "strip", z.ZodTypeAny, {
-        model: "hourly";
-        hourlyRate: {
-            currency: string;
-            amountMinor: number;
-        };
-        minimumHours: number;
-    }, {
-        model: "hourly";
-        hourlyRate: {
-            currency: string;
-            amountMinor: number;
-        };
-        minimumHours: number;
-    }>, z.ZodObject<{
-        model: z.ZodLiteral<"quote">;
-        startingFrom: z.ZodOptional<z.ZodObject<{
-            amountMinor: z.ZodNumber;
-            currency: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            currency: string;
-            amountMinor: number;
-        }, {
-            currency: string;
-            amountMinor: number;
-        }>>;
-    }, "strip", z.ZodTypeAny, {
-        model: "quote";
-        startingFrom?: {
-            currency: string;
-            amountMinor: number;
-        } | undefined;
-    }, {
-        model: "quote";
-        startingFrom?: {
-            currency: string;
-            amountMinor: number;
-        } | undefined;
-    }>]>;
+        currency: string;
+        amountMinor: number;
+    }>>;
+    status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
+    ratingAvg: z.ZodNumber;
+    ratingCount: z.ZodNumber;
     distanceMeters: z.ZodNumber;
-    isFavorite: z.ZodOptional<z.ZodBoolean>;
-    status: z.ZodDiscriminatedUnion<"kind", [z.ZodObject<{
-        kind: z.ZodLiteral<"draft">;
-    }, "strip", z.ZodTypeAny, {
-        kind: "draft";
-    }, {
-        kind: "draft";
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"published">;
-        publishedAt: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        kind: "published";
-        publishedAt: string;
-    }, {
-        kind: "published";
-        publishedAt: string;
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"paused">;
-    }, "strip", z.ZodTypeAny, {
-        kind: "paused";
-    }, {
-        kind: "paused";
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"under_review">;
-        reportId: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        kind: "under_review";
-        reportId: string;
-    }, {
-        kind: "under_review";
-        reportId: string;
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"removed">;
-        removedBy: z.ZodString;
-        reason: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    }, {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    }>]>;
-    rating: z.ZodOptional<z.ZodNumber>;
-    reviewCount: z.ZodOptional<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
-    status: {
-        kind: "draft";
-    } | {
-        kind: "published";
-        publishedAt: string;
-    } | {
-        kind: "paused";
-    } | {
-        kind: "under_review";
-        reportId: string;
-    } | {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    };
-    price: {
-        model: "fixed";
-        price: {
-            currency: string;
-            amountMinor: number;
-        };
-    } | {
-        model: "hourly";
-        hourlyRate: {
-            currency: string;
-            amountMinor: number;
-        };
-        minimumHours: number;
-    } | {
-        model: "quote";
-        startingFrom?: {
-            currency: string;
-            amountMinor: number;
-        } | undefined;
-    };
+    status: "draft" | "published" | "paused" | "under_review" | "removed";
     id: string;
     title: string;
     categoryId: string;
-    ownerId: string;
+    priceFrom: {
+        currency: string;
+        amountMinor: number;
+    } | null;
+    ratingAvg: number;
+    ratingCount: number;
     distanceMeters: number;
-    description?: string | undefined;
-    isFavorite?: boolean | undefined;
-    rating?: number | undefined;
-    reviewCount?: number | undefined;
 }, {
-    status: {
-        kind: "draft";
-    } | {
-        kind: "published";
-        publishedAt: string;
-    } | {
-        kind: "paused";
-    } | {
-        kind: "under_review";
-        reportId: string;
-    } | {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    };
-    price: {
-        model: "fixed";
-        price: {
-            currency: string;
-            amountMinor: number;
-        };
-    } | {
-        model: "hourly";
-        hourlyRate: {
-            currency: string;
-            amountMinor: number;
-        };
-        minimumHours: number;
-    } | {
-        model: "quote";
-        startingFrom?: {
-            currency: string;
-            amountMinor: number;
-        } | undefined;
-    };
+    status: "draft" | "published" | "paused" | "under_review" | "removed";
     id: string;
     title: string;
     categoryId: string;
-    ownerId: string;
+    priceFrom: {
+        currency: string;
+        amountMinor: number;
+    } | null;
+    ratingAvg: number;
+    ratingCount: number;
     distanceMeters: number;
-    description?: string | undefined;
-    isFavorite?: boolean | undefined;
-    rating?: number | undefined;
-    reviewCount?: number | undefined;
 }>;
+/** The single-listing response. Carries `pricing`, which search omits. */
 export declare const listingDetailSchema: z.ZodObject<{
     id: z.ZodString;
-    title: z.ZodString;
-    categoryId: z.ZodString;
     ownerId: z.ZodString;
-    price: z.ZodUnion<[z.ZodObject<{
+    categoryId: z.ZodString;
+    title: z.ZodString;
+    description: z.ZodString;
+    pricing: z.ZodUnion<[z.ZodObject<{
         model: z.ZodLiteral<"fixed">;
         price: z.ZodObject<{
             amountMinor: z.ZodNumber;
@@ -625,84 +429,34 @@ export declare const listingDetailSchema: z.ZodObject<{
             amountMinor: number;
         } | undefined;
     }>]>;
-    distanceMeters: z.ZodNumber;
-    isFavorite: z.ZodOptional<z.ZodBoolean>;
-    status: z.ZodDiscriminatedUnion<"kind", [z.ZodObject<{
-        kind: z.ZodLiteral<"draft">;
+    priceFrom: z.ZodNullable<z.ZodObject<{
+        amountMinor: z.ZodNumber;
+        currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        kind: "draft";
+        currency: string;
+        amountMinor: number;
     }, {
-        kind: "draft";
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"published">;
-        publishedAt: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        kind: "published";
-        publishedAt: string;
-    }, {
-        kind: "published";
-        publishedAt: string;
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"paused">;
-    }, "strip", z.ZodTypeAny, {
-        kind: "paused";
-    }, {
-        kind: "paused";
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"under_review">;
-        reportId: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        kind: "under_review";
-        reportId: string;
-    }, {
-        kind: "under_review";
-        reportId: string;
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"removed">;
-        removedBy: z.ZodString;
-        reason: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    }, {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    }>]>;
-    rating: z.ZodOptional<z.ZodNumber>;
-    reviewCount: z.ZodOptional<z.ZodNumber>;
-} & {
-    photos: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
-    location: z.ZodObject<{
-        lat: z.ZodNumber;
-        lng: z.ZodNumber;
-    }, "strip", z.ZodTypeAny, {
-        lat: number;
-        lng: number;
-    }, {
-        lat: number;
-        lng: number;
-    }>;
-    createdAt: z.ZodOptional<z.ZodString>;
-    description: z.ZodOptional<z.ZodString>;
+        currency: string;
+        amountMinor: number;
+    }>>;
+    status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
+    ratingAvg: z.ZodNumber;
+    ratingCount: z.ZodNumber;
+    createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    status: {
-        kind: "draft";
-    } | {
-        kind: "published";
-        publishedAt: string;
-    } | {
-        kind: "paused";
-    } | {
-        kind: "under_review";
-        reportId: string;
-    } | {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    };
-    price: {
+    status: "draft" | "published" | "paused" | "under_review" | "removed";
+    id: string;
+    title: string;
+    categoryId: string;
+    priceFrom: {
+        currency: string;
+        amountMinor: number;
+    } | null;
+    ratingAvg: number;
+    ratingCount: number;
+    ownerId: string;
+    description: string;
+    pricing: {
         model: "fixed";
         price: {
             currency: string;
@@ -722,38 +476,21 @@ export declare const listingDetailSchema: z.ZodObject<{
             amountMinor: number;
         } | undefined;
     };
-    id: string;
-    title: string;
-    categoryId: string;
-    ownerId: string;
-    distanceMeters: number;
-    location: {
-        lat: number;
-        lng: number;
-    };
-    description?: string | undefined;
-    isFavorite?: boolean | undefined;
-    rating?: number | undefined;
-    reviewCount?: number | undefined;
-    photos?: string[] | undefined;
-    createdAt?: string | undefined;
+    createdAt: string;
 }, {
-    status: {
-        kind: "draft";
-    } | {
-        kind: "published";
-        publishedAt: string;
-    } | {
-        kind: "paused";
-    } | {
-        kind: "under_review";
-        reportId: string;
-    } | {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    };
-    price: {
+    status: "draft" | "published" | "paused" | "under_review" | "removed";
+    id: string;
+    title: string;
+    categoryId: string;
+    priceFrom: {
+        currency: string;
+        amountMinor: number;
+    } | null;
+    ratingAvg: number;
+    ratingCount: number;
+    ownerId: string;
+    description: string;
+    pricing: {
         model: "fixed";
         price: {
             currency: string;
@@ -773,347 +510,91 @@ export declare const listingDetailSchema: z.ZodObject<{
             amountMinor: number;
         } | undefined;
     };
-    id: string;
-    title: string;
-    categoryId: string;
-    ownerId: string;
-    distanceMeters: number;
-    location: {
-        lat: number;
-        lng: number;
-    };
-    description?: string | undefined;
-    isFavorite?: boolean | undefined;
-    rating?: number | undefined;
-    reviewCount?: number | undefined;
-    photos?: string[] | undefined;
-    createdAt?: string | undefined;
+    createdAt: string;
 }>;
 export declare const listingsSearchResponseSchema: z.ZodObject<{
     items: z.ZodArray<z.ZodObject<{
         id: z.ZodString;
         title: z.ZodString;
-        description: z.ZodOptional<z.ZodString>;
         categoryId: z.ZodString;
-        ownerId: z.ZodString;
-        price: z.ZodUnion<[z.ZodObject<{
-            model: z.ZodLiteral<"fixed">;
-            price: z.ZodObject<{
-                amountMinor: z.ZodNumber;
-                currency: z.ZodString;
-            }, "strip", z.ZodTypeAny, {
-                currency: string;
-                amountMinor: number;
-            }, {
-                currency: string;
-                amountMinor: number;
-            }>;
+        priceFrom: z.ZodNullable<z.ZodObject<{
+            amountMinor: z.ZodNumber;
+            currency: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            model: "fixed";
-            price: {
-                currency: string;
-                amountMinor: number;
-            };
+            currency: string;
+            amountMinor: number;
         }, {
-            model: "fixed";
-            price: {
-                currency: string;
-                amountMinor: number;
-            };
-        }>, z.ZodObject<{
-            model: z.ZodLiteral<"hourly">;
-            hourlyRate: z.ZodObject<{
-                amountMinor: z.ZodNumber;
-                currency: z.ZodString;
-            }, "strip", z.ZodTypeAny, {
-                currency: string;
-                amountMinor: number;
-            }, {
-                currency: string;
-                amountMinor: number;
-            }>;
-            minimumHours: z.ZodNumber;
-        }, "strip", z.ZodTypeAny, {
-            model: "hourly";
-            hourlyRate: {
-                currency: string;
-                amountMinor: number;
-            };
-            minimumHours: number;
-        }, {
-            model: "hourly";
-            hourlyRate: {
-                currency: string;
-                amountMinor: number;
-            };
-            minimumHours: number;
-        }>, z.ZodObject<{
-            model: z.ZodLiteral<"quote">;
-            startingFrom: z.ZodOptional<z.ZodObject<{
-                amountMinor: z.ZodNumber;
-                currency: z.ZodString;
-            }, "strip", z.ZodTypeAny, {
-                currency: string;
-                amountMinor: number;
-            }, {
-                currency: string;
-                amountMinor: number;
-            }>>;
-        }, "strip", z.ZodTypeAny, {
-            model: "quote";
-            startingFrom?: {
-                currency: string;
-                amountMinor: number;
-            } | undefined;
-        }, {
-            model: "quote";
-            startingFrom?: {
-                currency: string;
-                amountMinor: number;
-            } | undefined;
-        }>]>;
+            currency: string;
+            amountMinor: number;
+        }>>;
+        status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
+        ratingAvg: z.ZodNumber;
+        ratingCount: z.ZodNumber;
         distanceMeters: z.ZodNumber;
-        isFavorite: z.ZodOptional<z.ZodBoolean>;
-        status: z.ZodDiscriminatedUnion<"kind", [z.ZodObject<{
-            kind: z.ZodLiteral<"draft">;
-        }, "strip", z.ZodTypeAny, {
-            kind: "draft";
-        }, {
-            kind: "draft";
-        }>, z.ZodObject<{
-            kind: z.ZodLiteral<"published">;
-            publishedAt: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            kind: "published";
-            publishedAt: string;
-        }, {
-            kind: "published";
-            publishedAt: string;
-        }>, z.ZodObject<{
-            kind: z.ZodLiteral<"paused">;
-        }, "strip", z.ZodTypeAny, {
-            kind: "paused";
-        }, {
-            kind: "paused";
-        }>, z.ZodObject<{
-            kind: z.ZodLiteral<"under_review">;
-            reportId: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            kind: "under_review";
-            reportId: string;
-        }, {
-            kind: "under_review";
-            reportId: string;
-        }>, z.ZodObject<{
-            kind: z.ZodLiteral<"removed">;
-            removedBy: z.ZodString;
-            reason: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            reason: string;
-            kind: "removed";
-            removedBy: string;
-        }, {
-            reason: string;
-            kind: "removed";
-            removedBy: string;
-        }>]>;
-        rating: z.ZodOptional<z.ZodNumber>;
-        reviewCount: z.ZodOptional<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
-        status: {
-            kind: "draft";
-        } | {
-            kind: "published";
-            publishedAt: string;
-        } | {
-            kind: "paused";
-        } | {
-            kind: "under_review";
-            reportId: string;
-        } | {
-            reason: string;
-            kind: "removed";
-            removedBy: string;
-        };
-        price: {
-            model: "fixed";
-            price: {
-                currency: string;
-                amountMinor: number;
-            };
-        } | {
-            model: "hourly";
-            hourlyRate: {
-                currency: string;
-                amountMinor: number;
-            };
-            minimumHours: number;
-        } | {
-            model: "quote";
-            startingFrom?: {
-                currency: string;
-                amountMinor: number;
-            } | undefined;
-        };
+        status: "draft" | "published" | "paused" | "under_review" | "removed";
         id: string;
         title: string;
         categoryId: string;
-        ownerId: string;
+        priceFrom: {
+            currency: string;
+            amountMinor: number;
+        } | null;
+        ratingAvg: number;
+        ratingCount: number;
         distanceMeters: number;
-        description?: string | undefined;
-        isFavorite?: boolean | undefined;
-        rating?: number | undefined;
-        reviewCount?: number | undefined;
     }, {
-        status: {
-            kind: "draft";
-        } | {
-            kind: "published";
-            publishedAt: string;
-        } | {
-            kind: "paused";
-        } | {
-            kind: "under_review";
-            reportId: string;
-        } | {
-            reason: string;
-            kind: "removed";
-            removedBy: string;
-        };
-        price: {
-            model: "fixed";
-            price: {
-                currency: string;
-                amountMinor: number;
-            };
-        } | {
-            model: "hourly";
-            hourlyRate: {
-                currency: string;
-                amountMinor: number;
-            };
-            minimumHours: number;
-        } | {
-            model: "quote";
-            startingFrom?: {
-                currency: string;
-                amountMinor: number;
-            } | undefined;
-        };
+        status: "draft" | "published" | "paused" | "under_review" | "removed";
         id: string;
         title: string;
         categoryId: string;
-        ownerId: string;
+        priceFrom: {
+            currency: string;
+            amountMinor: number;
+        } | null;
+        ratingAvg: number;
+        ratingCount: number;
         distanceMeters: number;
-        description?: string | undefined;
-        isFavorite?: boolean | undefined;
-        rating?: number | undefined;
-        reviewCount?: number | undefined;
     }>, "many">;
     nextCursor: z.ZodNullable<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     items: {
-        status: {
-            kind: "draft";
-        } | {
-            kind: "published";
-            publishedAt: string;
-        } | {
-            kind: "paused";
-        } | {
-            kind: "under_review";
-            reportId: string;
-        } | {
-            reason: string;
-            kind: "removed";
-            removedBy: string;
-        };
-        price: {
-            model: "fixed";
-            price: {
-                currency: string;
-                amountMinor: number;
-            };
-        } | {
-            model: "hourly";
-            hourlyRate: {
-                currency: string;
-                amountMinor: number;
-            };
-            minimumHours: number;
-        } | {
-            model: "quote";
-            startingFrom?: {
-                currency: string;
-                amountMinor: number;
-            } | undefined;
-        };
+        status: "draft" | "published" | "paused" | "under_review" | "removed";
         id: string;
         title: string;
         categoryId: string;
-        ownerId: string;
+        priceFrom: {
+            currency: string;
+            amountMinor: number;
+        } | null;
+        ratingAvg: number;
+        ratingCount: number;
         distanceMeters: number;
-        description?: string | undefined;
-        isFavorite?: boolean | undefined;
-        rating?: number | undefined;
-        reviewCount?: number | undefined;
     }[];
     nextCursor: string | null;
 }, {
     items: {
-        status: {
-            kind: "draft";
-        } | {
-            kind: "published";
-            publishedAt: string;
-        } | {
-            kind: "paused";
-        } | {
-            kind: "under_review";
-            reportId: string;
-        } | {
-            reason: string;
-            kind: "removed";
-            removedBy: string;
-        };
-        price: {
-            model: "fixed";
-            price: {
-                currency: string;
-                amountMinor: number;
-            };
-        } | {
-            model: "hourly";
-            hourlyRate: {
-                currency: string;
-                amountMinor: number;
-            };
-            minimumHours: number;
-        } | {
-            model: "quote";
-            startingFrom?: {
-                currency: string;
-                amountMinor: number;
-            } | undefined;
-        };
+        status: "draft" | "published" | "paused" | "under_review" | "removed";
         id: string;
         title: string;
         categoryId: string;
-        ownerId: string;
+        priceFrom: {
+            currency: string;
+            amountMinor: number;
+        } | null;
+        ratingAvg: number;
+        ratingCount: number;
         distanceMeters: number;
-        description?: string | undefined;
-        isFavorite?: boolean | undefined;
-        rating?: number | undefined;
-        reviewCount?: number | undefined;
     }[];
     nextCursor: string | null;
 }>;
 export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
     id: z.ZodString;
-    title: z.ZodString;
-    categoryId: z.ZodString;
     ownerId: z.ZodString;
-    price: z.ZodUnion<[z.ZodObject<{
+    categoryId: z.ZodString;
+    title: z.ZodString;
+    description: z.ZodString;
+    pricing: z.ZodUnion<[z.ZodObject<{
         model: z.ZodLiteral<"fixed">;
         price: z.ZodObject<{
             amountMinor: z.ZodNumber;
@@ -1189,84 +670,34 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
             amountMinor: number;
         } | undefined;
     }>]>;
-    distanceMeters: z.ZodNumber;
-    isFavorite: z.ZodOptional<z.ZodBoolean>;
-    status: z.ZodDiscriminatedUnion<"kind", [z.ZodObject<{
-        kind: z.ZodLiteral<"draft">;
+    priceFrom: z.ZodNullable<z.ZodObject<{
+        amountMinor: z.ZodNumber;
+        currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        kind: "draft";
+        currency: string;
+        amountMinor: number;
     }, {
-        kind: "draft";
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"published">;
-        publishedAt: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        kind: "published";
-        publishedAt: string;
-    }, {
-        kind: "published";
-        publishedAt: string;
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"paused">;
-    }, "strip", z.ZodTypeAny, {
-        kind: "paused";
-    }, {
-        kind: "paused";
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"under_review">;
-        reportId: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        kind: "under_review";
-        reportId: string;
-    }, {
-        kind: "under_review";
-        reportId: string;
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"removed">;
-        removedBy: z.ZodString;
-        reason: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    }, {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    }>]>;
-    rating: z.ZodOptional<z.ZodNumber>;
-    reviewCount: z.ZodOptional<z.ZodNumber>;
-} & {
-    photos: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
-    location: z.ZodObject<{
-        lat: z.ZodNumber;
-        lng: z.ZodNumber;
-    }, "strip", z.ZodTypeAny, {
-        lat: number;
-        lng: number;
-    }, {
-        lat: number;
-        lng: number;
-    }>;
-    createdAt: z.ZodOptional<z.ZodString>;
-    description: z.ZodOptional<z.ZodString>;
+        currency: string;
+        amountMinor: number;
+    }>>;
+    status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
+    ratingAvg: z.ZodNumber;
+    ratingCount: z.ZodNumber;
+    createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    status: {
-        kind: "draft";
-    } | {
-        kind: "published";
-        publishedAt: string;
-    } | {
-        kind: "paused";
-    } | {
-        kind: "under_review";
-        reportId: string;
-    } | {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    };
-    price: {
+    status: "draft" | "published" | "paused" | "under_review" | "removed";
+    id: string;
+    title: string;
+    categoryId: string;
+    priceFrom: {
+        currency: string;
+        amountMinor: number;
+    } | null;
+    ratingAvg: number;
+    ratingCount: number;
+    ownerId: string;
+    description: string;
+    pricing: {
         model: "fixed";
         price: {
             currency: string;
@@ -1286,38 +717,21 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
             amountMinor: number;
         } | undefined;
     };
-    id: string;
-    title: string;
-    categoryId: string;
-    ownerId: string;
-    distanceMeters: number;
-    location: {
-        lat: number;
-        lng: number;
-    };
-    description?: string | undefined;
-    isFavorite?: boolean | undefined;
-    rating?: number | undefined;
-    reviewCount?: number | undefined;
-    photos?: string[] | undefined;
-    createdAt?: string | undefined;
+    createdAt: string;
 }, {
-    status: {
-        kind: "draft";
-    } | {
-        kind: "published";
-        publishedAt: string;
-    } | {
-        kind: "paused";
-    } | {
-        kind: "under_review";
-        reportId: string;
-    } | {
-        reason: string;
-        kind: "removed";
-        removedBy: string;
-    };
-    price: {
+    status: "draft" | "published" | "paused" | "under_review" | "removed";
+    id: string;
+    title: string;
+    categoryId: string;
+    priceFrom: {
+        currency: string;
+        amountMinor: number;
+    } | null;
+    ratingAvg: number;
+    ratingCount: number;
+    ownerId: string;
+    description: string;
+    pricing: {
         model: "fixed";
         price: {
             currency: string;
@@ -1337,21 +751,7 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
             amountMinor: number;
         } | undefined;
     };
-    id: string;
-    title: string;
-    categoryId: string;
-    ownerId: string;
-    distanceMeters: number;
-    location: {
-        lat: number;
-        lng: number;
-    };
-    description?: string | undefined;
-    isFavorite?: boolean | undefined;
-    rating?: number | undefined;
-    reviewCount?: number | undefined;
-    photos?: string[] | undefined;
-    createdAt?: string | undefined;
+    createdAt: string;
 }>, "many">;
 export declare const bookingSchema: z.ZodObject<{
     id: z.ZodString;
@@ -1642,19 +1042,19 @@ export declare const reviewSchema: z.ZodObject<{
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     id: string;
-    rating: number;
     createdAt: string;
     listingId: string;
     bookingId: string;
     authorId: string;
+    rating: number;
     comment?: string | undefined;
 }, {
     id: string;
-    rating: number;
     createdAt: string;
     listingId: string;
     bookingId: string;
     authorId: string;
+    rating: number;
     comment?: string | undefined;
 }>;
 export declare const reviewsResponseSchema: z.ZodObject<{
@@ -1668,41 +1068,41 @@ export declare const reviewsResponseSchema: z.ZodObject<{
         createdAt: z.ZodString;
     }, "strip", z.ZodTypeAny, {
         id: string;
-        rating: number;
         createdAt: string;
         listingId: string;
         bookingId: string;
         authorId: string;
+        rating: number;
         comment?: string | undefined;
     }, {
         id: string;
-        rating: number;
         createdAt: string;
         listingId: string;
         bookingId: string;
         authorId: string;
+        rating: number;
         comment?: string | undefined;
     }>, "many">;
     nextCursor: z.ZodNullable<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     items: {
         id: string;
-        rating: number;
         createdAt: string;
         listingId: string;
         bookingId: string;
         authorId: string;
+        rating: number;
         comment?: string | undefined;
     }[];
     nextCursor: string | null;
 }, {
     items: {
         id: string;
-        rating: number;
         createdAt: string;
         listingId: string;
         bookingId: string;
         authorId: string;
+        rating: number;
         comment?: string | undefined;
     }[];
     nextCursor: string | null;
@@ -1799,8 +1199,14 @@ export declare const problemDetailsSchema: z.ZodObject<{
 export type PricingSchemaType = z.infer<typeof pricingSchema>;
 export type ListingSummary = z.infer<typeof listingSummarySchema>;
 export type ListingDetail = z.infer<typeof listingDetailSchema>;
+export type ListingsSearchResponse = z.infer<typeof listingsSearchResponseSchema>;
+export type MyListingsResponse = z.infer<typeof myListingsResponseSchema>;
 export type BookingResponse = z.infer<typeof bookingSchema>;
+export type BookingsResponse = z.infer<typeof bookingsResponseSchema>;
 export type ReviewResponse = z.infer<typeof reviewSchema>;
+export type ReviewsResponse = z.infer<typeof reviewsResponseSchema>;
 export type ReportResponse = z.infer<typeof reportSchema>;
+export type ReportsResponse = z.infer<typeof reportsResponseSchema>;
+export type ProblemDetails = z.infer<typeof problemDetailsSchema>;
 export type ActorResponse = z.infer<typeof actorSchema>;
 export type AuthSignInResponse = z.infer<typeof authSignInSchema>;

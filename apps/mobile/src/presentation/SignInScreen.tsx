@@ -1,52 +1,79 @@
 import { useState } from 'react';
 import { ActivityIndicator, Button, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import '../infrastructure/i18n';
-import { signIn } from '../infrastructure/api';
-import type { AuthSignInResponse } from '@cerca/contract';
+import { useRouter } from 'expo-router';
+import { ApiError } from '../domain/errors';
+import { useSignIn } from '../infrastructure/query/hooks';
 
 export function SignInScreen() {
   const { t } = useTranslation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const [email, setEmail] = useState('customer@cerca.app');
+  const [password, setPassword] = useState('Password123!');
 
-  async function handleSubmit() {
-    setLoading(true);
-    setError(null);
+  const signIn = useSignIn();
 
-    try {
-      const response: AuthSignInResponse = await signIn(email, password);
-      console.log('Signed in', response.actor.id);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
+  function handleSubmit() {
+    signIn.mutate(
+      { email, password },
+      { onSuccess: () => router.replace('/search') },
+    );
   }
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', padding: 24 }}>
-      <Text style={{ fontSize: 24, fontWeight: '700', marginBottom: 16 }}>{t('signIn.title')}</Text>
+      <Text style={{ fontSize: 28, fontWeight: '700', marginBottom: 4 }}>{t('signIn.title')}</Text>
+      <Text style={{ color: '#666', marginBottom: 20 }}>{t('signIn.description')}</Text>
+
       <TextInput
         placeholder={t('signIn.email')}
         value={email}
         onChangeText={setEmail}
-        style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, marginBottom: 12 }}
+        style={inputStyle}
         autoCapitalize="none"
+        autoCorrect={false}
         keyboardType="email-address"
       />
       <TextInput
         placeholder={t('signIn.password')}
         value={password}
         onChangeText={setPassword}
-        style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, marginBottom: 16 }}
+        style={inputStyle}
         secureTextEntry
       />
-      {error ? <Text style={{ color: 'red', marginBottom: 12 }}>{error}</Text> : null}
-      <Button title={loading ? t('signIn.loading') : t('signIn.submit')} onPress={handleSubmit} disabled={loading} />
-      {loading ? <ActivityIndicator style={{ marginTop: 16 }} /> : null}
+
+      {signIn.error ? (
+        <Text style={{ color: '#c00', marginBottom: 12 }}>{describe(signIn.error, t)}</Text>
+      ) : null}
+
+      <Button
+        title={signIn.isPending ? t('signIn.loading') : t('signIn.submit')}
+        onPress={handleSubmit}
+        disabled={signIn.isPending}
+      />
+      {signIn.isPending ? <ActivityIndicator style={{ marginTop: 16 }} /> : null}
     </View>
   );
+}
+
+const inputStyle = {
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 8,
+  padding: 12,
+  marginBottom: 12,
+} as const;
+
+/**
+ * The server's `message` is English and developer-facing, so it is never shown.
+ * The kind is what the user can act on: wrong password vs. unreachable server
+ * are different problems with different fixes.
+ */
+function describe(error: unknown, t: (key: string) => string): string {
+  if (error instanceof ApiError) {
+    if (error.kind === 'network') return t('error.network');
+    if (error.kind === 'unauthorized') return t('error.badCredentials');
+    if (error.kind === 'validation') return t('error.validation');
+  }
+  return t('error.unknown');
 }

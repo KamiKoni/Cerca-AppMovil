@@ -23,13 +23,14 @@ export const pricingQuote = z.object({
 
 export const pricingSchema = z.union([pricingFixed, pricingHourly, pricingQuote]);
 
-export const listingStatusSchema = z.discriminatedUnion('kind', [
-  z.object({ kind: z.literal('draft') }),
-  z.object({ kind: z.literal('published'), publishedAt: z.string() }),
-  z.object({ kind: z.literal('paused') }),
-  z.object({ kind: z.literal('under_review'), reportId: z.string() }),
-  z.object({ kind: z.literal('removed'), removedBy: z.string(), reason: z.string() }),
-]);
+/**
+ * The wire format the API actually sends: a flat string, not a tagged union.
+ *
+ * `status.ts` keeps the richer `ListingStatus` union that the domain policies
+ * reason about. These are two different things — transport and domain — and
+ * conflating them is what made every listing response fail to parse.
+ */
+export const listingStatusSchema = z.enum(['draft', 'published', 'paused', 'under_review', 'removed']);
 
 export const bookingStatusSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('requested'), requestedAt: z.string() }),
@@ -53,30 +54,44 @@ export const authSignInSchema = z.object({
 
 export const categorySchema = z.object({
   id: z.string(),
+  slug: z.string(),
   name: z.string(),
 });
 
 export const categoriesSchema = z.array(categorySchema);
 
+/**
+ * A row in the search results. Deliberately narrower than the detail: search
+ * returns 2000 rows and does not carry `description` or `pricing`, only the
+ * denormalized `priceFrom` the server can sort by.
+ *
+ * `priceFrom` is nullable and not optional — a `quote` listing with no floor has
+ * no sortable price, and the server sends an explicit null for it.
+ */
 export const listingSummarySchema = z.object({
   id: z.string(),
   title: z.string(),
-  description: z.string().optional(),
   categoryId: z.string(),
-  ownerId: z.string(),
-  price: pricingSchema,
-  distanceMeters: z.number().nonnegative(),
-  isFavorite: z.boolean().optional(),
+  priceFrom: moneySchema.nullable(),
   status: listingStatusSchema,
-  rating: z.number().min(0).max(5).optional(),
-  reviewCount: z.number().int().nonnegative().optional(),
+  ratingAvg: z.number(),
+  ratingCount: z.number().int().nonnegative(),
+  distanceMeters: z.number(),
 });
 
-export const listingDetailSchema = listingSummarySchema.extend({
-  photos: z.array(z.string()).optional(),
-  location: z.object({ lat: z.number(), lng: z.number() }),
-  createdAt: z.string().optional(),
-  description: z.string().optional(),
+/** The single-listing response. Carries `pricing`, which search omits. */
+export const listingDetailSchema = z.object({
+  id: z.string(),
+  ownerId: z.string(),
+  categoryId: z.string(),
+  title: z.string(),
+  description: z.string(),
+  pricing: pricingSchema,
+  priceFrom: moneySchema.nullable(),
+  status: listingStatusSchema,
+  ratingAvg: z.number(),
+  ratingCount: z.number().int().nonnegative(),
+  createdAt: z.string(),
 });
 
 export const listingsSearchResponseSchema = z.object({

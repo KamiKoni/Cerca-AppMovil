@@ -1,11 +1,38 @@
-import { Slot } from 'expo-router';
-import { StatusBar, View } from 'react-native';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ApiError } from '../src/domain/errors';
+import '../src/infrastructure/i18n';
 
-export default function Layout() {
+/**
+ * Created once, outside the component: a client rebuilt on every render would
+ * drop the whole cache on every state change, which is indistinguishable from
+ * having no cache at all.
+ */
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      /**
+       * A 4xx is an answer, not a hiccup — the server will say the same thing
+       * three times. Only retry what could plausibly differ on a second try.
+       */
+      retry: (failureCount, error) => {
+        if (error instanceof ApiError && error.status >= 400 && error.status < 500) return false;
+        return failureCount < 2;
+      },
+    },
+  },
+});
+
+export default function RootLayout() {
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
-      <StatusBar barStyle="dark-content" />
-      <Slot />
-    </View>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <StatusBar barStyle="dark-content" />
+        <Stack screenOptions={{ headerTitleStyle: { fontWeight: '700' } }} />
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }
