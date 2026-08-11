@@ -1,0 +1,44 @@
+{
+  "items": [
+    {
+      "id": "ef4c91a8-5ac6-4173-9272-b77f381dbc85",
+      "title": "Pintura — servicio profesional",
+      "categoryId": "9aa19d46-818d-47b8-a680-7627d34e0f83",
+      "priceFrom": {
+        "amountMinor": 46000,
+        "currency": "COP"
+      },
+      "status": "published",
+      "ratingAvg": 0,
+      "ratingCount": 0,
+      "distanceMeters": 321.84143852
+    },
+    {
+      "id": "da6fe149-1c3e-4455-87cb-775090a3cdc8",
+      "title": "Catering — servicio profesional",
+      "categoryId": "a54bca17-50d6-44f1-9e63-238a798f3c0a",
+      "priceFrom": {
+        "amountMinor": 24000,
+        "currency": "COP"
+      },
+      "status": "published",
+      "ratingAvg": 0,
+      "ratingCount": 0,
+      "distanceMeters": 595.86173522
+    },
+    {
+      "id": "2153701c-5abd-4e41-bd00-28becd88c09d",
+      "title": "Cuidado de adultos — servicio profesional",
+      "categoryId": "5fb64586-e088-4308-b9d5-9fe3e28e5540",
+      "priceFrom": {
+        "amountMinor": 50000,
+        "currency": "COP"
+      },
+      "status": "published",
+      "ratingAvg": 0,
+      "ratingCount": 0,
+      "distanceMeters": 1582.71545617
+    }
+  ],
+  "nextCursor": "eyJkaXN0YW5jZSI6MTU4Mi43MTU0NTYxNywiaWQiOiIyMTUzNzAxYy01YWJkLTRlNDEtYmQwMC0yOGJlY2Q4OGMwOWQifQ"
+}

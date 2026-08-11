@@ -1,0 +1,20 @@
+{
+  "_note": "truncated to the first 3 of 40 items; the endpoint returns a bare array",
+  "items": [
+    {
+      "id": "650f5ee5-3bfa-4b30-9a0a-8d4763715346",
+      "slug": "aire-acondicionado",
+      "name": "Aire acondicionado"
+    },
+    {
+      "id": "3d1a9edc-d7ae-43f8-a353-466da8055510",
+      "slug": "bartender",
+      "name": "Bartender"
+    },
+    {
+      "id": "fbc97e81-dd6b-4aa0-a175-9b81c2b6ca4b",
+      "slug": "carpinteria",
+      "name": "Carpintería"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "type": "https://cerca.app/errors/UNAUTHENTICATED",
+  "status": 401,
+  "code": "UNAUTHENTICATED",
+  "title": "Unauthenticated",
+  "detail": "A bearer access token is required.",
+  "instance": "/v1/me",
+  "traceId": "2a856b17-b5b7-4f57-8924-65fee004af77"
+}

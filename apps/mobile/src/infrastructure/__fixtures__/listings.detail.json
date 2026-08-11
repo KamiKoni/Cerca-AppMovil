@@ -1,0 +1,22 @@
+{
+  "id": "ef4c91a8-5ac6-4173-9272-b77f381dbc85",
+  "ownerId": "700c36af-1dab-4736-91d5-3bbbfccd5bd4",
+  "categoryId": "9aa19d46-818d-47b8-a680-7627d34e0f83",
+  "title": "Pintura — servicio profesional",
+  "description": "Servicio de pintura con experiencia y garantía.",
+  "pricing": {
+    "model": "fixed",
+    "price": {
+      "amountMinor": 46000,
+      "currency": "COP"
+    }
+  },
+  "priceFrom": {
+    "amountMinor": 46000,
+    "currency": "COP"
+  },
+  "status": "published",
+  "ratingAvg": 0,
+  "ratingCount": 0,
+  "createdAt": "2026-08-10T13:19:08.884Z"
+}

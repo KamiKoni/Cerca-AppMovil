@@ -1,0 +1,9 @@
+{
+  "type": "https://cerca.app/errors/LISTING_NOT_FOUND",
+  "status": 404,
+  "code": "LISTING_NOT_FOUND",
+  "title": "Listing Not Found",
+  "detail": "Listing not found.",
+  "instance": "/v1/listings/00000000-0000-4000-8000-000000000000",
+  "traceId": "f80fe041-e95e-413c-92b0-849215a46d1d"
+}

@@ -1,0 +1,9 @@
+{
+  "type": "https://cerca.app/errors/LOCATION_REQUIRED",
+  "status": 422,
+  "code": "LOCATION_REQUIRED",
+  "title": "Location Required",
+  "detail": "Provide lat/lng, or a known cityId to search from.",
+  "instance": "/v1/listings?limit=1",
+  "traceId": "2456106c-c857-46f4-b0c3-33b2e443da15"
+}
