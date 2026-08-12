@@ -1,5 +1,5 @@
-import type { Coords } from './geo';
-import type { CategoryId } from './ids';
+import type { Coords } from "./geo";
+import type { CategoryId } from "./ids";
 
 /**
  * What a search is made of. Mirrors the query parameters of GET /v1/listings,

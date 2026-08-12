@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react';
-import { Redirect } from 'expo-router';
-import { guardDecision, type RouteGroup } from '../application/route-guard';
-import { LoadingScreen } from './LoadingScreen';
-import { useSession } from './SessionProvider';
+import type { ReactNode } from "react";
+import { Redirect } from "expo-router";
+import { guardDecision, type RouteGroup } from "../application/route-guard";
+import { LoadingScreen } from "./LoadingScreen";
+import { useSession } from "./SessionProvider";
 
 /**
  * One guard, mounted in each group's `_layout.tsx`.
@@ -16,12 +16,18 @@ import { useSession } from './SessionProvider';
  * *after* the children have rendered, which paints one frame of the protected
  * screen before navigating away. That frame is the flash the story rules out.
  */
-export function SessionGuard({ group, children }: { group: RouteGroup; children?: ReactNode }) {
+export function SessionGuard({
+  group,
+  children,
+}: {
+  group: RouteGroup;
+  children?: ReactNode;
+}) {
   const { state } = useSession();
   const decision = guardDecision(state, group);
 
-  if (decision.type === 'bootstrap') return <LoadingScreen />;
-  if (decision.type === 'redirect') return <Redirect href={decision.to} />;
+  if (decision.type === "bootstrap") return <LoadingScreen />;
+  if (decision.type === "redirect") return <Redirect href={decision.to} />;
 
   return <>{children}</>;
 }

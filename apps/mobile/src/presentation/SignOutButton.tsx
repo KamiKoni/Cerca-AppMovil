@@ -1,6 +1,6 @@
-import { Pressable, Text } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useSession } from './SessionProvider';
+import { Pressable, Text } from "react-native";
+import { useTranslation } from "react-i18next";
+import { useSession } from "./SessionProvider";
 
 /**
  * Lives in the group headers, so it is reachable from every screen behind the
@@ -20,11 +20,13 @@ export function SignOutButton() {
         void signOut();
       }}
       accessibilityRole="button"
-      accessibilityLabel={t('session.signOut')}
+      accessibilityLabel={t("session.signOut")}
       hitSlop={8}
       style={{ paddingHorizontal: 8 }}
     >
-      <Text style={{ color: '#c00', fontWeight: '600' }}>{t('session.signOut')}</Text>
+      <Text style={{ color: "#c00", fontWeight: "600" }}>
+        {t("session.signOut")}
+      </Text>
     </Pressable>
   );
 }

@@ -42,6 +42,10 @@
       "under_review": "In Prüfung",
       "removed": "Entfernt"
     },
+    "blocked": {
+      "not_owner": "Sie sind nicht berechtigt, diese Aktion für den Dienst auszuführen.",
+      "unknown": "Sie haben keine Berechtigung, diese Aktion auszuführen."
+    },
     "reviewsCount_one": "{{count}} Bewertung",
     "reviewsCount_other": "{{count}} Bewertungen"
   },
@@ -110,7 +114,9 @@
     "openReports": "Offene Meldungen",
     "underReview": "In Prüfung stellen",
     "remove": "Dienst entfernen",
-    "resolve": "Meldung abschließen"
+    "resolve": "Meldung abschließen",
+    "accessDeniedTitle": "Zugriff verweigert",
+    "accessDeniedMessage": "Dieser Bereich ist nur für Moderatoren verfügbar."
   },
   "error": {
     "network": "Verbindung zum Server fehlgeschlagen.",

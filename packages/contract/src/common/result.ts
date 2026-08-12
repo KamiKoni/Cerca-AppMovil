@@ -4,4 +4,5 @@
  * `reason` field of the RFC 9457 problem+json body, and the mobile app turns it
  * into a localized message with `t(`...blocked.${reason}`)`.
  */
-export type Eligibility<Reason extends string> = { ok: true } | { ok: false; reason: Reason };
+export type Eligibility<Reason extends string> =
+  { ok: true } | { ok: false; reason: Reason };

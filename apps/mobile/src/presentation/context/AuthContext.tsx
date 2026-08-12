@@ -1,7 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import type { Actor, AuthSignInResponse } from '@cerca/contract';
-import { secureTokenStore } from '../../infrastructure/auth/secure-token-store';
-import { getMe, addProviderCapacity as callAddProviderCapacity } from '../../infrastructure/gateways/me-gateway';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import type { Actor, AuthSignInResponse } from "@cerca/contract";
+import { secureTokenStore } from "../../infrastructure/auth/secure-token-store";
+import {
+  getMe,
+  addProviderCapacity as callAddProviderCapacity,
+} from "../../infrastructure/gateways/me-gateway";
 
 interface AuthContextValue {
   actor: Actor | null;
@@ -81,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuthSession() {
   const ctx = useContext(AuthContext);
   if (!ctx) {
-    throw new Error('useAuthSession must be used within an AuthProvider');
+    throw new Error("useAuthSession must be used within an AuthProvider");
   }
   return ctx;
 }

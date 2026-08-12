@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React from "react";
+import { View, StyleSheet } from "react-native";
 
 export function CardSkeleton() {
   return (
@@ -31,37 +31,37 @@ const styles = StyleSheet.create({
   card: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: "#f0f0f0",
     marginBottom: 8,
   },
   titleBone: {
     height: 18,
-    width: '75%',
-    backgroundColor: '#e5e7eb',
+    width: "75%",
+    backgroundColor: "#e5e7eb",
     borderRadius: 4,
     marginBottom: 10,
   },
   detailsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   priceBone: {
     height: 16,
     width: 60,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: "#e5e7eb",
     borderRadius: 4,
   },
   distanceBone: {
     height: 16,
     width: 50,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: "#e5e7eb",
     borderRadius: 4,
   },
   ratingBone: {
     height: 16,
     width: 40,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: "#e5e7eb",
     borderRadius: 4,
   },
 });

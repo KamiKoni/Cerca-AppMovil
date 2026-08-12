@@ -7,8 +7,8 @@ import {
   type CreateBookingInput,
   type CreateReviewInput,
   type ReviewResponse,
-} from '@cerca/contract';
-import { apiClient } from '../api-client';
+} from "@cerca/contract";
+import { apiClient } from "../api-client";
 
 /**
   POST /v1/bookings
@@ -18,21 +18,21 @@ export async function createBooking(
   input: CreateBookingInput,
   idempotencyKey: string,
 ): Promise<BookingResponse> {
-  return apiClient.request('/bookings', bookingSchema, {
-    method: 'POST',
+  return apiClient.request("/bookings", bookingSchema, {
+    method: "POST",
     body: input,
     headers: {
-      'Idempotency-Key': idempotencyKey,
+      "Idempotency-Key": idempotencyKey,
     },
   });
 }
 
 /** GET /v1/bookings?role=customer|provider&cursor=... */
 export async function getBookings(
-  role: 'customer' | 'provider',
+  role: "customer" | "provider",
   cursor?: string,
 ): Promise<BookingsResponse> {
-  return apiClient.request('/bookings', bookingsResponseSchema, {
+  return apiClient.request("/bookings", bookingsResponseSchema, {
     query: { role, cursor },
   });
 }
@@ -44,26 +44,36 @@ export async function getBookingDetail(id: string): Promise<BookingResponse> {
 
 /** POST /v1/bookings/{id}/accept */
 export async function acceptBooking(id: string): Promise<BookingResponse> {
-  return apiClient.request(`/bookings/${id}/accept`, bookingSchema, { method: 'POST' });
+  return apiClient.request(`/bookings/${id}/accept`, bookingSchema, {
+    method: "POST",
+  });
 }
 
 /** POST /v1/bookings/{id}/decline */
-export async function declineBooking(id: string, reason: string): Promise<BookingResponse> {
+export async function declineBooking(
+  id: string,
+  reason: string,
+): Promise<BookingResponse> {
   return apiClient.request(`/bookings/${id}/decline`, bookingSchema, {
-    method: 'POST',
+    method: "POST",
     body: { reason },
   });
 }
 
 /** POST /v1/bookings/{id}/complete */
 export async function completeBooking(id: string): Promise<BookingResponse> {
-  return apiClient.request(`/bookings/${id}/complete`, bookingSchema, { method: 'POST' });
+  return apiClient.request(`/bookings/${id}/complete`, bookingSchema, {
+    method: "POST",
+  });
 }
 
 /** POST /v1/bookings/{id}/cancel */
-export async function cancelBooking(id: string, reason?: string): Promise<BookingResponse> {
+export async function cancelBooking(
+  id: string,
+  reason?: string,
+): Promise<BookingResponse> {
   return apiClient.request(`/bookings/${id}/cancel`, bookingSchema, {
-    method: 'POST',
+    method: "POST",
     body: { reason },
   });
 }
@@ -78,10 +88,10 @@ export async function submitReview(
   idempotencyKey: string,
 ): Promise<ReviewResponse> {
   return apiClient.request(`/bookings/${bookingId}/review`, reviewSchema, {
-    method: 'POST',
+    method: "POST",
     body: input,
     headers: {
-      'Idempotency-Key': idempotencyKey,
+      "Idempotency-Key": idempotencyKey,
     },
   });
 }

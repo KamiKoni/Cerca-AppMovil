@@ -1,4 +1,4 @@
-export type CurrencyCode = 'JPY' | 'MXN' | 'KWD' | string;
+export type CurrencyCode = "JPY" | "MXN" | "KWD" | string;
 export interface Money {
     readonly amountMinor: number;
     readonly currency: CurrencyCode;

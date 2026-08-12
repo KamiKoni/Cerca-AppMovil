@@ -1,8 +1,19 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { Category, CreateBookingInput, CreateListingInput, CreateReviewInput, ListingDetail } from '@cerca/contract';
-import type { ListingId } from '../../domain/ids';
-import type { SearchFilters } from '../../domain/search';
-import { signIn, signOut } from '../gateways/auth-gateway';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import type {
+  Category,
+  CreateBookingInput,
+  CreateListingInput,
+  CreateReviewInput,
+  ListingDetail,
+} from "@cerca/contract";
+import type { ListingId } from "../../domain/ids";
+import type { SearchFilters } from "../../domain/search";
+import { signIn, signOut } from "../gateways/auth-gateway";
 import {
   acceptBooking,
   cancelBooking,
@@ -12,7 +23,7 @@ import {
   getBookingDetail,
   getBookings,
   submitReview,
-} from '../gateways/bookings-gateway';
+} from "../gateways/bookings-gateway";
 import {
   createListing,
   getCategories,
@@ -25,14 +36,18 @@ import {
   searchListings,
   setFavorite,
   updateListing,
-} from '../gateways/listings-gateway';
-import { addProviderCapacity, getMe } from '../gateways/me-gateway';
-import { getReports, moderateListing, resolveReport } from '../gateways/moderation-gateway';
-import { listingKeys } from './listing-keys';
+} from "../gateways/listings-gateway";
+import { addProviderCapacity, getMe } from "../gateways/me-gateway";
+import {
+  getReports,
+  moderateListing,
+  resolveReport,
+} from "../gateways/moderation-gateway";
+import { listingKeys } from "./listing-keys";
 
 export function useMe() {
   return useQuery({
-    queryKey: ['me'],
+    queryKey: ["me"],
     queryFn: getMe,
     staleTime: 5 * 60 * 1000,
   });
@@ -43,14 +58,14 @@ export function useAddProviderCapacity() {
   return useMutation({
     mutationFn: addProviderCapacity,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['me'] });
+      queryClient.invalidateQueries({ queryKey: ["me"] });
     },
   });
 }
 
 export function useCategories() {
   return useQuery<Category[]>({
-    queryKey: ['categories'],
+    queryKey: ["categories"],
     queryFn: getCategories,
     staleTime: 5 * 60 * 1000,
   });
@@ -104,7 +119,8 @@ export function useCreateListing() {
 export function useUpdateListing(id: ListingId) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: Partial<CreateListingInput>) => updateListing(id, input),
+    mutationFn: (input: Partial<CreateListingInput>) =>
+      updateListing(id, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: listingKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: listingKeys.mine() });
@@ -142,12 +158,19 @@ export function useToggleFavorite() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, next }: { id: ListingId; next: boolean }) => setFavorite(id, next),
+    mutationFn: ({ id, next }: { id: ListingId; next: boolean }) =>
+      setFavorite(id, next),
     onMutate: async ({ id, next }) => {
       await queryClient.cancelQueries({ queryKey: listingKeys.detail(id) });
-      const prev = queryClient.getQueryData<ListingDetail>(listingKeys.detail(id));
-      queryClient.setQueryData<ListingDetail | undefined>(listingKeys.detail(id), (old) =>
-        old ? { ...old, isFavorite: next } : old,
+      await queryClient.cancelQueries({ queryKey: listingKeys.searches() });
+      await queryClient.cancelQueries({ queryKey: listingKeys.favorites() });
+
+      const prev = queryClient.getQueryData<ListingDetail>(
+        listingKeys.detail(id),
+      );
+      queryClient.setQueryData<ListingDetail | undefined>(
+        listingKeys.detail(id),
+        (old) => (old ? { ...old, isFavorite: next } : old),
       );
       return { prev };
     },
@@ -162,9 +185,9 @@ export function useToggleFavorite() {
   });
 }
 
-export function useBookings(role: 'customer' | 'provider') {
+export function useBookings(role: "customer" | "provider") {
   return useInfiniteQuery({
-    queryKey: ['bookings', role],
+    queryKey: ["bookings", role],
     queryFn: ({ pageParam }) => getBookings(role, pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
@@ -173,7 +196,7 @@ export function useBookings(role: 'customer' | 'provider') {
 
 export function useBookingDetail(id: string) {
   return useQuery({
-    queryKey: ['bookings', 'detail', id],
+    queryKey: ["bookings", "detail", id],
     queryFn: () => getBookingDetail(id),
     enabled: Boolean(id),
   });
@@ -182,10 +205,15 @@ export function useBookingDetail(id: string) {
 export function useCreateBooking() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ input, idempotencyKey }: { input: CreateBookingInput; idempotencyKey: string }) =>
-      createBooking(input, idempotencyKey),
+    mutationFn: ({
+      input,
+      idempotencyKey,
+    }: {
+      input: CreateBookingInput;
+      idempotencyKey: string;
+    }) => createBooking(input, idempotencyKey),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
     },
   });
 }
@@ -195,8 +223,8 @@ export function useAcceptBooking() {
   return useMutation({
     mutationFn: (id: string) => acceptBooking(id),
     onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      queryClient.invalidateQueries({ queryKey: ['bookings', 'detail', id] });
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", "detail", id] });
     },
   });
 }
@@ -204,10 +232,11 @@ export function useAcceptBooking() {
 export function useDeclineBooking() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason: string }) => declineBooking(id, reason),
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      declineBooking(id, reason),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      queryClient.invalidateQueries({ queryKey: ['bookings', 'detail', id] });
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", "detail", id] });
     },
   });
 }
@@ -217,8 +246,8 @@ export function useCompleteBooking() {
   return useMutation({
     mutationFn: (id: string) => completeBooking(id),
     onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      queryClient.invalidateQueries({ queryKey: ['bookings', 'detail', id] });
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", "detail", id] });
     },
   });
 }
@@ -226,10 +255,11 @@ export function useCompleteBooking() {
 export function useCancelBooking() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason?: string }) => cancelBooking(id, reason),
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      cancelBooking(id, reason),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      queryClient.invalidateQueries({ queryKey: ['bookings', 'detail', id] });
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", "detail", id] });
     },
   });
 }
@@ -247,8 +277,10 @@ export function useSubmitReview() {
       idempotencyKey: string;
     }) => submitReview(bookingId, input, idempotencyKey),
     onSuccess: (_, { bookingId }) => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      queryClient.invalidateQueries({ queryKey: ['bookings', 'detail', bookingId] });
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      queryClient.invalidateQueries({
+        queryKey: ["bookings", "detail", bookingId],
+      });
       queryClient.invalidateQueries({ queryKey: listingKeys.all });
     },
   });
@@ -256,7 +288,7 @@ export function useSubmitReview() {
 
 export function useListingReviews(listingId: ListingId) {
   return useInfiniteQuery({
-    queryKey: ['reviews', listingId],
+    queryKey: ["reviews", listingId],
     queryFn: ({ pageParam }) => getListingReviews(listingId, pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
@@ -266,7 +298,7 @@ export function useListingReviews(listingId: ListingId) {
 
 export function useReports() {
   return useInfiniteQuery({
-    queryKey: ['reports'],
+    queryKey: ["reports"],
     queryFn: ({ pageParam }) => getReports(pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
@@ -278,7 +310,7 @@ export function useResolveReport() {
   return useMutation({
     mutationFn: (id: string) => resolveReport(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
     },
   });
 }
@@ -292,13 +324,15 @@ export function useModerateListing() {
       reason,
     }: {
       listingId: string;
-      status: 'under_review' | 'removed';
+      status: "under_review" | "removed";
       reason?: string;
     }) => moderateListing(listingId, status, reason),
     onSuccess: (_, { listingId }) => {
-      queryClient.invalidateQueries({ queryKey: listingKeys.detail(listingId) });
+      queryClient.invalidateQueries({
+        queryKey: listingKeys.detail(listingId),
+      });
       queryClient.invalidateQueries({ queryKey: listingKeys.searches() });
-      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
     },
   });
 }

@@ -1,4 +1,4 @@
-import type { Actor } from '@cerca/contract';
+import type { Actor } from "@cerca/contract";
 
 export type AuthTokens = {
   accessToken: string;

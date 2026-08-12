@@ -1,7 +1,7 @@
-import * as SecureStore from 'expo-secure-store';
-import type { CityOption } from '../../presentation/components/CitySelectorModal';
+import * as SecureStore from "expo-secure-store";
+import type { CityOption } from "../../presentation/components/CitySelectorModal";
 
-const CITY_KEY = 'cerca.selectedCity';
+const CITY_KEY = "cerca.selectedCity";
 
 export async function saveSelectedCity(city: CityOption): Promise<void> {
   await SecureStore.setItemAsync(CITY_KEY, JSON.stringify(city));

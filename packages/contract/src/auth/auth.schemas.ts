@@ -1,12 +1,16 @@
-import { z } from 'zod';
-import { actorSchema as actorResponseSchema } from '../schemas';
+import { z } from "zod";
+import { actorSchema as actorResponseSchema } from "../schemas";
 
 export const signUpSchema = z
   .object({
     email: z.string().email(),
     password: z.string().min(8).max(200),
     displayName: z.string().min(1).max(120),
-    capacities: z.array(z.enum(['customer', 'provider'])).min(1).max(2).default(['customer']),
+    capacities: z
+      .array(z.enum(["customer", "provider"]))
+      .min(1)
+      .max(2)
+      .default(["customer"]),
   })
   .strict();
 export type SignUpInput = z.infer<typeof signUpSchema>;
@@ -19,10 +23,14 @@ export const signInSchema = z
   .strict();
 export type SignInInput = z.infer<typeof signInSchema>;
 
-export const refreshSchema = z.object({ refreshToken: z.string().min(1) }).strict();
+export const refreshSchema = z
+  .object({ refreshToken: z.string().min(1) })
+  .strict();
 export type RefreshInput = z.infer<typeof refreshSchema>;
 
-export const signOutSchema = z.object({ refreshToken: z.string().min(1) }).strict();
+export const signOutSchema = z
+  .object({ refreshToken: z.string().min(1) })
+  .strict();
 export type SignOutInput = z.infer<typeof signOutSchema>;
 
 export const authResultSchema = z.object({

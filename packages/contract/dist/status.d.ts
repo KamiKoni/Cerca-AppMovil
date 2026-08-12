@@ -1,33 +1,33 @@
 export type ListingStatus = {
-    kind: 'draft';
+    kind: "draft";
 } | {
-    kind: 'published';
+    kind: "published";
     publishedAt: string;
 } | {
-    kind: 'paused';
+    kind: "paused";
 } | {
-    kind: 'under_review';
+    kind: "under_review";
     reportId: string;
 } | {
-    kind: 'removed';
+    kind: "removed";
     removedBy: string;
     reason: string;
 };
 export type BookingStatus = {
-    kind: 'requested';
+    kind: "requested";
     requestedAt: string;
 } | {
-    kind: 'accepted';
+    kind: "accepted";
     acceptedAt: string;
     scheduledFor: string;
 } | {
-    kind: 'declined';
+    kind: "declined";
     reason: string;
 } | {
-    kind: 'completed';
+    kind: "completed";
     completedAt: string;
 } | {
-    kind: 'cancelled';
+    kind: "cancelled";
     cancelledBy: string;
     at: string;
 };

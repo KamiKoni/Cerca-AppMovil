@@ -1,20 +1,21 @@
-import type { Coords } from '../../domain/geo';
+import type { Coords } from "../../domain/geo";
 
 export type LocationGranted = {
-  status: 'granted';
+  status: "granted";
   coords: Coords;
 };
 
 export type LocationDenied = {
-  status: 'denied';
+  status: "denied";
   canAskAgain: boolean;
 };
 
 export type LocationUnavailable = {
-  status: 'unavailable';
+  status: "unavailable";
 };
 
-export type LocationResult = LocationGranted | LocationDenied | LocationUnavailable;
+export type LocationResult =
+  LocationGranted | LocationDenied | LocationUnavailable;
 
 export interface LocationProvider {
   getLocation(): Promise<LocationResult>;

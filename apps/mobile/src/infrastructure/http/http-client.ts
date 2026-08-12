@@ -1,12 +1,18 @@
-import { z } from 'zod';
-import { authSignInSchema } from '@cerca/contract';
-import type { AuthTokens, TokenProvider } from '../../application/ports/token-provider';
-import { ApiError } from '../../domain/errors';
-import { toApiError } from './problem';
+import { z } from "zod";
+import { authSignInSchema } from "@cerca/contract";
+import type {
+  AuthTokens,
+  TokenProvider,
+} from "../../application/ports/token-provider";
+import { ApiError } from "../../domain/errors";
+import { toApiError } from "./problem";
 
-export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
+export type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
-export type QueryParams = Record<string, string | number | boolean | undefined | null>;
+export type QueryParams = Record<
+  string,
+  string | number | boolean | undefined | null
+>;
 
 export interface RequestOptions {
   method?: HttpMethod;
@@ -23,7 +29,11 @@ export interface RequestOptions {
 }
 
 export interface HttpClient {
-  request<T>(path: string, schema: z.ZodType<T>, options?: RequestOptions): Promise<T>;
+  request<T>(
+    path: string,
+    schema: z.ZodType<T>,
+    options?: RequestOptions,
+  ): Promise<T>;
 }
 
 export interface HttpClientConfig {
@@ -44,10 +54,14 @@ export interface HttpClientConfig {
  */
 export function createHttpClient(config: HttpClientConfig): HttpClient {
   const doFetch = config.fetchFn ?? globalThis.fetch;
-  const baseUrl = config.baseUrl.replace(/\/+$/, '');
+  const baseUrl = config.baseUrl.replace(/\/+$/, "");
   let refreshInProgress: Promise<void> | undefined;
 
-  async function request<T>(path: string, schema: z.ZodType<T>, options: RequestOptions = {}): Promise<T> {
+  async function request<T>(
+    path: string,
+    schema: z.ZodType<T>,
+    options: RequestOptions = {},
+  ): Promise<T> {
     return requestInternal(path, schema, options, false);
   }
 
@@ -57,30 +71,42 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
     options: RequestOptions,
     hasRefreshed: boolean,
   ): Promise<T> {
-    const url = baseUrl + (path.startsWith('/') ? path : `/${path}`) + buildQuery(options.query);
+    const url =
+      baseUrl +
+      (path.startsWith("/") ? path : `/${path}`) +
+      buildQuery(options.query);
     const headers = await buildHeaders(options);
 
     let response: Response;
     try {
       response = await doFetch(url, {
-        method: options.method ?? 'GET',
+        method: options.method ?? "GET",
         headers,
-        ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
+        ...(options.body === undefined
+          ? {}
+          : { body: JSON.stringify(options.body) }),
         ...(options.signal ? { signal: options.signal } : {}),
       });
     } catch (cause) {
       throw new ApiError({
-        kind: 'network',
+        kind: "network",
         status: 0,
-        code: 'NETWORK_ERROR',
-        message: cause instanceof Error ? cause.message : 'The request could not be sent.',
+        code: "NETWORK_ERROR",
+        message:
+          cause instanceof Error
+            ? cause.message
+            : "The request could not be sent.",
       });
     }
 
     const raw = await readBody(response);
 
     if (!response.ok) {
-      if (response.status === 401 && !hasRefreshed && shouldAttemptRefresh(path)) {
+      if (
+        response.status === 401 &&
+        !hasRefreshed &&
+        shouldAttemptRefresh(path)
+      ) {
         await refreshAccessToken();
         return requestInternal(path, schema, options, true);
       }
@@ -91,20 +117,17 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
   }
 
   function shouldAttemptRefresh(path: string): boolean {
-    return Boolean(
-      config.tokenProvider &&
-        !path.startsWith('/auth/'),
-    );
+    return Boolean(config.tokenProvider && !path.startsWith("/auth/"));
   }
 
   async function refreshAccessToken(): Promise<void> {
     const provider = config.tokenProvider;
     if (!provider) {
       throw new ApiError({
-        kind: 'unauthorized',
+        kind: "unauthorized",
         status: 401,
-        code: 'REFRESH_UNAVAILABLE',
-        message: 'No token provider is configured for refresh.',
+        code: "REFRESH_UNAVAILABLE",
+        message: "No token provider is configured for refresh.",
       });
     }
 
@@ -117,19 +140,19 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
       const refreshToken = await provider.getRefreshToken();
       if (!refreshToken) {
         throw new ApiError({
-          kind: 'unauthorized',
+          kind: "unauthorized",
           status: 401,
-          code: 'REFRESH_TOKEN_MISSING',
-          message: 'No refresh token is available.',
+          code: "REFRESH_TOKEN_MISSING",
+          message: "No refresh token is available.",
         });
       }
 
       const url = `${baseUrl}/auth/refresh`;
       const response = await doFetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ refreshToken }),
       });
@@ -150,11 +173,15 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
     }
   }
 
-  async function buildHeaders(options: RequestOptions): Promise<Record<string, string>> {
-    const headers: Record<string, string> = { Accept: 'application/json' };
+  async function buildHeaders(
+    options: RequestOptions,
+  ): Promise<Record<string, string>> {
+    const headers: Record<string, string> = { Accept: "application/json" };
 
-    if (options.body !== undefined) headers['Content-Type'] = 'application/json';
-    if (options.idempotencyKey) headers['Idempotency-Key'] = options.idempotencyKey;
+    if (options.body !== undefined)
+      headers["Content-Type"] = "application/json";
+    if (options.idempotencyKey)
+      headers["Idempotency-Key"] = options.idempotencyKey;
 
     // Attached whenever a session exists, including on public routes: the server
     // uses it to personalise responses (a listing knows it is your favourite),
@@ -169,16 +196,16 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
 }
 
 function buildQuery(query: QueryParams | undefined): string {
-  if (!query) return '';
+  if (!query) return "";
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query)) {
     // Absent is absent: sending `?query=` would make an empty filter look like a
     // deliberate search for the empty string.
-    if (value === undefined || value === null || value === '') continue;
+    if (value === undefined || value === null || value === "") continue;
     params.append(key, String(value));
   }
   const serialised = params.toString();
-  return serialised ? `?${serialised}` : '';
+  return serialised ? `?${serialised}` : "";
 }
 
 /**
@@ -211,10 +238,10 @@ async function readBody(response: Response): Promise<unknown> {
  */
 export function createIdempotencyKey(): string {
   const uuid = globalThis.crypto?.randomUUID;
-  if (typeof uuid !== 'function') {
+  if (typeof uuid !== "function") {
     throw new Error(
-      'crypto.randomUUID is unavailable. Install a CSPRNG polyfill (expo-crypto) ' +
-        'rather than weakening idempotency keys to Math.random.',
+      "crypto.randomUUID is unavailable. Install a CSPRNG polyfill (expo-crypto) " +
+        "rather than weakening idempotency keys to Math.random.",
     );
   }
   return globalThis.crypto.randomUUID();

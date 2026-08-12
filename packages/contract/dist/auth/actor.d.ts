@@ -1,12 +1,12 @@
-import type { UserId } from '../common/ids';
-export type Capacity = 'customer' | 'provider';
-export type PlatformRole = 'user' | 'moderator' | 'admin';
+import type { UserId } from "../common/ids";
+export type Capacity = "customer" | "provider";
+export type PlatformRole = "user" | "moderator" | "admin";
 export interface Actor {
     readonly id: UserId;
     readonly capacities: readonly Capacity[];
     readonly platformRole: PlatformRole;
 }
-export type Permission = 'listing:read' | 'listing:create' | 'listing:update' | 'listing:moderate' | 'booking:request' | 'booking:accept' | 'review:write' | 'review:moderate' | 'report:resolve' | 'user:suspend';
+export type Permission = "listing:read" | "listing:create" | "listing:update" | "listing:moderate" | "booking:request" | "booking:accept" | "review:write" | "review:moderate" | "report:resolve" | "user:suspend";
 export interface OwnableResource {
     readonly ownerId: string;
 }

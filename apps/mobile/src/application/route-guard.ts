@@ -1,7 +1,7 @@
-import type { SessionState } from './session';
+import type { SessionState } from "./session";
 
-export const SIGN_IN_ROUTE = '/sign-in';
-export const HOME_ROUTE = '/search';
+export const SIGN_IN_ROUTE = "/sign-in";
+export const HOME_ROUTE = "/search";
 
 /**
  * Which kind of area a route group is, from the session's point of view.
@@ -15,17 +15,20 @@ export const HOME_ROUTE = '/search';
  * answered by `withCapacity` (SCRUM-20), and mixing the two would put two
  * unrelated reasons to redirect in one branch.
  */
-export type RouteGroup = 'entry' | 'auth' | 'protected';
+export type RouteGroup = "entry" | "auth" | "protected";
 
 export type GuardDecision =
-  | { readonly type: 'bootstrap' }
-  | { readonly type: 'render' }
-  | { readonly type: 'redirect'; readonly to: typeof SIGN_IN_ROUTE | typeof HOME_ROUTE };
+  | { readonly type: "bootstrap" }
+  | { readonly type: "render" }
+  | {
+      readonly type: "redirect";
+      readonly to: typeof SIGN_IN_ROUTE | typeof HOME_ROUTE;
+    };
 
-const BOOTSTRAP: GuardDecision = { type: 'bootstrap' };
-const RENDER: GuardDecision = { type: 'render' };
-const TO_SIGN_IN: GuardDecision = { type: 'redirect', to: SIGN_IN_ROUTE };
-const TO_HOME: GuardDecision = { type: 'redirect', to: HOME_ROUTE };
+const BOOTSTRAP: GuardDecision = { type: "bootstrap" };
+const RENDER: GuardDecision = { type: "render" };
+const TO_SIGN_IN: GuardDecision = { type: "redirect", to: SIGN_IN_ROUTE };
+const TO_HOME: GuardDecision = { type: "redirect", to: HOME_ROUTE };
 
 /**
  * The whole redirect policy, as a function of state and nothing else.
@@ -38,19 +41,22 @@ const TO_HOME: GuardDecision = { type: 'redirect', to: HOME_ROUTE };
  * redirected while the keystore was still being read would send a user with a
  * perfectly valid session to sign-in, every single launch.
  */
-export function guardDecision(state: SessionState, group: RouteGroup): GuardDecision {
-  if (state.status === 'bootstrapping') return BOOTSTRAP;
+export function guardDecision(
+  state: SessionState,
+  group: RouteGroup,
+): GuardDecision {
+  if (state.status === "bootstrapping") return BOOTSTRAP;
 
-  const authenticated = state.status === 'authenticated';
+  const authenticated = state.status === "authenticated";
 
   switch (group) {
-    case 'entry':
+    case "entry":
       return authenticated ? TO_HOME : TO_SIGN_IN;
-    case 'auth':
+    case "auth":
       // Signing in is not something you do twice. Landing back on the form
       // after a successful sign-in reads as the sign-in having failed.
       return authenticated ? TO_HOME : RENDER;
-    case 'protected':
+    case "protected":
       return authenticated ? RENDER : TO_SIGN_IN;
   }
 }

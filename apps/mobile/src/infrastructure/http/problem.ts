@@ -1,5 +1,9 @@
-import { z } from 'zod';
-import { ApiError, type ApiErrorKind, type FieldError } from '../../domain/errors';
+import { z } from "zod";
+import {
+  ApiError,
+  type ApiErrorKind,
+  type FieldError,
+} from "../../domain/errors";
 
 /**
  * RFC 9457 `application/problem+json`, as this API actually emits it.
@@ -19,7 +23,9 @@ export const problemDetailsSchema = z.object({
   instance: z.string().optional(),
   /** Present only on the domain 403/409 raised by a policy. */
   reason: z.string().optional(),
-  errors: z.array(z.object({ path: z.string(), message: z.string() })).optional(),
+  errors: z
+    .array(z.object({ path: z.string(), message: z.string() }))
+    .optional(),
   traceId: z.string().optional(),
 });
 
@@ -32,17 +38,17 @@ export type ProblemDetails = z.infer<typeof problemDetailsSchema>;
 export function kindForStatus(status: number): ApiErrorKind {
   switch (status) {
     case 401:
-      return 'unauthorized';
+      return "unauthorized";
     case 403:
-      return 'forbidden';
+      return "forbidden";
     case 404:
-      return 'not_found';
+      return "not_found";
     case 409:
-      return 'conflict';
+      return "conflict";
     case 422:
-      return 'validation';
+      return "validation";
     default:
-      return status >= 500 ? 'server' : 'unknown';
+      return status >= 500 ? "server" : "unknown";
   }
 }
 
@@ -64,7 +70,7 @@ export function toApiError(status: number, body: unknown): ApiError {
     return new ApiError({
       kind: kindForStatus(status),
       status,
-      code: 'MALFORMED_PROBLEM_RESPONSE',
+      code: "MALFORMED_PROBLEM_RESPONSE",
       message: `The server returned ${status} with a body that is not problem+json.`,
     });
   }

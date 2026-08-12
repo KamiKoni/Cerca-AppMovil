@@ -1,9 +1,21 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import type { Actor } from '@cerca/contract';
-import { ANONYMOUS, BOOTSTRAPPING, restoreSession, type SessionState } from '../application/session';
-import { secureTokenStore } from '../infrastructure/auth/secure-token-store';
-import { signOut as clearStoredSession } from '../infrastructure/gateways/auth-gateway';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import type { Actor } from "@cerca/contract";
+import {
+  ANONYMOUS,
+  BOOTSTRAPPING,
+  restoreSession,
+  type SessionState,
+} from "../application/session";
+import { secureTokenStore } from "../infrastructure/auth/secure-token-store";
+import { signOut as clearStoredSession } from "../infrastructure/gateways/auth-gateway";
 
 interface SessionContextValue {
   readonly state: SessionState;
@@ -47,7 +59,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       await secureTokenStore.saveTokens({ ...stored, actor });
     }
 
-    setState({ status: 'authenticated', actor });
+    setState({ status: "authenticated", actor });
   }
 
   const value = useMemo<SessionContextValue>(
@@ -67,14 +79,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [state, signedIn, queryClient],
   );
 
-  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
+  return (
+    <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
+  );
 }
 
 export function useSession(): SessionContextValue {
   const value = useContext(SessionContext);
 
   if (!value) {
-    throw new Error('useSession must be used inside <SessionProvider>.');
+    throw new Error("useSession must be used inside <SessionProvider>.");
   }
 
   return value;
@@ -89,5 +103,5 @@ export function useSession(): SessionContextValue {
  */
 export function useActor(): Actor | null {
   const { state } = useSession();
-  return state.status === 'authenticated' ? state.actor : null;
+  return state.status === "authenticated" ? state.actor : null;
 }

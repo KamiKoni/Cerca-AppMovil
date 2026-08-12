@@ -55,6 +55,12 @@
       "under_review": "Under review",
       "removed": "Removed"
     },
+    "blocked": {
+      "not_owner": "You are not allowed to perform this action on the listing.",
+      "unknown": "You do not have permission to perform this action."
+    },
+    "emptyReviews": "No reviews yet. Be the first to leave a review!",
+    "withdrawnReview": "This review was withdrawn by moderation.",
     "reviewsCount_one": "{{count}} review",
     "reviewsCount_other": "{{count}} reviews"
   },
@@ -129,7 +135,9 @@
     "openReports": "Pending reports",
     "underReview": "Put under review",
     "remove": "Remove listing",
-    "resolve": "Resolve report"
+    "resolve": "Resolve report",
+    "accessDeniedTitle": "Access denied",
+    "accessDeniedMessage": "This section is only available to moderators."
   },
   "error": {
     "network": "Could not connect to the server. Please check your connection.",

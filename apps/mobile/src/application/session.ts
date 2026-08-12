@@ -1,5 +1,5 @@
-import type { Actor } from '@cerca/contract';
-import type { SessionStorage } from './ports/session-storage';
+import type { Actor } from "@cerca/contract";
+import type { SessionStorage } from "./ports/session-storage";
 
 /**
  * Who the app thinks you are, as three states rather than two.
@@ -11,12 +11,12 @@ import type { SessionStorage } from './ports/session-storage';
  * moment before the restored session pushes it away.
  */
 export type SessionState =
-  | { readonly status: 'bootstrapping' }
-  | { readonly status: 'authenticated'; readonly actor: Actor }
-  | { readonly status: 'anonymous' };
+  | { readonly status: "bootstrapping" }
+  | { readonly status: "authenticated"; readonly actor: Actor }
+  | { readonly status: "anonymous" };
 
-export const BOOTSTRAPPING: SessionState = { status: 'bootstrapping' };
-export const ANONYMOUS: SessionState = { status: 'anonymous' };
+export const BOOTSTRAPPING: SessionState = { status: "bootstrapping" };
+export const ANONYMOUS: SessionState = { status: "anonymous" };
 
 /**
  * Reads the stored session once, at launch.
@@ -26,10 +26,14 @@ export const ANONYMOUS: SessionState = { status: 'anonymous' };
  * is not a reason to crash on the splash screen: signing in again is a recovery
  * the user can perform, and reinstalling the app is not.
  */
-export async function restoreSession(storage: SessionStorage): Promise<SessionState> {
+export async function restoreSession(
+  storage: SessionStorage,
+): Promise<SessionState> {
   try {
     const stored = await storage.getTokens();
-    return stored ? { status: 'authenticated', actor: stored.actor } : ANONYMOUS;
+    return stored
+      ? { status: "authenticated", actor: stored.actor }
+      : ANONYMOUS;
   } catch {
     return ANONYMOUS;
   }

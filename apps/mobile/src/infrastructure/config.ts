@@ -13,9 +13,9 @@ const configured = process.env.EXPO_PUBLIC_API_URL;
 
 if (!configured) {
   throw new Error(
-    'EXPO_PUBLIC_API_URL is not set. Copy apps/mobile/.env.example to apps/mobile/.env ' +
-      'and set it to your machine LAN IP, e.g. http://192.168.1.20:3333/v1 — not localhost, ' +
-      'which on a phone resolves to the phone itself.',
+    "EXPO_PUBLIC_API_URL is not set. Copy apps/mobile/.env.example to apps/mobile/.env " +
+      "and set it to your machine LAN IP, e.g. http://192.168.1.20:3333/v1 — not localhost, " +
+      "which on a phone resolves to the phone itself.",
   );
 }
 

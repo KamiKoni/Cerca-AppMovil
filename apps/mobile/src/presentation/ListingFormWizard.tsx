@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
-import type { CreateListingInput } from '@cerca/contract';
-import { useCreateListing } from '../infrastructure/query/hooks';
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
+import type { CreateListingInput } from "@cerca/contract";
+import { useCreateListing } from "../infrastructure/query/hooks";
 
 export function ListingFormWizard() {
   const { t } = useTranslation();
@@ -13,32 +21,32 @@ export function ListingFormWizard() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
   // Form State
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [categoryId, setCategoryId] = useState('cat-general');
-  const [model, setModel] = useState<'fixed' | 'hourly' | 'quote'>('fixed');
-  const [fixedAmount, setFixedAmount] = useState('500');
-  const [hourlyAmount, setHourlyAmount] = useState('250');
-  const [minimumHours, setMinimumHours] = useState('2');
-  const [startingAmount, setStartingAmount] = useState('');
-  const [currency, setCurrency] = useState('MXN');
-  const [cityId, setCityId] = useState('cdmx');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [categoryId, setCategoryId] = useState("cat-general");
+  const [model, setModel] = useState<"fixed" | "hourly" | "quote">("fixed");
+  const [fixedAmount, setFixedAmount] = useState("500");
+  const [hourlyAmount, setHourlyAmount] = useState("250");
+  const [minimumHours, setMinimumHours] = useState("2");
+  const [startingAmount, setStartingAmount] = useState("");
+  const [currency, setCurrency] = useState("MXN");
+  const [cityId, setCityId] = useState("cdmx");
   const [photoKeys, setPhotoKeys] = useState<string[]>([]);
-  const [simulatedPhotoName, setSimulatedPhotoName] = useState('');
+  const [simulatedPhotoName, setSimulatedPhotoName] = useState("");
 
   function buildPricingPayload() {
-    if (model === 'fixed') {
+    if (model === "fixed") {
       return {
-        model: 'fixed' as const,
+        model: "fixed" as const,
         price: {
           amountMinor: Math.round((parseFloat(fixedAmount) || 0) * 100),
           currency,
         },
       };
     }
-    if (model === 'hourly') {
+    if (model === "hourly") {
       return {
-        model: 'hourly' as const,
+        model: "hourly" as const,
         hourlyRate: {
           amountMinor: Math.round((parseFloat(hourlyAmount) || 0) * 100),
           currency,
@@ -47,7 +55,7 @@ export function ListingFormWizard() {
       };
     }
     return {
-      model: 'quote' as const,
+      model: "quote" as const,
       startingFrom: startingAmount
         ? {
             amountMinor: Math.round((parseFloat(startingAmount) || 0) * 100),
@@ -69,7 +77,7 @@ export function ListingFormWizard() {
 
     createListing.mutate(payload, {
       onSuccess: () => {
-        router.replace('/(provider)/my-listings');
+        router.replace("/(provider)/my-listings");
       },
     });
   }
@@ -78,7 +86,7 @@ export function ListingFormWizard() {
     if (!simulatedPhotoName.trim()) return;
     const key = `photos/${Date.now()}-${simulatedPhotoName.trim()}`;
     setPhotoKeys((prev) => [...prev, key]);
-    setSimulatedPhotoName('');
+    setSimulatedPhotoName("");
   }
 
   return (
@@ -88,9 +96,18 @@ export function ListingFormWizard() {
         {[1, 2, 3, 4].map((s) => (
           <View
             key={s}
-            style={[styles.stepDot, step === s && styles.stepDotActive, step > s && styles.stepDotDone]}
+            style={[
+              styles.stepDot,
+              step === s && styles.stepDotActive,
+              step > s && styles.stepDotDone,
+            ]}
           >
-            <Text style={[styles.stepDotText, (step === s || step > s) && styles.stepDotTextActive]}>
+            <Text
+              style={[
+                styles.stepDotText,
+                (step === s || step > s) && styles.stepDotTextActive,
+              ]}
+            >
               {s}
             </Text>
           </View>
@@ -98,10 +115,10 @@ export function ListingFormWizard() {
       </View>
 
       <Text style={styles.stepTitle}>
-        {step === 1 && t('provider.step1')}
-        {step === 2 && t('provider.step2')}
-        {step === 3 && t('provider.step3')}
-        {step === 4 && t('provider.step4')}
+        {step === 1 && t("provider.step1")}
+        {step === 2 && t("provider.step2")}
+        {step === 3 && t("provider.step3")}
+        {step === 4 && t("provider.step4")}
       </Text>
 
       {/* Step 1: Category & Details */}
@@ -141,13 +158,21 @@ export function ListingFormWizard() {
           <Text style={styles.label}>Modelo de cobro</Text>
 
           <View style={styles.modelRow}>
-            {(['fixed', 'hourly', 'quote'] as const).map((m) => (
+            {(["fixed", "hourly", "quote"] as const).map((m) => (
               <Pressable
                 key={m}
-                style={[styles.modelChip, model === m && styles.modelChipActive]}
+                style={[
+                  styles.modelChip,
+                  model === m && styles.modelChipActive,
+                ]}
                 onPress={() => setModel(m)}
               >
-                <Text style={[styles.modelChipText, model === m && styles.modelChipTextActive]}>
+                <Text
+                  style={[
+                    styles.modelChipText,
+                    model === m && styles.modelChipTextActive,
+                  ]}
+                >
                   {t(`provider.pricingModel.${m}`)}
                 </Text>
               </Pressable>
@@ -155,9 +180,13 @@ export function ListingFormWizard() {
           </View>
 
           <Text style={styles.label}>Moneda</Text>
-          <TextInput style={styles.input} value={currency} onChangeText={setCurrency} />
+          <TextInput
+            style={styles.input}
+            value={currency}
+            onChangeText={setCurrency}
+          />
 
-          {model === 'fixed' ? (
+          {model === "fixed" ? (
             <>
               <Text style={styles.label}>Precio total</Text>
               <TextInput
@@ -170,7 +199,7 @@ export function ListingFormWizard() {
             </>
           ) : null}
 
-          {model === 'hourly' ? (
+          {model === "hourly" ? (
             <>
               <Text style={styles.label}>Tarifa por hora</Text>
               <TextInput
@@ -192,7 +221,7 @@ export function ListingFormWizard() {
             </>
           ) : null}
 
-          {model === 'quote' ? (
+          {model === "quote" ? (
             <>
               <Text style={styles.label}>Precio desde (opcional)</Text>
               <TextInput
@@ -211,7 +240,12 @@ export function ListingFormWizard() {
       {step === 3 ? (
         <View style={styles.formGroup}>
           <Text style={styles.label}>Identificador de Ciudad / Zona</Text>
-          <TextInput style={styles.input} value={cityId} onChangeText={setCityId} placeholder="cdmx" />
+          <TextInput
+            style={styles.input}
+            value={cityId}
+            onChangeText={setCityId}
+            placeholder="cdmx"
+          />
         </View>
       ) : null}
 
@@ -241,16 +275,21 @@ export function ListingFormWizard() {
       ) : null}
 
       {createListing.error ? (
-        <Text style={styles.errorText}>{t('error.unknown')}</Text>
+        <Text style={styles.errorText}>{t("error.unknown")}</Text>
       ) : null}
 
       {/* Navigation Buttons */}
       <View style={styles.wizardFooter}>
         {step > 1 ? (
-          <Pressable style={styles.secondaryButton} onPress={() => setStep((s) => (s > 1 ? s - 1 : s) as 1 | 2 | 3 | 4)}>
-            <Text style={styles.secondaryButtonText}>{t('provider.back')}</Text>
+          <Pressable
+            style={styles.secondaryButton}
+            onPress={() => setStep((s) => (s > 1 ? s - 1 : s) as 1 | 2 | 3 | 4)}
+          >
+            <Text style={styles.secondaryButtonText}>{t("provider.back")}</Text>
           </Pressable>
-        ) : <View />}
+        ) : (
+          <View />
+        )}
 
         {step < 4 ? (
           <Pressable
@@ -258,18 +297,23 @@ export function ListingFormWizard() {
             onPress={() => setStep((s) => (s < 4 ? s + 1 : s) as 1 | 2 | 3 | 4)}
             disabled={step === 1 && !title.trim()}
           >
-            <Text style={styles.primaryButtonText}>{t('provider.next')}</Text>
+            <Text style={styles.primaryButtonText}>{t("provider.next")}</Text>
           </Pressable>
         ) : (
           <Pressable
-            style={[styles.publishButton, createListing.isPending && styles.disabledButton]}
+            style={[
+              styles.publishButton,
+              createListing.isPending && styles.disabledButton,
+            ]}
             onPress={handleFinalPublish}
             disabled={createListing.isPending}
           >
             {createListing.isPending ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.publishButtonText}>{t('provider.publish')}</Text>
+              <Text style={styles.publishButtonText}>
+                {t("provider.publish")}
+              </Text>
             )}
           </Pressable>
         )}
@@ -281,14 +325,14 @@ export function ListingFormWizard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   content: {
     padding: 20,
   },
   stepIndicatorRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     gap: 12,
     marginBottom: 20,
   },
@@ -296,28 +340,28 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#e5e7eb',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#e5e7eb",
+    justifyContent: "center",
+    alignItems: "center",
   },
   stepDotActive: {
-    backgroundColor: '#2563eb',
+    backgroundColor: "#2563eb",
   },
   stepDotDone: {
-    backgroundColor: '#059669',
+    backgroundColor: "#059669",
   },
   stepDotText: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#4b5563',
+    fontWeight: "700",
+    color: "#4b5563",
   },
   stepDotTextActive: {
-    color: '#ffffff',
+    color: "#ffffff",
   },
   stepTitle: {
     fontSize: 20,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: "700",
+    color: "#111827",
     marginBottom: 20,
   },
   formGroup: {
@@ -326,111 +370,111 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#374151',
+    fontWeight: "600",
+    color: "#374151",
   },
   input: {
     minHeight: 44,
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: "#d1d5db",
     borderRadius: 8,
     paddingHorizontal: 12,
     fontSize: 15,
-    color: '#111827',
+    color: "#111827",
   },
   textArea: {
     minHeight: 90,
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: "#d1d5db",
     borderRadius: 8,
     padding: 12,
     fontSize: 15,
-    textAlignVertical: 'top',
-    color: '#111827',
+    textAlignVertical: "top",
+    color: "#111827",
   },
   modelRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
   modelChip: {
     minHeight: 40,
     paddingHorizontal: 12,
     borderRadius: 20,
-    backgroundColor: '#f3f4f6',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#f3f4f6",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modelChipActive: {
-    backgroundColor: '#2563eb',
+    backgroundColor: "#2563eb",
   },
   modelChipText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#374151',
+    fontWeight: "600",
+    color: "#374151",
   },
   modelChipTextActive: {
-    color: '#ffffff',
+    color: "#ffffff",
   },
   photoAddRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
   photoItem: {
     padding: 10,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: "#f3f4f6",
     borderRadius: 6,
   },
   photoText: {
     fontSize: 14,
-    color: '#374151',
+    color: "#374151",
   },
   errorText: {
-    color: '#dc2626',
+    color: "#dc2626",
     marginBottom: 12,
   },
   wizardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 20,
   },
   primaryButton: {
     minHeight: 44,
     paddingHorizontal: 24,
-    backgroundColor: '#2563eb',
+    backgroundColor: "#2563eb",
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   primaryButtonText: {
-    color: '#ffffff',
-    fontWeight: '600',
+    color: "#ffffff",
+    fontWeight: "600",
     fontSize: 15,
   },
   secondaryButton: {
     minHeight: 44,
     paddingHorizontal: 20,
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: "#d1d5db",
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   secondaryButtonText: {
-    color: '#374151',
-    fontWeight: '600',
+    color: "#374151",
+    fontWeight: "600",
     fontSize: 15,
   },
   publishButton: {
     minHeight: 44,
     paddingHorizontal: 24,
-    backgroundColor: '#059669',
+    backgroundColor: "#059669",
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   publishButtonText: {
-    color: '#ffffff',
-    fontWeight: '600',
+    color: "#ffffff",
+    fontWeight: "600",
     fontSize: 15,
   },
   disabledButton: {

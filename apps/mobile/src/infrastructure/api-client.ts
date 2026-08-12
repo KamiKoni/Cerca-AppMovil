@@ -1,6 +1,6 @@
-import { createHttpClient } from './http/http-client';
-import { secureTokenStore } from './auth/secure-token-store';
-import { API_BASE_URL } from './config';
+import { createHttpClient } from "./http/http-client";
+import { secureTokenStore } from "./auth/secure-token-store";
+import { API_BASE_URL } from "./config";
 
 /**
  * The one client the app uses.

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 export declare const moneySchema: z.ZodObject<{
     amountMinor: z.ZodNumber;
     currency: z.ZodString;
@@ -282,6 +282,7 @@ export declare const categorySchema: z.ZodObject<{
     slug: string;
     name: string;
 }>;
+export type Category = z.infer<typeof categorySchema>;
 export declare const categoriesSchema: z.ZodArray<z.ZodObject<{
     id: z.ZodString;
     slug: z.ZodString;
@@ -321,6 +322,7 @@ export declare const listingSummarySchema: z.ZodObject<{
     ratingAvg: z.ZodNumber;
     ratingCount: z.ZodNumber;
     distanceMeters: z.ZodNumber;
+    isFavorite: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
     id: string;
@@ -333,6 +335,7 @@ export declare const listingSummarySchema: z.ZodObject<{
     ratingAvg: number;
     ratingCount: number;
     distanceMeters: number;
+    isFavorite?: boolean | undefined;
 }, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
     id: string;
@@ -345,6 +348,7 @@ export declare const listingSummarySchema: z.ZodObject<{
     ratingAvg: number;
     ratingCount: number;
     distanceMeters: number;
+    isFavorite?: boolean | undefined;
 }>;
 /** The single-listing response. Carries `pricing`, which search omits. */
 export declare const listingDetailSchema: z.ZodObject<{
@@ -443,6 +447,7 @@ export declare const listingDetailSchema: z.ZodObject<{
     status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
     ratingAvg: z.ZodNumber;
     ratingCount: z.ZodNumber;
+    isFavorite: z.ZodOptional<z.ZodBoolean>;
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
@@ -478,6 +483,7 @@ export declare const listingDetailSchema: z.ZodObject<{
         } | undefined;
     };
     createdAt: string;
+    isFavorite?: boolean | undefined;
     cityId?: string | undefined;
 }, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
@@ -513,6 +519,7 @@ export declare const listingDetailSchema: z.ZodObject<{
         } | undefined;
     };
     createdAt: string;
+    isFavorite?: boolean | undefined;
     cityId?: string | undefined;
 }>;
 export declare const listingsSearchResponseSchema: z.ZodObject<{
@@ -534,6 +541,7 @@ export declare const listingsSearchResponseSchema: z.ZodObject<{
         ratingAvg: z.ZodNumber;
         ratingCount: z.ZodNumber;
         distanceMeters: z.ZodNumber;
+        isFavorite: z.ZodOptional<z.ZodBoolean>;
     }, "strip", z.ZodTypeAny, {
         status: "draft" | "published" | "paused" | "under_review" | "removed";
         id: string;
@@ -546,6 +554,7 @@ export declare const listingsSearchResponseSchema: z.ZodObject<{
         ratingAvg: number;
         ratingCount: number;
         distanceMeters: number;
+        isFavorite?: boolean | undefined;
     }, {
         status: "draft" | "published" | "paused" | "under_review" | "removed";
         id: string;
@@ -558,6 +567,7 @@ export declare const listingsSearchResponseSchema: z.ZodObject<{
         ratingAvg: number;
         ratingCount: number;
         distanceMeters: number;
+        isFavorite?: boolean | undefined;
     }>, "many">;
     nextCursor: z.ZodNullable<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
@@ -573,6 +583,7 @@ export declare const listingsSearchResponseSchema: z.ZodObject<{
         ratingAvg: number;
         ratingCount: number;
         distanceMeters: number;
+        isFavorite?: boolean | undefined;
     }[];
     nextCursor: string | null;
 }, {
@@ -588,6 +599,7 @@ export declare const listingsSearchResponseSchema: z.ZodObject<{
         ratingAvg: number;
         ratingCount: number;
         distanceMeters: number;
+        isFavorite?: boolean | undefined;
     }[];
     nextCursor: string | null;
 }>;
@@ -687,6 +699,7 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
     status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
     ratingAvg: z.ZodNumber;
     ratingCount: z.ZodNumber;
+    isFavorite: z.ZodOptional<z.ZodBoolean>;
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
@@ -722,6 +735,7 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
         } | undefined;
     };
     createdAt: string;
+    isFavorite?: boolean | undefined;
     cityId?: string | undefined;
 }, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
@@ -757,6 +771,7 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
         } | undefined;
     };
     createdAt: string;
+    isFavorite?: boolean | undefined;
     cityId?: string | undefined;
 }>, "many">;
 export declare const bookingSchema: z.ZodObject<{

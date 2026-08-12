@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 /** Every list paginates by keyset cursor — never OFFSET. `?cursor=&limit=`. */
 export declare const paginationQuerySchema: z.ZodObject<{
     cursor: z.ZodOptional<z.ZodString>;

@@ -55,6 +55,12 @@
       "under_review": "En revisión",
       "removed": "Retirado"
     },
+    "blocked": {
+      "not_owner": "No tienes permiso para modificar este anuncio.",
+      "unknown": "No tienes permiso para realizar esta acción."
+    },
+    "emptyReviews": "Aún no hay reseñas. ¡Sé el primero en dejar una!",
+    "withdrawnReview": "Esta reseña fue retirada por moderación.",
     "reviewsCount_one": "{{count}} reseña",
     "reviewsCount_other": "{{count}} reseñas"
   },
@@ -124,35 +130,14 @@
     "loginPrompt": "Inicia sesión para guardar servicios favoritos y verlos aquí.",
     "retry": "Reintentar"
   },
-  "listing": {
-    "title": "Servicio",
-    "perHour": "/hora",
-    "minimum": "mínimo",
-    "from": "Desde",
-    "onQuote": "Precio a consultar",
-    "noReviews": "Aún sin reseñas",
-    "notFound": "Este servicio ya no está disponible.",
-    "edit": "Editar anuncio",
-    "editTitle": "Editar servicio",
-    "save": "Guardar cambios",
-    "book": "Solicitar reserva",
-    "bookingRequested": "Reserva solicitada",
-    "status": {
-      "draft": "Borrador",
-      "published": "Publicado",
-      "paused": "Pausado",
-      "under_review": "En revisión",
-      "removed": "Retirado"
-    },
-    "reviewsCount_one": "{{count}} reseña",
-    "reviewsCount_other": "{{count}} reseñas"
-  },
   "moderation": {
     "title": "Cola de Moderación",
     "openReports": "Reportes pendientes",
     "underReview": "Poner en revisión",
     "remove": "Retirar servicio",
-    "resolve": "Resolver reporte"
+    "resolve": "Resolver reporte",
+    "accessDeniedTitle": "Acceso restringido",
+    "accessDeniedMessage": "Esta sección solo está disponible para moderadores."
   },
   "error": {
     "network": "No se pudo contactar el servidor. Revisa tu conexión a internet.",

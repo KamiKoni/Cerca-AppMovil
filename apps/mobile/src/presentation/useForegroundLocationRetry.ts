@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { useEffect, useRef } from "react";
+import { AppState, AppStateStatus } from "react-native";
 
 export function useAppStateChange(onForeground: () => void): void {
   const savedCallback = useRef(onForeground);
@@ -9,11 +9,14 @@ export function useAppStateChange(onForeground: () => void): void {
   }, [onForeground]);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (state: AppStateStatus) => {
-      if (state === 'active') {
-        savedCallback.current();
-      }
-    });
+    const subscription = AppState.addEventListener(
+      "change",
+      (state: AppStateStatus) => {
+        if (state === "active") {
+          savedCallback.current();
+        }
+      },
+    );
 
     return () => subscription.remove();
   }, []);

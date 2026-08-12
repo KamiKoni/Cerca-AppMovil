@@ -3,10 +3,7 @@
   "refreshToken": "<redacted>",
   "actor": {
     "id": "27639491-27a4-4b5a-8c0c-c749817b5953",
-    "capacities": [
-      "customer",
-      "provider"
-    ],
+    "capacities": ["customer", "provider"],
     "platformRole": "user"
   }
 }

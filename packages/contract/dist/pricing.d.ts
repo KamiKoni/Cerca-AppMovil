@@ -1,12 +1,12 @@
-import { Money } from './money';
+import { Money } from "./money";
 export type Pricing = {
-    model: 'fixed';
+    model: "fixed";
     price: Money;
 } | {
-    model: 'hourly';
+    model: "hourly";
     hourlyRate: Money;
     minimumHours: number;
 } | {
-    model: 'quote';
+    model: "quote";
     startingFrom?: Money;
 };

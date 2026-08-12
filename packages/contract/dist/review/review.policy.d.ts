@@ -1,12 +1,12 @@
-import type { Actor } from '../auth/actor';
-import type { BookingStatus } from '../status';
+import type { Actor } from "../auth/actor";
+import type { BookingStatus } from "../status";
 export type BookingForReview = {
     id: string;
     customerId: string;
     status: BookingStatus;
     reviewId: string | null;
 };
-export type ReviewBlockedReason = 'not_your_booking' | 'not_completed' | 'already_reviewed' | 'window_closed';
+export type ReviewBlockedReason = "not_your_booking" | "not_completed" | "already_reviewed" | "window_closed";
 export type ReviewEligibility = {
     ok: true;
 } | {

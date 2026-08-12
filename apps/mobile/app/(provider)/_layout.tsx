@@ -13,19 +13,20 @@ import { useActor } from '../../src/presentation/SessionProvider';
  */
 export default function ProviderLayout() {
   const actor = useActor();
-
-  if (actor && !actor.capacities.includes('provider')) {
-    return <Redirect href={HOME_ROUTE} />;
-  }
+  const isProvider = actor?.capacities.includes('provider') ?? false;
 
   return (
     <SessionGuard group="protected">
-      <Stack
-        screenOptions={{
-          headerTitleStyle: { fontWeight: '700' },
-          headerRight: () => <SignOutButton />,
-        }}
-      />
+      {isProvider ? (
+        <Stack
+          screenOptions={{
+            headerTitleStyle: { fontWeight: '700' },
+            headerRight: () => <SignOutButton />,
+          }}
+        />
+      ) : (
+        <Redirect href={HOME_ROUTE} />
+      )}
     </SessionGuard>
   );
 }
