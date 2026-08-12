@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import type { ListingDetail, UpdateListingInput } from "@cerca/contract";
 import { ApiError } from "../domain/errors";
-import { useAuthSession } from "./context/AuthContext";
+import { useActor } from "./SessionProvider";
 import {
   useListingDetail,
   useUpdateListing,
@@ -23,7 +23,7 @@ import { mapProblemReasonToI18nKey } from "./authorizationMapper";
 export function ListingEditScreen({ id }: { id: string }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const { actor } = useAuthSession();
+  const actor = useActor();
 
   const detailQuery = useListingDetail(id);
   const updateMutation = useUpdateListing(id);
