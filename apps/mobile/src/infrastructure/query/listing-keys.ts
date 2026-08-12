@@ -39,6 +39,7 @@ export const listingKeys = {
   details: () => [...listingKeys.all, 'detail'] as const,
   detail: (id: ListingId) => [...listingKeys.details(), id] as const,
   mine: () => [...listingKeys.all, 'mine'] as const,
+  favorites: () => [...listingKeys.all, 'favorites'] as const,
 } as const;
 
 /**

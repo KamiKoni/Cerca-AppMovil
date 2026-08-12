@@ -1,5 +1,6 @@
-import type { z } from 'zod';
-import type { TokenProvider } from '../../application/ports/token-provider';
+import { z } from 'zod';
+import { authSignInSchema } from '@cerca/contract';
+import type { AuthTokens, TokenProvider } from '../../application/ports/token-provider';
 import { ApiError } from '../../domain/errors';
 import { toApiError } from './problem';
 
@@ -11,6 +12,7 @@ export interface RequestOptions {
   method?: HttpMethod;
   query?: QueryParams;
   body?: unknown;
+  headers?: Record<string, string>;
   /**
    * Required by POST /bookings and POST /bookings/{id}/review; the server answers
    * 422 IDEMPOTENCY_KEY_REQUIRED without it. Deliberately NOT generated here —
@@ -43,8 +45,18 @@ export interface HttpClientConfig {
 export function createHttpClient(config: HttpClientConfig): HttpClient {
   const doFetch = config.fetchFn ?? globalThis.fetch;
   const baseUrl = config.baseUrl.replace(/\/+$/, '');
+  let refreshInProgress: Promise<void> | undefined;
 
   async function request<T>(path: string, schema: z.ZodType<T>, options: RequestOptions = {}): Promise<T> {
+    return requestInternal(path, schema, options, false);
+  }
+
+  async function requestInternal<T>(
+    path: string,
+    schema: z.ZodType<T>,
+    options: RequestOptions,
+    hasRefreshed: boolean,
+  ): Promise<T> {
     const url = baseUrl + (path.startsWith('/') ? path : `/${path}`) + buildQuery(options.query);
     const headers = await buildHeaders(options);
 
@@ -57,9 +69,6 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
         ...(options.signal ? { signal: options.signal } : {}),
       });
     } catch (cause) {
-      // The request never left the device: airplane mode, DNS, wrong LAN IP.
-      // status 0 marks "no answer", which is not the same as a server error and
-      // must not be treated as one.
       throw new ApiError({
         kind: 'network',
         status: 0,
@@ -71,13 +80,74 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
     const raw = await readBody(response);
 
     if (!response.ok) {
+      if (response.status === 401 && !hasRefreshed && shouldAttemptRefresh(path)) {
+        await refreshAccessToken();
+        return requestInternal(path, schema, options, true);
+      }
       throw toApiError(response.status, raw);
     }
 
-    // The acceptance criterion, in one line. `parse`, never `as`: a cast is a
-    // promise to the compiler that nobody checks, and a renamed field would then
-    // surface three screens later as `undefined` instead of here, by name.
     return schema.parse(raw);
+  }
+
+  function shouldAttemptRefresh(path: string): boolean {
+    return Boolean(
+      config.tokenProvider &&
+        !path.startsWith('/auth/'),
+    );
+  }
+
+  async function refreshAccessToken(): Promise<void> {
+    const provider = config.tokenProvider;
+    if (!provider) {
+      throw new ApiError({
+        kind: 'unauthorized',
+        status: 401,
+        code: 'REFRESH_UNAVAILABLE',
+        message: 'No token provider is configured for refresh.',
+      });
+    }
+
+    if (refreshInProgress) {
+      await refreshInProgress;
+      return;
+    }
+
+    refreshInProgress = (async () => {
+      const refreshToken = await provider.getRefreshToken();
+      if (!refreshToken) {
+        throw new ApiError({
+          kind: 'unauthorized',
+          status: 401,
+          code: 'REFRESH_TOKEN_MISSING',
+          message: 'No refresh token is available.',
+        });
+      }
+
+      const url = `${baseUrl}/auth/refresh`;
+      const response = await doFetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      const raw = await readBody(response);
+      if (!response.ok) {
+        throw toApiError(response.status, raw);
+      }
+
+      const tokens = authSignInSchema.parse(raw) as AuthTokens;
+      await provider.saveTokens(tokens);
+    })();
+
+    try {
+      await refreshInProgress;
+    } finally {
+      refreshInProgress = undefined;
+    }
   }
 
   async function buildHeaders(options: RequestOptions): Promise<Record<string, string>> {

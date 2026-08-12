@@ -1,9 +1,14 @@
-import { Text, View } from 'react-native';
+import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { ListingFormWizard } from '../../../src/presentation/ListingFormWizard';
 
-export default function NewListingPage() {
+export default function CreateListingPage() {
+  const { t } = useTranslation();
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>New listing wizard placeholder</Text>
-    </View>
+    <>
+      <Stack.Screen options={{ title: t('provider.newListing') }} />
+      <ListingFormWizard />
+    </>
   );
 }

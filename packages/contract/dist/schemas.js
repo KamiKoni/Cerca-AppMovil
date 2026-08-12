@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.problemDetailsSchema = exports.reportsResponseSchema = exports.reportSchema = exports.reviewsResponseSchema = exports.reviewSchema = exports.bookingsResponseSchema = exports.bookingSchema = exports.myListingsResponseSchema = exports.listingsSearchResponseSchema = exports.listingDetailSchema = exports.listingSummarySchema = exports.categoriesSchema = exports.categorySchema = exports.authSignInSchema = exports.actorSchema = exports.bookingStatusSchema = exports.listingStatusSchema = exports.pricingSchema = exports.pricingQuote = exports.pricingHourly = exports.pricingFixed = exports.moneySchema = void 0;
+exports.presignPhotoResponseSchema = exports.presignPhotoRequestSchema = exports.updateListingSchema = exports.createListingSchema = exports.createReviewSchema = exports.createBookingSchema = exports.problemDetailsSchema = exports.reportsResponseSchema = exports.reportSchema = exports.reviewsResponseSchema = exports.reviewSchema = exports.bookingsResponseSchema = exports.bookingSchema = exports.myListingsResponseSchema = exports.listingsSearchResponseSchema = exports.listingDetailSchema = exports.listingSummarySchema = exports.categoriesSchema = exports.categorySchema = exports.authSignInSchema = exports.actorSchema = exports.bookingStatusSchema = exports.listingStatusSchema = exports.pricingSchema = exports.pricingQuote = exports.pricingHourly = exports.pricingFixed = exports.moneySchema = void 0;
 const zod_1 = require("zod");
 exports.moneySchema = zod_1.z.object({
     amountMinor: zod_1.z.number().int().nonnegative({ message: 'error.money.nonnegative' }),
@@ -76,6 +76,7 @@ exports.listingDetailSchema = zod_1.z.object({
     categoryId: zod_1.z.string(),
     title: zod_1.z.string(),
     description: zod_1.z.string(),
+    cityId: zod_1.z.string().optional(),
     pricing: exports.pricingSchema,
     priceFrom: exports.moneySchema.nullable(),
     status: exports.listingStatusSchema,
@@ -133,4 +134,30 @@ exports.problemDetailsSchema = zod_1.z.object({
     detail: zod_1.z.string().optional(),
     instance: zod_1.z.string().optional(),
     reason: zod_1.z.string().optional(),
+});
+exports.createBookingSchema = zod_1.z.object({
+    listingId: zod_1.z.string().min(1),
+    scheduledFor: zod_1.z.string().optional(),
+    notes: zod_1.z.string().optional(),
+});
+exports.createReviewSchema = zod_1.z.object({
+    rating: zod_1.z.number().min(1).max(5),
+    comment: zod_1.z.string().optional(),
+});
+exports.createListingSchema = zod_1.z.object({
+    title: zod_1.z.string().min(3),
+    description: zod_1.z.string().min(10),
+    categoryId: zod_1.z.string().min(1),
+    pricing: exports.pricingSchema,
+    cityId: zod_1.z.string().optional(),
+    photoKeys: zod_1.z.array(zod_1.z.string()).optional(),
+});
+exports.updateListingSchema = exports.createListingSchema.partial();
+exports.presignPhotoRequestSchema = zod_1.z.object({
+    fileName: zod_1.z.string().min(1),
+    contentType: zod_1.z.string().min(1),
+});
+exports.presignPhotoResponseSchema = zod_1.z.object({
+    uploadUrl: zod_1.z.string().url(),
+    key: zod_1.z.string().min(1),
 });

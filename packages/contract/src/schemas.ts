@@ -77,6 +77,7 @@ export const listingSummarySchema = z.object({
   ratingAvg: z.number(),
   ratingCount: z.number().int().nonnegative(),
   distanceMeters: z.number(),
+  isFavorite: z.boolean().optional(),
 });
 
 /** The single-listing response. Carries `pricing`, which search omits. */
@@ -86,11 +87,13 @@ export const listingDetailSchema = z.object({
   categoryId: z.string(),
   title: z.string(),
   description: z.string(),
+  cityId: z.string().optional(),
   pricing: pricingSchema,
   priceFrom: moneySchema.nullable(),
   status: listingStatusSchema,
   ratingAvg: z.number(),
   ratingCount: z.number().int().nonnegative(),
+  isFavorite: z.boolean().optional(),
   createdAt: z.string(),
 });
 
@@ -154,6 +157,38 @@ export const problemDetailsSchema = z.object({
   reason: z.string().optional(),
 });
 
+export const createBookingSchema = z.object({
+  listingId: z.string().min(1),
+  scheduledFor: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+export const createReviewSchema = z.object({
+  rating: z.number().min(1).max(5),
+  comment: z.string().optional(),
+});
+
+export const createListingSchema = z.object({
+  title: z.string().min(3),
+  description: z.string().min(10),
+  categoryId: z.string().min(1),
+  pricing: pricingSchema,
+  cityId: z.string().optional(),
+  photoKeys: z.array(z.string()).optional(),
+});
+
+export const updateListingSchema = createListingSchema.partial();
+
+export const presignPhotoRequestSchema = z.object({
+  fileName: z.string().min(1),
+  contentType: z.string().min(1),
+});
+
+export const presignPhotoResponseSchema = z.object({
+  uploadUrl: z.string().url(),
+  key: z.string().min(1),
+});
+
 export type PricingSchemaType = z.infer<typeof pricingSchema>;
 export type ListingSummary = z.infer<typeof listingSummarySchema>;
 export type ListingDetail = z.infer<typeof listingDetailSchema>;
@@ -168,3 +203,9 @@ export type ReportsResponse = z.infer<typeof reportsResponseSchema>;
 export type ProblemDetails = z.infer<typeof problemDetailsSchema>;
 export type ActorResponse = z.infer<typeof actorSchema>;
 export type AuthSignInResponse = z.infer<typeof authSignInSchema>;
+export type CreateBookingInput = z.infer<typeof createBookingSchema>;
+export type CreateReviewInput = z.infer<typeof createReviewSchema>;
+export type CreateListingInput = z.infer<typeof createListingSchema>;
+export type UpdateListingInput = z.infer<typeof updateListingSchema>;
+export type PresignPhotoResponse = z.infer<typeof presignPhotoResponseSchema>;
+

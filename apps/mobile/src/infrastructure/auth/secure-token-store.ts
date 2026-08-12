@@ -1,7 +1,8 @@
 import * as SecureStore from 'expo-secure-store';
 import type { Actor } from '@cerca/contract';
 import type { TokenProvider } from '../../application/ports/token-provider';
-import type { AuthStorage, AuthTokens } from '../auth';
+import type { AuthStorage } from '../auth';
+import type { AuthTokens } from '../../application/ports/token-provider';
 
 const ACCESS_KEY = 'cerca.accessToken';
 const REFRESH_KEY = 'cerca.refreshToken';
@@ -54,5 +55,9 @@ export const secureTokenStore: AuthStorage & TokenProvider = {
 
   async getAccessToken(): Promise<string | null> {
     return SecureStore.getItemAsync(ACCESS_KEY);
+  },
+
+  async getRefreshToken(): Promise<string | null> {
+    return SecureStore.getItemAsync(REFRESH_KEY);
   },
 };

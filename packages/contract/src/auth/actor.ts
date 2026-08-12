@@ -1,7 +1,7 @@
+import type { UserId } from '../common/ids';
+
 export type Capacity = 'customer' | 'provider';
 export type PlatformRole = 'user' | 'moderator' | 'admin';
-
-export type UserId = string;
 
 export interface Actor {
   readonly id: UserId;

@@ -50,7 +50,11 @@ describe('createHttpClient', () => {
     const client = createHttpClient({
       baseUrl: 'http://localhost:3333/v1',
       fetchFn,
-      tokenProvider: { getAccessToken: async () => 'jwt-123' },
+      tokenProvider: {
+        getAccessToken: async () => 'jwt-123',
+        getRefreshToken: async () => null,
+        saveTokens: async () => {},
+      },
     });
 
     await client.request('/me', actorSchema);
@@ -63,7 +67,11 @@ describe('createHttpClient', () => {
     const client = createHttpClient({
       baseUrl: 'http://localhost:3333/v1',
       fetchFn,
-      tokenProvider: { getAccessToken: async () => null },
+      tokenProvider: {
+        getAccessToken: async () => null,
+        getRefreshToken: async () => null,
+        saveTokens: async () => {},
+      },
     });
 
     await client.request('/me', actorSchema);
