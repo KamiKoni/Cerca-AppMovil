@@ -27,14 +27,14 @@ import {
   useListingReviews,
   useToggleFavorite,
 } from "../infrastructure/query/hooks";
-import { useAuthSession } from "./context/AuthContext";
+import { useActor } from "./SessionProvider";
 import { mapProblemReasonToI18nKey } from "./authorizationMapper";
 import { useCan } from "./authorization";
 
 export function ListingDetailScreen({ id }: { id: ListingId }) {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const { actor } = useAuthSession();
+  const actor = useActor();
   const locale = i18n.language || "es-CO";
 
   const detail = useListingDetail(id);
