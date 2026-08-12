@@ -16,7 +16,13 @@
     "expandRadius": "Radius auf 20 km erweitern",
     "retry": "Erneut versuchen",
     "selectCity": "Stadt auswählen",
-    "citySelectorTitle": "Manuelle Standortauswahl"
+    "citySelectorTitle": "Manuelle Standortauswahl",
+    "usingDeviceLocation": "Verwende den Standort Ihres Geräts.",
+    "usingCity": "Ergebnisse für {{city}}.",
+    "locationDeniedPermanent": "Standortzugriff dauerhaft verweigert. Öffnen Sie die Einstellungen oder wählen Sie eine Stadt.",
+    "locationUnavailable": "Standort nicht verfügbar. Bitte wählen Sie eine Stadt manuell.",
+    "openSettings": "Einstellungen öffnen",
+    "currentLocation": "Aktueller Standort"
   },
   "listing": {
     "title": "Dienstleistung",

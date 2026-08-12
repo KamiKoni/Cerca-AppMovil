@@ -3,17 +3,22 @@ import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from '
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useMyListings, usePauseListing, usePublishListing } from '../infrastructure/query/hooks';
-import { useAuthSession } from './context/AuthContext';
+import { useActor } from './SessionProvider';
+import { LoadingScreen } from './LoadingScreen';
 
 export function MyListingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { actor, becomeProvider } = useAuthSession();
+  const actor = useActor();
   const isProvider = actor?.capacities.includes('provider');
 
   const myListings = useMyListings();
   const publishMutation = usePublishListing();
   const pauseMutation = usePauseListing();
+
+  if (actor === null) {
+    return <LoadingScreen />;
+  }
 
   if (!isProvider) {
     return (
@@ -22,7 +27,7 @@ export function MyListingsScreen() {
         <Text style={styles.subtitle}>{t('provider.onboardingDescription')}</Text>
         <Pressable
           style={styles.primaryButton}
-          onPress={() => becomeProvider()}
+          onPress={() => router.push('/search' as never)}
           accessibilityRole="button"
         >
           <Text style={styles.primaryButtonText}>{t('provider.becomeProvider')}</Text>

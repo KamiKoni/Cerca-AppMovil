@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateBookingInput, CreateListingInput, CreateReviewInput, ListingDetail } from '@cerca/contract';
+import type { Category, CreateBookingInput, CreateListingInput, CreateReviewInput, ListingDetail } from '@cerca/contract';
 import type { ListingId } from '../../domain/ids';
 import type { SearchFilters } from '../../domain/search';
 import { signIn, signOut } from '../gateways/auth-gateway';
@@ -15,6 +15,7 @@ import {
 } from '../gateways/bookings-gateway';
 import {
   createListing,
+  getCategories,
   getFavoriteListings,
   getListingDetail,
   getListingReviews,
@@ -44,6 +45,14 @@ export function useAddProviderCapacity() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['me'] });
     },
+  });
+}
+
+export function useCategories() {
+  return useQuery<Category[]>({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

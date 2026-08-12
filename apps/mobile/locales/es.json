@@ -19,7 +19,20 @@
     "expandRadius": "Ampliar radio a 20 km",
     "retry": "Reintentar",
     "selectCity": "Seleccionar ciudad",
-    "citySelectorTitle": "Ubicación manual"
+    "citySelectorTitle": "Ubicación manual",
+    "filters": "Filtros",
+    "filterSubtitle": "Ajusta tu búsqueda por categoría y distancia.",
+    "categoryLabel": "Categoría",
+    "radiusLabel": "Distancia",
+    "radiusOption": "{{distance}} km",
+    "applyFilters": "Aplicar filtros",
+    "usingDeviceLocation": "Usando la ubicación de tu dispositivo.",
+    "usingCity": "Mostrando resultados para {{city}}.",
+    "locationDeniedPermanent": "Permiso de ubicación denegado permanentemente. Abre ajustes o elige una ciudad.",
+    "locationUnavailable": "Ubicación no disponible. Selecciona una ciudad manualmente.",
+    "openSettings": "Abrir ajustes",
+    "currentLocation": "Ubicación actual",
+    "allCategories": "Todas las categorías"
   },
   "listing": {
     "title": "Servicio",

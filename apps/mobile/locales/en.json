@@ -19,7 +19,20 @@
     "expandRadius": "Expand radius to 20 km",
     "retry": "Retry",
     "selectCity": "Select city",
-    "citySelectorTitle": "Manual location"
+    "citySelectorTitle": "Manual location",
+    "filters": "Filters",
+    "filterSubtitle": "Fine tune your search by category and radius.",
+    "usingDeviceLocation": "Using your device location.",
+    "usingCity": "Showing results for {{city}}.",
+    "locationDeniedPermanent": "Location permission denied permanently. Open settings or choose a city.",
+    "locationUnavailable": "Location unavailable. Select a city manually.",
+    "openSettings": "Open settings",
+    "currentLocation": "Current location",
+    "categoryLabel": "Category",
+    "radiusLabel": "Distance",
+    "radiusOption": "{{distance}} km",
+    "applyFilters": "Apply filters",
+    "allCategories": "All categories"
   },
   "listing": {
     "title": "Service",

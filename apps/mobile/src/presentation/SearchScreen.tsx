@@ -1,44 +1,143 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { formatDistance, formatMoney, type ListingSummary } from '@cerca/contract';
+import { formatDistance, formatMoney, type ListingSummary, type Category } from '@cerca/contract';
+import type { Coords } from '../domain/geo';
+import type { LocationResult } from '../application/ports/location-provider';
 import { ApiError } from '../domain/errors';
-import { useAuthSession } from './context/AuthContext';
+import { useActor, useSession } from './SessionProvider';
+import { useAppStateChange } from './useForegroundLocationRetry';
 import { DEFAULT_SEARCH_COORDS } from '../infrastructure/config';
-import { useSearchListings } from '../infrastructure/query/hooks';
+import { ExpoLocationAdapter, openSettings } from '../infrastructure/location/expo-location-adapter';
+import { getSelectedCity, saveSelectedCity } from '../infrastructure/storage/city-storage';
+import { useAddProviderCapacity, useCategories, useSearchListings } from '../infrastructure/query/hooks';
 import { CardSkeleton, SkeletonList } from './components/CardSkeleton';
 import { CitySelectorModal, type CityOption } from './components/CitySelectorModal';
+
+const locationAdapter = new ExpoLocationAdapter();
 
 export function SearchScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const { actor, becomeProvider, isLoading: authLoading } = useAuthSession();
+  const actor = useActor();
+  const { signedIn } = useSession();
+  const becomeProvider = useAddProviderCapacity();
+  const categories = useCategories();
   const [text, setText] = useState('');
   const [radiusKm, setRadiusKm] = useState(10);
+  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [selectedCity, setSelectedCity] = useState<CityOption | null>(null);
   const [showCityModal, setShowCityModal] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [deviceCoords, setDeviceCoords] = useState<Coords | null>(null);
+  const [locationStatus, setLocationStatus] = useState<'pending' | 'granted' | 'fallback'>('pending');
+  const [canOpenSettings, setCanOpenSettings] = useState(false);
+  const [locationMessage, setLocationMessage] = useState<string | null>(null);
 
   const query = useDebounced(text, 350);
   const locale = i18n.language || 'es-CO';
 
   const isProvider = actor?.capacities.includes('provider');
   const isModerator = actor?.platformRole === 'moderator' || actor?.platformRole === 'admin';
-  const searchCoords = selectedCity ? selectedCity.coords : DEFAULT_SEARCH_COORDS;
-  const cityId = selectedCity ? selectedCity.id : undefined;
+  const isLoading = becomeProvider.isPending;
+  const useDeviceLocation = locationStatus === 'granted' && deviceCoords !== null;
+  const searchCoords = useDeviceLocation ? deviceCoords! : selectedCity ? selectedCity.coords : DEFAULT_SEARCH_COORDS;
+  const cityId = useDeviceLocation ? undefined : selectedCity ? selectedCity.id : undefined;
 
-  const search = useSearchListings({
-    query,
-    coords: searchCoords,
-    cityId,
-    radiusKm,
+  const selectedCategory = useMemo(
+    () => categories.data?.find((item) => item.id === categoryId),
+    [categories.data, categoryId],
+  );
+
+  const handleLocationResult = useCallback(
+    (result: LocationResult) => {
+      if (result.status === 'granted') {
+        setDeviceCoords(result.coords);
+        setLocationStatus('granted');
+        setLocationMessage(t('search.usingDeviceLocation'));
+        setCanOpenSettings(false);
+        return;
+      }
+
+      const fallbackMessage =
+        result.status === 'denied'
+          ? result.canAskAgain
+            ? t('search.locationDenied')
+            : t('search.locationDeniedPermanent')
+          : t('search.locationUnavailable');
+
+      setLocationStatus('fallback');
+      setLocationMessage(fallbackMessage);
+      setCanOpenSettings(result.status === 'denied' && !result.canAskAgain);
+      if (!selectedCity) setShowCityModal(true);
+    },
+    [selectedCity, t],
+  );
+
+  useAppStateChange(() => {
+    if (locationStatus !== 'granted') {
+      void locationAdapter.checkStatus().then((result) => {
+        if (result.status === 'granted') {
+          handleLocationResult(result);
+        }
+      });
+    }
   });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      const persistedCity = await getSelectedCity();
+      if (cancelled) return;
+
+      if (persistedCity) {
+        setSelectedCity(persistedCity);
+        setLocationStatus('fallback');
+        setLocationMessage(t('search.usingCity', { city: persistedCity.name }));
+        return;
+      }
+
+      const locationResult = await locationAdapter.getLocation();
+      if (cancelled) return;
+      handleLocationResult(locationResult);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [handleLocationResult, t]);
+
+  const filters = useMemo(
+    () => ({
+      query,
+      coords: searchCoords,
+      cityId,
+      radiusKm,
+      categoryId,
+    }),
+    [query, searchCoords, cityId, radiusKm, categoryId],
+  );
+
+  const search = useSearchListings(filters);
 
   const items = search.data?.pages.flatMap((page) => page.items) ?? [];
   const isInitialState = !query && radiusKm === 10;
+  const cityLabel = useDeviceLocation ? t('search.currentLocation') : selectedCity ? selectedCity.name : t('search.selectCity');
 
   return (
     <View style={styles.container}>
+      {locationMessage ? (
+        <View style={styles.locationBanner}>
+          <Text style={styles.locationBannerText}>{locationMessage}</Text>
+          {canOpenSettings ? (
+            <Pressable style={styles.locationBannerButton} onPress={openSettings} accessibilityRole="button">
+              <Text style={styles.locationBannerButtonText}>{t('search.openSettings')}</Text>
+            </Pressable>
+          ) : null}
+        </View>
+      ) : null}
       {/* Top Header bar with search input and city selector */}
       <View style={styles.header}>
         <View style={styles.inputContainer}>
@@ -53,16 +152,28 @@ export function SearchScreen() {
           />
         </View>
 
-        <Pressable
-          style={styles.cityBadge}
-          onPress={() => setShowCityModal(true)}
-          accessibilityRole="button"
-          accessibilityLabel={t('search.selectCity')}
-        >
-          <Text style={styles.cityBadgeText}>
-            📍 {selectedCity ? selectedCity.name : t('search.selectCity')}
-          </Text>
-        </Pressable>
+        <View style={styles.headerBadgeRow}>
+          <Pressable
+            style={styles.cityBadge}
+            onPress={() => setShowCityModal(true)}
+            accessibilityRole="button"
+            accessibilityLabel={t('search.selectCity')}
+          >
+            <Text style={styles.cityBadgeText}>
+              📍 {cityLabel}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.filterBadge}
+            onPress={() => setShowFilterModal(true)}
+            accessibilityRole="button"
+            accessibilityLabel={t('search.filters')}
+          >
+            <Text style={styles.filterBadgeText}>
+              {selectedCategory?.name ?? t('search.allCategories')} · {radiusKm} km
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.actionRowTop}>
@@ -83,14 +194,15 @@ export function SearchScreen() {
             }
 
             try {
-              await becomeProvider();
+              const updated = await becomeProvider.mutateAsync();
+              await signedIn(updated);
               router.push('/my-listings' as never);
             } catch {
               // Keep current screen if provider upgrade fails.
             }
           }}
           accessibilityRole="button"
-          disabled={authLoading}
+          disabled={isLoading}
         >
           <Text style={styles.actionText}>
             {isProvider ? t('provider.myServices') : t('provider.becomeProvider')}
@@ -180,9 +292,127 @@ export function SearchScreen() {
       <CitySelectorModal
         visible={showCityModal}
         onClose={() => setShowCityModal(false)}
-        onSelectCity={(city) => setSelectedCity(city)}
+        onSelectCity={async (city) => {
+          setSelectedCity(city);
+          await saveSelectedCity(city);
+          setLocationStatus('fallback');
+          setLocationMessage(t('search.usingCity', { city: city.name }));
+          setCanOpenSettings(false);
+        }}
+      />
+
+      <FilterModal
+        visible={showFilterModal}
+        categories={categories.data ?? []}
+        selectedCategoryId={categoryId}
+        radiusKm={radiusKm}
+        onClose={() => setShowFilterModal(false)}
+        onSelectCategory={(next) => setCategoryId(next)}
+        onChangeRadius={setRadiusKm}
+        onClear={() => {
+          setCategoryId(undefined);
+          setRadiusKm(10);
+        }}
       />
     </View>
+  );
+}
+
+function FilterModal({
+  visible,
+  categories,
+  selectedCategoryId,
+  radiusKm,
+  onClose,
+  onSelectCategory,
+  onChangeRadius,
+  onClear,
+}: {
+  visible: boolean;
+  categories: Category[];
+  selectedCategoryId?: string;
+  radiusKm: number;
+  onClose: () => void;
+  onSelectCategory: (id: string | undefined) => void;
+  onChangeRadius: (next: number) => void;
+  onClear: () => void;
+}) {
+  const { t } = useTranslation();
+  const radiusOptions = [10, 20, 50];
+
+  return (
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <View style={styles.modalBackdrop}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>{t('search.filters')}</Text>
+          <Text style={styles.modalSubtitle}>{t('search.filterSubtitle')}</Text>
+
+          <Text style={styles.filterHeading}>{t('search.categoryLabel')}</Text>
+          <View style={styles.filterOptionsContainer}>
+            <Pressable
+              style={[
+                styles.filterOption,
+                selectedCategoryId === undefined && styles.filterOptionSelected,
+              ]}
+              onPress={() => onSelectCategory(undefined)}
+            >
+              <Text
+                style={[
+                  styles.filterOptionText,
+                  selectedCategoryId === undefined && styles.filterOptionTextSelected,
+                ]}
+              >
+                {t('search.allCategories')}
+              </Text>
+            </Pressable>
+            {categories.map((category) => (
+              <Pressable
+                key={category.id}
+                style={[
+                  styles.filterOption,
+                  category.id === selectedCategoryId && styles.filterOptionSelected,
+                ]}
+                onPress={() => onSelectCategory(category.id)}
+              >
+                <Text
+                  style={[
+                    styles.filterOptionText,
+                    category.id === selectedCategoryId && styles.filterOptionTextSelected,
+                  ]}
+                >
+                  {category.name}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+
+          <Text style={styles.filterHeading}>{t('search.radiusLabel')}</Text>
+          <View style={styles.filterOptionsContainer}>
+            {radiusOptions.map((distance) => (
+              <Pressable
+                key={distance}
+                style={[
+                  styles.filterOption,
+                  radiusKm === distance && styles.filterOptionSelected,
+                ]}
+                onPress={() => onChangeRadius(distance)}
+              >
+                <Text style={styles.filterOptionText}>{t('search.radiusOption', { distance })}</Text>
+              </Pressable>
+            ))}
+          </View>
+
+          <View style={styles.modalActionRow}>
+            <Pressable style={styles.secondaryButton} onPress={onClear}>
+              <Text style={styles.secondaryButtonText}>{t('search.clearFilters')}</Text>
+            </Pressable>
+            <Pressable style={styles.primaryButton} onPress={onClose}>
+              <Text style={styles.primaryButtonText}>{t('search.applyFilters')}</Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 }
 
@@ -296,6 +526,25 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 14,
   },
+  headerBadgeRow: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
+  filterBadge: {
+    alignSelf: 'flex-start',
+    minHeight: 36,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: '#eef2ff',
+    justifyContent: 'center',
+  },
+  filterBadgeText: {
+    color: '#4338ca',
+    fontWeight: '600',
+    fontSize: 14,
+  },
   card: {
     padding: 16,
     borderBottomWidth: 1,
@@ -344,6 +593,61 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#4b5563',
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.42)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 24,
+    gap: 16,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  filterHeading: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  filterOptionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  filterOption: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    backgroundColor: '#f8fafc',
+  },
+  filterOptionSelected: {
+    backgroundColor: '#2563eb',
+  },
+  filterOptionText: {
+    color: '#0f172a',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  filterOptionTextSelected: {
+    color: '#ffffff',
+  },
+  modalActionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginTop: 8,
   },
   centerContainer: {
     padding: 32,
@@ -413,5 +717,32 @@ const styles = StyleSheet.create({
     color: '#374151',
     fontWeight: '600',
     fontSize: 15,
+  },
+  locationBanner: {
+    backgroundColor: '#f8fafc',
+    borderBottomWidth: 1,
+    borderBottomColor: '#dbeafe',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  locationBannerText: {
+    color: '#1d4ed8',
+    flex: 1,
+    fontSize: 14,
+    marginRight: 12,
+  },
+  locationBannerButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#2563eb',
+    borderRadius: 8,
+  },
+  locationBannerButtonText: {
+    color: '#ffffff',
+    fontWeight: '600',
+    fontSize: 14,
   },
 });
