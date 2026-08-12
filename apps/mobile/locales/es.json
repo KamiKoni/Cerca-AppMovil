@@ -7,6 +7,9 @@
     "submit": "Iniciar sesión",
     "loading": "Iniciando sesión..."
   },
+  "session": {
+    "signOut": "Cerrar sesión"
+  },
   "search": {
     "title": "Buscar",
     "placeholder": "¿Qué necesitas?",

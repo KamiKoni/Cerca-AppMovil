@@ -7,6 +7,9 @@
     "submit": "Sign In",
     "loading": "Signing in..."
   },
+  "session": {
+    "signOut": "Sign out"
+  },
   "search": {
     "title": "Search",
     "placeholder": "What do you need?",

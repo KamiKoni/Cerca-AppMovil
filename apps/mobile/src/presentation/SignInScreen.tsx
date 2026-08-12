@@ -1,31 +1,25 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
 import { ApiError } from '../domain/errors';
 import { useSignIn } from '../infrastructure/query/hooks';
-import { useAuthSession } from './context/AuthContext';
+import { useSession } from './SessionProvider';
 
 export function SignInScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
-  const { setSession } = useAuthSession();
-
+  const { signedIn } = useSession();
   const [email, setEmail] = useState('customer@cerca.app');
   const [password, setPassword] = useState('Password123!');
 
   const signIn = useSignIn();
 
+  /**
+   * Announces the new session and navigates nowhere. The `(auth)` guard sees an
+   * authenticated state and forwards to the app; a `router.replace` here would
+   * be a second opinion on the same question, and the two would race.
+   */
   function handleSubmit() {
-    signIn.mutate(
-      { email, password },
-      {
-        onSuccess: async (response) => {
-          await setSession(response);
-          router.replace('/search' as any);
-        },
-      },
-    );
+    signIn.mutate({ email, password }, { onSuccess: (session) => signedIn(session.actor) });
   }
 
   return (
