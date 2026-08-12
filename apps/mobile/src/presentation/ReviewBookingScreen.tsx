@@ -16,14 +16,14 @@ import {
   useBookingDetail,
   useSubmitReview,
 } from "../infrastructure/query/hooks";
-import { useAuthSession } from "./context/AuthContext";
+import { useActor } from "./SessionProvider";
 import { mapProblemReasonToI18nKey } from "./authorizationMapper";
 import { createIdempotencyKey } from "../infrastructure/http/http-client";
 
 export function ReviewBookingScreen({ bookingId }: { bookingId: string }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const { actor } = useAuthSession();
+  const actor = useActor();
 
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");

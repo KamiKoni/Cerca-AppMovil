@@ -14,13 +14,18 @@ import {
   formatMoney,
   type ListingSummary,
 } from "@cerca/contract";
-import { useAuthSession } from "./context/AuthContext";
+import { useSession } from "./SessionProvider";
 import { useFavoriteListings } from "../infrastructure/query/hooks";
 
 export function FavoritesScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const { actor, isLoading } = useAuthSession();
+  // Both reads come from the one session: this screen sits behind the guard, so
+  // in practice it only ever renders authenticated, but keeping the two branches
+  // costs nothing and survives the screen being moved out of `(app)` later.
+  const { state } = useSession();
+  const actor = state.status === "authenticated" ? state.actor : null;
+  const isLoading = state.status === "bootstrapping";
   const favorites = useFavoriteListings(Boolean(actor));
   const locale = i18n.language || "es-CO";
 
