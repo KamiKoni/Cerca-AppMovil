@@ -1,6 +1,8 @@
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import { SessionGuard } from '../../src/presentation/SessionGuard';
+import { HOME_ROUTE } from '../../src/application/route-guard';
 import { SignOutButton } from '../../src/presentation/SignOutButton';
+import { useActor } from '../../src/presentation/SessionProvider';
 
 /**
  * A session is necessary here but not sufficient: these routes are for
@@ -10,14 +12,21 @@ import { SignOutButton } from '../../src/presentation/SignOutButton';
  * actor it belongs to has been restored.
  */
 export default function ProviderLayout() {
+  const actor = useActor();
+  const isProvider = actor?.capacities.includes('provider') ?? false;
+
   return (
     <SessionGuard group="protected">
-      <Stack
-        screenOptions={{
-          headerTitleStyle: { fontWeight: '700' },
-          headerRight: () => <SignOutButton />,
-        }}
-      />
+      {isProvider ? (
+        <Stack
+          screenOptions={{
+            headerTitleStyle: { fontWeight: '700' },
+            headerRight: () => <SignOutButton />,
+          }}
+        />
+      ) : (
+        <Redirect href={HOME_ROUTE} />
+      )}
     </SessionGuard>
   );
 }

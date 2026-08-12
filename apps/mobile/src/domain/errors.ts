@@ -6,14 +6,14 @@
  * `network` when the request could not be sent, `unknown` for anything unmapped.
  */
 export type ApiErrorKind =
-  | 'unauthorized'
-  | 'forbidden'
-  | 'not_found'
-  | 'conflict'
-  | 'validation'
-  | 'server'
-  | 'network'
-  | 'unknown';
+  | "unauthorized"
+  | "forbidden"
+  | "not_found"
+  | "conflict"
+  | "validation"
+  | "server"
+  | "network"
+  | "unknown";
 
 /** One invalid field, as reported by the API's `errors[]` on a 422. */
 export interface FieldError {
@@ -67,7 +67,7 @@ export class ApiError extends Error {
     traceId?: string;
   }) {
     super(props.message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
     this.kind = props.kind;
     this.status = props.status;
     this.code = props.code;
@@ -83,4 +83,5 @@ export class ApiError extends Error {
  * round trips and burns the user's data allowance.
  */
 export const isAuthorizationError = (error: unknown): boolean =>
-  error instanceof ApiError && (error.kind === 'unauthorized' || error.kind === 'forbidden');
+  error instanceof ApiError &&
+  (error.kind === "unauthorized" || error.kind === "forbidden");

@@ -1,13 +1,13 @@
-import { z } from 'zod';
+import { z } from "zod";
 export declare const moneySchema: z.ZodObject<{
     amountMinor: z.ZodNumber;
     currency: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    currency: string;
     amountMinor: number;
+    currency: string;
 }, {
-    currency: string;
     amountMinor: number;
+    currency: string;
 }>;
 export declare const pricingFixed: z.ZodObject<{
     model: z.ZodLiteral<"fixed">;
@@ -15,23 +15,23 @@ export declare const pricingFixed: z.ZodObject<{
         amountMinor: z.ZodNumber;
         currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }>;
 }, "strip", z.ZodTypeAny, {
     model: "fixed";
     price: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     };
 }, {
     model: "fixed";
     price: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     };
 }>;
 export declare const pricingHourly: z.ZodObject<{
@@ -40,25 +40,25 @@ export declare const pricingHourly: z.ZodObject<{
         amountMinor: z.ZodNumber;
         currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }>;
     minimumHours: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
     model: "hourly";
     hourlyRate: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     };
     minimumHours: number;
 }, {
     model: "hourly";
     hourlyRate: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     };
     minimumHours: number;
 }>;
@@ -68,23 +68,23 @@ export declare const pricingQuote: z.ZodObject<{
         amountMinor: z.ZodNumber;
         currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }>>;
 }, "strip", z.ZodTypeAny, {
     model: "quote";
     startingFrom?: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     } | undefined;
 }, {
     model: "quote";
     startingFrom?: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     } | undefined;
 }>;
 export declare const pricingSchema: z.ZodUnion<[z.ZodObject<{
@@ -93,23 +93,23 @@ export declare const pricingSchema: z.ZodUnion<[z.ZodObject<{
         amountMinor: z.ZodNumber;
         currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }>;
 }, "strip", z.ZodTypeAny, {
     model: "fixed";
     price: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     };
 }, {
     model: "fixed";
     price: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     };
 }>, z.ZodObject<{
     model: z.ZodLiteral<"hourly">;
@@ -117,25 +117,25 @@ export declare const pricingSchema: z.ZodUnion<[z.ZodObject<{
         amountMinor: z.ZodNumber;
         currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }>;
     minimumHours: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
     model: "hourly";
     hourlyRate: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     };
     minimumHours: number;
 }, {
     model: "hourly";
     hourlyRate: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     };
     minimumHours: number;
 }>, z.ZodObject<{
@@ -144,23 +144,23 @@ export declare const pricingSchema: z.ZodUnion<[z.ZodObject<{
         amountMinor: z.ZodNumber;
         currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }>>;
 }, "strip", z.ZodTypeAny, {
     model: "quote";
     startingFrom?: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     } | undefined;
 }, {
     model: "quote";
     startingFrom?: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     } | undefined;
 }>]>;
 /**
@@ -196,11 +196,11 @@ export declare const bookingStatusSchema: z.ZodDiscriminatedUnion<"kind", [z.Zod
     kind: z.ZodLiteral<"declined">;
     reason: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    reason: string;
     kind: "declined";
+    reason: string;
 }, {
-    reason: string;
     kind: "declined";
+    reason: string;
 }>, z.ZodObject<{
     kind: z.ZodLiteral<"completed">;
     completedAt: z.ZodString;
@@ -282,6 +282,7 @@ export declare const categorySchema: z.ZodObject<{
     slug: string;
     name: string;
 }>;
+export type Category = z.infer<typeof categorySchema>;
 export declare const categoriesSchema: z.ZodArray<z.ZodObject<{
     id: z.ZodString;
     slug: z.ZodString;
@@ -311,40 +312,43 @@ export declare const listingSummarySchema: z.ZodObject<{
         amountMinor: z.ZodNumber;
         currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }>>;
     status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
     ratingAvg: z.ZodNumber;
     ratingCount: z.ZodNumber;
     distanceMeters: z.ZodNumber;
+    isFavorite: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
     id: string;
     title: string;
     categoryId: string;
     priceFrom: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     } | null;
     ratingAvg: number;
     ratingCount: number;
     distanceMeters: number;
+    isFavorite?: boolean | undefined;
 }, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
     id: string;
     title: string;
     categoryId: string;
     priceFrom: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     } | null;
     ratingAvg: number;
     ratingCount: number;
     distanceMeters: number;
+    isFavorite?: boolean | undefined;
 }>;
 /** The single-listing response. Carries `pricing`, which search omits. */
 export declare const listingDetailSchema: z.ZodObject<{
@@ -353,29 +357,30 @@ export declare const listingDetailSchema: z.ZodObject<{
     categoryId: z.ZodString;
     title: z.ZodString;
     description: z.ZodString;
+    cityId: z.ZodOptional<z.ZodString>;
     pricing: z.ZodUnion<[z.ZodObject<{
         model: z.ZodLiteral<"fixed">;
         price: z.ZodObject<{
             amountMinor: z.ZodNumber;
             currency: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }>;
     }, "strip", z.ZodTypeAny, {
         model: "fixed";
         price: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
     }, {
         model: "fixed";
         price: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
     }>, z.ZodObject<{
         model: z.ZodLiteral<"hourly">;
@@ -383,25 +388,25 @@ export declare const listingDetailSchema: z.ZodObject<{
             amountMinor: z.ZodNumber;
             currency: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }>;
         minimumHours: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
         model: "hourly";
         hourlyRate: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
         minimumHours: number;
     }, {
         model: "hourly";
         hourlyRate: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
         minimumHours: number;
     }>, z.ZodObject<{
@@ -410,38 +415,39 @@ export declare const listingDetailSchema: z.ZodObject<{
             amountMinor: z.ZodNumber;
             currency: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }>>;
     }, "strip", z.ZodTypeAny, {
         model: "quote";
         startingFrom?: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | undefined;
     }, {
         model: "quote";
         startingFrom?: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | undefined;
     }>]>;
     priceFrom: z.ZodNullable<z.ZodObject<{
         amountMinor: z.ZodNumber;
         currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }>>;
     status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
     ratingAvg: z.ZodNumber;
     ratingCount: z.ZodNumber;
+    isFavorite: z.ZodOptional<z.ZodBoolean>;
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
@@ -449,8 +455,8 @@ export declare const listingDetailSchema: z.ZodObject<{
     title: string;
     categoryId: string;
     priceFrom: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     } | null;
     ratingAvg: number;
     ratingCount: number;
@@ -459,32 +465,34 @@ export declare const listingDetailSchema: z.ZodObject<{
     pricing: {
         model: "fixed";
         price: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
     } | {
         model: "hourly";
         hourlyRate: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
         minimumHours: number;
     } | {
         model: "quote";
         startingFrom?: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | undefined;
     };
     createdAt: string;
+    isFavorite?: boolean | undefined;
+    cityId?: string | undefined;
 }, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
     id: string;
     title: string;
     categoryId: string;
     priceFrom: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     } | null;
     ratingAvg: number;
     ratingCount: number;
@@ -493,24 +501,26 @@ export declare const listingDetailSchema: z.ZodObject<{
     pricing: {
         model: "fixed";
         price: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
     } | {
         model: "hourly";
         hourlyRate: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
         minimumHours: number;
     } | {
         model: "quote";
         startingFrom?: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | undefined;
     };
     createdAt: string;
+    isFavorite?: boolean | undefined;
+    cityId?: string | undefined;
 }>;
 export declare const listingsSearchResponseSchema: z.ZodObject<{
     items: z.ZodArray<z.ZodObject<{
@@ -521,40 +531,43 @@ export declare const listingsSearchResponseSchema: z.ZodObject<{
             amountMinor: z.ZodNumber;
             currency: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }>>;
         status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
         ratingAvg: z.ZodNumber;
         ratingCount: z.ZodNumber;
         distanceMeters: z.ZodNumber;
+        isFavorite: z.ZodOptional<z.ZodBoolean>;
     }, "strip", z.ZodTypeAny, {
         status: "draft" | "published" | "paused" | "under_review" | "removed";
         id: string;
         title: string;
         categoryId: string;
         priceFrom: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | null;
         ratingAvg: number;
         ratingCount: number;
         distanceMeters: number;
+        isFavorite?: boolean | undefined;
     }, {
         status: "draft" | "published" | "paused" | "under_review" | "removed";
         id: string;
         title: string;
         categoryId: string;
         priceFrom: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | null;
         ratingAvg: number;
         ratingCount: number;
         distanceMeters: number;
+        isFavorite?: boolean | undefined;
     }>, "many">;
     nextCursor: z.ZodNullable<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
@@ -564,12 +577,13 @@ export declare const listingsSearchResponseSchema: z.ZodObject<{
         title: string;
         categoryId: string;
         priceFrom: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | null;
         ratingAvg: number;
         ratingCount: number;
         distanceMeters: number;
+        isFavorite?: boolean | undefined;
     }[];
     nextCursor: string | null;
 }, {
@@ -579,12 +593,13 @@ export declare const listingsSearchResponseSchema: z.ZodObject<{
         title: string;
         categoryId: string;
         priceFrom: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | null;
         ratingAvg: number;
         ratingCount: number;
         distanceMeters: number;
+        isFavorite?: boolean | undefined;
     }[];
     nextCursor: string | null;
 }>;
@@ -594,29 +609,30 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
     categoryId: z.ZodString;
     title: z.ZodString;
     description: z.ZodString;
+    cityId: z.ZodOptional<z.ZodString>;
     pricing: z.ZodUnion<[z.ZodObject<{
         model: z.ZodLiteral<"fixed">;
         price: z.ZodObject<{
             amountMinor: z.ZodNumber;
             currency: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }>;
     }, "strip", z.ZodTypeAny, {
         model: "fixed";
         price: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
     }, {
         model: "fixed";
         price: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
     }>, z.ZodObject<{
         model: z.ZodLiteral<"hourly">;
@@ -624,25 +640,25 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
             amountMinor: z.ZodNumber;
             currency: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }>;
         minimumHours: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
         model: "hourly";
         hourlyRate: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
         minimumHours: number;
     }, {
         model: "hourly";
         hourlyRate: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
         minimumHours: number;
     }>, z.ZodObject<{
@@ -651,38 +667,39 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
             amountMinor: z.ZodNumber;
             currency: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }, {
-            currency: string;
             amountMinor: number;
+            currency: string;
         }>>;
     }, "strip", z.ZodTypeAny, {
         model: "quote";
         startingFrom?: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | undefined;
     }, {
         model: "quote";
         startingFrom?: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | undefined;
     }>]>;
     priceFrom: z.ZodNullable<z.ZodObject<{
         amountMinor: z.ZodNumber;
         currency: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }, {
-        currency: string;
         amountMinor: number;
+        currency: string;
     }>>;
     status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
     ratingAvg: z.ZodNumber;
     ratingCount: z.ZodNumber;
+    isFavorite: z.ZodOptional<z.ZodBoolean>;
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
@@ -690,8 +707,8 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
     title: string;
     categoryId: string;
     priceFrom: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     } | null;
     ratingAvg: number;
     ratingCount: number;
@@ -700,32 +717,34 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
     pricing: {
         model: "fixed";
         price: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
     } | {
         model: "hourly";
         hourlyRate: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
         minimumHours: number;
     } | {
         model: "quote";
         startingFrom?: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | undefined;
     };
     createdAt: string;
+    isFavorite?: boolean | undefined;
+    cityId?: string | undefined;
 }, {
     status: "draft" | "published" | "paused" | "under_review" | "removed";
     id: string;
     title: string;
     categoryId: string;
     priceFrom: {
-        currency: string;
         amountMinor: number;
+        currency: string;
     } | null;
     ratingAvg: number;
     ratingCount: number;
@@ -734,24 +753,26 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
     pricing: {
         model: "fixed";
         price: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
     } | {
         model: "hourly";
         hourlyRate: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         };
         minimumHours: number;
     } | {
         model: "quote";
         startingFrom?: {
-            currency: string;
             amountMinor: number;
+            currency: string;
         } | undefined;
     };
     createdAt: string;
+    isFavorite?: boolean | undefined;
+    cityId?: string | undefined;
 }>, "many">;
 export declare const bookingSchema: z.ZodObject<{
     id: z.ZodString;
@@ -783,11 +804,11 @@ export declare const bookingSchema: z.ZodObject<{
         kind: z.ZodLiteral<"declined">;
         reason: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        reason: string;
         kind: "declined";
+        reason: string;
     }, {
-        reason: string;
         kind: "declined";
+        reason: string;
     }>, z.ZodObject<{
         kind: z.ZodLiteral<"completed">;
         completedAt: z.ZodString;
@@ -821,8 +842,8 @@ export declare const bookingSchema: z.ZodObject<{
         acceptedAt: string;
         scheduledFor: string;
     } | {
-        reason: string;
         kind: "declined";
+        reason: string;
     } | {
         kind: "completed";
         completedAt: string;
@@ -846,8 +867,8 @@ export declare const bookingSchema: z.ZodObject<{
         acceptedAt: string;
         scheduledFor: string;
     } | {
-        reason: string;
         kind: "declined";
+        reason: string;
     } | {
         kind: "completed";
         completedAt: string;
@@ -894,11 +915,11 @@ export declare const bookingsResponseSchema: z.ZodObject<{
             kind: z.ZodLiteral<"declined">;
             reason: z.ZodString;
         }, "strip", z.ZodTypeAny, {
-            reason: string;
             kind: "declined";
+            reason: string;
         }, {
-            reason: string;
             kind: "declined";
+            reason: string;
         }>, z.ZodObject<{
             kind: z.ZodLiteral<"completed">;
             completedAt: z.ZodString;
@@ -932,8 +953,8 @@ export declare const bookingsResponseSchema: z.ZodObject<{
             acceptedAt: string;
             scheduledFor: string;
         } | {
-            reason: string;
             kind: "declined";
+            reason: string;
         } | {
             kind: "completed";
             completedAt: string;
@@ -957,8 +978,8 @@ export declare const bookingsResponseSchema: z.ZodObject<{
             acceptedAt: string;
             scheduledFor: string;
         } | {
-            reason: string;
             kind: "declined";
+            reason: string;
         } | {
             kind: "completed";
             completedAt: string;
@@ -985,8 +1006,8 @@ export declare const bookingsResponseSchema: z.ZodObject<{
             acceptedAt: string;
             scheduledFor: string;
         } | {
-            reason: string;
             kind: "declined";
+            reason: string;
         } | {
             kind: "completed";
             completedAt: string;
@@ -1013,8 +1034,8 @@ export declare const bookingsResponseSchema: z.ZodObject<{
             acceptedAt: string;
             scheduledFor: string;
         } | {
-            reason: string;
             kind: "declined";
+            reason: string;
         } | {
             kind: "completed";
             completedAt: string;
@@ -1115,15 +1136,15 @@ export declare const reportSchema: z.ZodObject<{
     createdAt: z.ZodString;
     status: z.ZodEnum<["open", "resolved"]>;
 }, "strip", z.ZodTypeAny, {
-    reason: string;
     status: "open" | "resolved";
+    reason: string;
     id: string;
     createdAt: string;
     listingId: string;
     reporterId: string;
 }, {
-    reason: string;
     status: "open" | "resolved";
+    reason: string;
     id: string;
     createdAt: string;
     listingId: string;
@@ -1138,15 +1159,15 @@ export declare const reportsResponseSchema: z.ZodObject<{
         createdAt: z.ZodString;
         status: z.ZodEnum<["open", "resolved"]>;
     }, "strip", z.ZodTypeAny, {
-        reason: string;
         status: "open" | "resolved";
+        reason: string;
         id: string;
         createdAt: string;
         listingId: string;
         reporterId: string;
     }, {
-        reason: string;
         status: "open" | "resolved";
+        reason: string;
         id: string;
         createdAt: string;
         listingId: string;
@@ -1155,8 +1176,8 @@ export declare const reportsResponseSchema: z.ZodObject<{
     nextCursor: z.ZodNullable<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     items: {
-        reason: string;
         status: "open" | "resolved";
+        reason: string;
         id: string;
         createdAt: string;
         listingId: string;
@@ -1165,8 +1186,8 @@ export declare const reportsResponseSchema: z.ZodObject<{
     nextCursor: string | null;
 }, {
     items: {
-        reason: string;
         status: "open" | "resolved";
+        reason: string;
         id: string;
         createdAt: string;
         listingId: string;
@@ -1184,17 +1205,330 @@ export declare const problemDetailsSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     status: number;
     title: string;
-    reason?: string | undefined;
     type?: string | undefined;
+    reason?: string | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
 }, {
     status: number;
     title: string;
-    reason?: string | undefined;
     type?: string | undefined;
+    reason?: string | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
+}>;
+export declare const createBookingSchema: z.ZodObject<{
+    listingId: z.ZodString;
+    scheduledFor: z.ZodOptional<z.ZodString>;
+    notes: z.ZodOptional<z.ZodString>;
+}, "strip", z.ZodTypeAny, {
+    listingId: string;
+    scheduledFor?: string | undefined;
+    notes?: string | undefined;
+}, {
+    listingId: string;
+    scheduledFor?: string | undefined;
+    notes?: string | undefined;
+}>;
+export declare const createReviewSchema: z.ZodObject<{
+    rating: z.ZodNumber;
+    comment: z.ZodOptional<z.ZodString>;
+}, "strip", z.ZodTypeAny, {
+    rating: number;
+    comment?: string | undefined;
+}, {
+    rating: number;
+    comment?: string | undefined;
+}>;
+export declare const createListingSchema: z.ZodObject<{
+    title: z.ZodString;
+    description: z.ZodString;
+    categoryId: z.ZodString;
+    pricing: z.ZodUnion<[z.ZodObject<{
+        model: z.ZodLiteral<"fixed">;
+        price: z.ZodObject<{
+            amountMinor: z.ZodNumber;
+            currency: z.ZodString;
+        }, "strip", z.ZodTypeAny, {
+            amountMinor: number;
+            currency: string;
+        }, {
+            amountMinor: number;
+            currency: string;
+        }>;
+    }, "strip", z.ZodTypeAny, {
+        model: "fixed";
+        price: {
+            amountMinor: number;
+            currency: string;
+        };
+    }, {
+        model: "fixed";
+        price: {
+            amountMinor: number;
+            currency: string;
+        };
+    }>, z.ZodObject<{
+        model: z.ZodLiteral<"hourly">;
+        hourlyRate: z.ZodObject<{
+            amountMinor: z.ZodNumber;
+            currency: z.ZodString;
+        }, "strip", z.ZodTypeAny, {
+            amountMinor: number;
+            currency: string;
+        }, {
+            amountMinor: number;
+            currency: string;
+        }>;
+        minimumHours: z.ZodNumber;
+    }, "strip", z.ZodTypeAny, {
+        model: "hourly";
+        hourlyRate: {
+            amountMinor: number;
+            currency: string;
+        };
+        minimumHours: number;
+    }, {
+        model: "hourly";
+        hourlyRate: {
+            amountMinor: number;
+            currency: string;
+        };
+        minimumHours: number;
+    }>, z.ZodObject<{
+        model: z.ZodLiteral<"quote">;
+        startingFrom: z.ZodOptional<z.ZodObject<{
+            amountMinor: z.ZodNumber;
+            currency: z.ZodString;
+        }, "strip", z.ZodTypeAny, {
+            amountMinor: number;
+            currency: string;
+        }, {
+            amountMinor: number;
+            currency: string;
+        }>>;
+    }, "strip", z.ZodTypeAny, {
+        model: "quote";
+        startingFrom?: {
+            amountMinor: number;
+            currency: string;
+        } | undefined;
+    }, {
+        model: "quote";
+        startingFrom?: {
+            amountMinor: number;
+            currency: string;
+        } | undefined;
+    }>]>;
+    cityId: z.ZodOptional<z.ZodString>;
+    photoKeys: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+}, "strip", z.ZodTypeAny, {
+    title: string;
+    categoryId: string;
+    description: string;
+    pricing: {
+        model: "fixed";
+        price: {
+            amountMinor: number;
+            currency: string;
+        };
+    } | {
+        model: "hourly";
+        hourlyRate: {
+            amountMinor: number;
+            currency: string;
+        };
+        minimumHours: number;
+    } | {
+        model: "quote";
+        startingFrom?: {
+            amountMinor: number;
+            currency: string;
+        } | undefined;
+    };
+    cityId?: string | undefined;
+    photoKeys?: string[] | undefined;
+}, {
+    title: string;
+    categoryId: string;
+    description: string;
+    pricing: {
+        model: "fixed";
+        price: {
+            amountMinor: number;
+            currency: string;
+        };
+    } | {
+        model: "hourly";
+        hourlyRate: {
+            amountMinor: number;
+            currency: string;
+        };
+        minimumHours: number;
+    } | {
+        model: "quote";
+        startingFrom?: {
+            amountMinor: number;
+            currency: string;
+        } | undefined;
+    };
+    cityId?: string | undefined;
+    photoKeys?: string[] | undefined;
+}>;
+export declare const updateListingSchema: z.ZodObject<{
+    title: z.ZodOptional<z.ZodString>;
+    description: z.ZodOptional<z.ZodString>;
+    categoryId: z.ZodOptional<z.ZodString>;
+    pricing: z.ZodOptional<z.ZodUnion<[z.ZodObject<{
+        model: z.ZodLiteral<"fixed">;
+        price: z.ZodObject<{
+            amountMinor: z.ZodNumber;
+            currency: z.ZodString;
+        }, "strip", z.ZodTypeAny, {
+            amountMinor: number;
+            currency: string;
+        }, {
+            amountMinor: number;
+            currency: string;
+        }>;
+    }, "strip", z.ZodTypeAny, {
+        model: "fixed";
+        price: {
+            amountMinor: number;
+            currency: string;
+        };
+    }, {
+        model: "fixed";
+        price: {
+            amountMinor: number;
+            currency: string;
+        };
+    }>, z.ZodObject<{
+        model: z.ZodLiteral<"hourly">;
+        hourlyRate: z.ZodObject<{
+            amountMinor: z.ZodNumber;
+            currency: z.ZodString;
+        }, "strip", z.ZodTypeAny, {
+            amountMinor: number;
+            currency: string;
+        }, {
+            amountMinor: number;
+            currency: string;
+        }>;
+        minimumHours: z.ZodNumber;
+    }, "strip", z.ZodTypeAny, {
+        model: "hourly";
+        hourlyRate: {
+            amountMinor: number;
+            currency: string;
+        };
+        minimumHours: number;
+    }, {
+        model: "hourly";
+        hourlyRate: {
+            amountMinor: number;
+            currency: string;
+        };
+        minimumHours: number;
+    }>, z.ZodObject<{
+        model: z.ZodLiteral<"quote">;
+        startingFrom: z.ZodOptional<z.ZodObject<{
+            amountMinor: z.ZodNumber;
+            currency: z.ZodString;
+        }, "strip", z.ZodTypeAny, {
+            amountMinor: number;
+            currency: string;
+        }, {
+            amountMinor: number;
+            currency: string;
+        }>>;
+    }, "strip", z.ZodTypeAny, {
+        model: "quote";
+        startingFrom?: {
+            amountMinor: number;
+            currency: string;
+        } | undefined;
+    }, {
+        model: "quote";
+        startingFrom?: {
+            amountMinor: number;
+            currency: string;
+        } | undefined;
+    }>]>>;
+    cityId: z.ZodOptional<z.ZodOptional<z.ZodString>>;
+    photoKeys: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodString, "many">>>;
+}, "strip", z.ZodTypeAny, {
+    title?: string | undefined;
+    categoryId?: string | undefined;
+    description?: string | undefined;
+    cityId?: string | undefined;
+    pricing?: {
+        model: "fixed";
+        price: {
+            amountMinor: number;
+            currency: string;
+        };
+    } | {
+        model: "hourly";
+        hourlyRate: {
+            amountMinor: number;
+            currency: string;
+        };
+        minimumHours: number;
+    } | {
+        model: "quote";
+        startingFrom?: {
+            amountMinor: number;
+            currency: string;
+        } | undefined;
+    } | undefined;
+    photoKeys?: string[] | undefined;
+}, {
+    title?: string | undefined;
+    categoryId?: string | undefined;
+    description?: string | undefined;
+    cityId?: string | undefined;
+    pricing?: {
+        model: "fixed";
+        price: {
+            amountMinor: number;
+            currency: string;
+        };
+    } | {
+        model: "hourly";
+        hourlyRate: {
+            amountMinor: number;
+            currency: string;
+        };
+        minimumHours: number;
+    } | {
+        model: "quote";
+        startingFrom?: {
+            amountMinor: number;
+            currency: string;
+        } | undefined;
+    } | undefined;
+    photoKeys?: string[] | undefined;
+}>;
+export declare const presignPhotoRequestSchema: z.ZodObject<{
+    fileName: z.ZodString;
+    contentType: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    fileName: string;
+    contentType: string;
+}, {
+    fileName: string;
+    contentType: string;
+}>;
+export declare const presignPhotoResponseSchema: z.ZodObject<{
+    uploadUrl: z.ZodString;
+    key: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    uploadUrl: string;
+    key: string;
+}, {
+    uploadUrl: string;
+    key: string;
 }>;
 export type PricingSchemaType = z.infer<typeof pricingSchema>;
 export type ListingSummary = z.infer<typeof listingSummarySchema>;
@@ -1210,3 +1544,8 @@ export type ReportsResponse = z.infer<typeof reportsResponseSchema>;
 export type ProblemDetails = z.infer<typeof problemDetailsSchema>;
 export type ActorResponse = z.infer<typeof actorSchema>;
 export type AuthSignInResponse = z.infer<typeof authSignInSchema>;
+export type CreateBookingInput = z.infer<typeof createBookingSchema>;
+export type CreateReviewInput = z.infer<typeof createReviewSchema>;
+export type CreateListingInput = z.infer<typeof createListingSchema>;
+export type UpdateListingInput = z.infer<typeof updateListingSchema>;
+export type PresignPhotoResponse = z.infer<typeof presignPhotoResponseSchema>;

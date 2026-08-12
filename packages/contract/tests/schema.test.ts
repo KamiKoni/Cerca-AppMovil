@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { MONEY_SCHEMA } from '../src/money';
 import { authSignInSchema } from '../src/schemas';
 
 describe('contract schemas', () => {

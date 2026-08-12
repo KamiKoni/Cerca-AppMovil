@@ -1,10 +1,4 @@
-import type { Actor } from '@cerca/contract';
-
-export type AuthTokens = {
-  accessToken: string;
-  refreshToken: string;
-  actor: Actor;
-};
+import type { AuthTokens } from "../application/ports/token-provider";
 
 export interface AuthStorage {
   saveTokens(tokens: AuthTokens): Promise<void>;

@@ -1,10 +1,10 @@
 {
   "signIn": {
-    "title": "Sign in",
-    "description": "Enter your account details to continue.",
-    "email": "Email",
+    "title": "Sign In",
+    "description": "Enter your credentials to continue.",
+    "email": "Email address",
     "password": "Password",
-    "submit": "Sign in",
+    "submit": "Sign In",
     "loading": "Signing in..."
   },
   "session": {
@@ -13,27 +13,143 @@
   "search": {
     "title": "Search",
     "placeholder": "What do you need?",
-    "empty": "No services found nearby."
+    "emptyInitial": "No services found in your area yet.",
+    "emptyFilter": "No services match these filters.",
+    "clearFilters": "Clear filters",
+    "expandRadius": "Expand radius to 20 km",
+    "retry": "Retry",
+    "selectCity": "Select city",
+    "citySelectorTitle": "Manual location",
+    "filters": "Filters",
+    "filterSubtitle": "Fine tune your search by category and radius.",
+    "usingDeviceLocation": "Using your device location.",
+    "usingCity": "Showing results for {{city}}.",
+    "locationDeniedPermanent": "Location permission denied permanently. Open settings or choose a city.",
+    "locationUnavailable": "Location unavailable. Select a city manually.",
+    "openSettings": "Open settings",
+    "currentLocation": "Current location",
+    "categoryLabel": "Category",
+    "radiusLabel": "Distance",
+    "radiusOption": "{{distance}} km",
+    "applyFilters": "Apply filters",
+    "allCategories": "All categories"
   },
   "listing": {
     "title": "Service",
     "perHour": "/hour",
     "minimum": "minimum",
     "from": "From",
-    "onQuote": "Price on request",
+    "onQuote": "Quote required",
     "noReviews": "No reviews yet",
-    "notFound": "This service is no longer available."
+    "notFound": "This service is no longer available.",
+    "edit": "Edit listing",
+    "editTitle": "Edit service",
+    "save": "Save changes",
+    "editUnauthorized": "You are not authorized to edit this listing.",
+    "book": "Request booking",
+    "bookingRequested": "Booking requested",
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "paused": "Paused",
+      "under_review": "Under review",
+      "removed": "Removed"
+    },
+    "blocked": {
+      "not_owner": "You are not allowed to perform this action on the listing.",
+      "unknown": "You do not have permission to perform this action."
+    },
+    "emptyReviews": "No reviews yet. Be the first to leave a review!",
+    "withdrawnReview": "This review was withdrawn by moderation.",
+    "reviewsCount_one": "{{count}} review",
+    "reviewsCount_other": "{{count}} reviews"
+  },
+  "review": {
+    "title": "Leave a Review",
+    "rating": "Rating",
+    "comment": "Comment (optional)",
+    "submit": "Submit Review",
+    "submitting": "Submitting...",
+    "success": "Review saved successfully",
+    "blocked": {
+      "not_your_booking": "You cannot review a service you did not book.",
+      "not_completed": "You can only review once the booking is completed.",
+      "already_reviewed": "You have already reviewed this booking.",
+      "window_closed": "The 30-day window to leave a review has passed."
+    }
+  },
+  "booking": {
+    "title": "My Bookings",
+    "notes": "Notes for provider",
+    "scheduledFor": "Scheduled date",
+    "submit": "Confirm booking",
+    "accept": "Accept",
+    "decline": "Decline",
+    "complete": "Mark as completed",
+    "cancel": "Cancel booking",
+    "status": {
+      "requested": "Requested",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "provider": {
+    "myServices": "My Services",
+    "becomeProvider": "Become a provider",
+    "newListing": "Publish Service",
+    "step1": "1. Category & Details",
+    "step2": "2. Pricing Model",
+    "step3": "3. Location",
+    "step4": "4. Photos",
+    "next": "Next",
+    "back": "Back",
+    "publish": "Publish Listing",
+    "onboardingTitle": "Offer your services on Cerca",
+    "onboardingDescription": "Create a provider account to post your services and manage requests.",
+    "noListings": "You haven't published any services yet.",
+    "pause": "Pause",
+    "publishListing": "Publish",
+    "viewDetails": "View details",
+    "category": "Category",
+    "cityId": "City / Zone",
+    "pricingModel": {
+      "fixed": "Fixed price",
+      "hourly": "Hourly rate",
+      "quote": "Custom quote"
+    },
+    "fixedPrice": "Fixed amount",
+    "hourlyRate": "Hourly rate",
+    "minimumHours": "Minimum hours",
+    "startingFrom": "Starting from"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "empty": "You haven't saved any services yet.",
+    "loginPrompt": "Sign in to save favorite services and view them here.",
+    "retry": "Retry"
+  },
+  "moderation": {
+    "title": "Moderation Queue",
+    "openReports": "Pending reports",
+    "underReview": "Put under review",
+    "remove": "Remove listing",
+    "resolve": "Resolve report",
+    "accessDeniedTitle": "Access denied",
+    "accessDeniedMessage": "This section is only available to moderators."
   },
   "error": {
-    "network": "Could not reach the server. Check that you are on the same Wi-Fi and that the API is running.",
-    "badCredentials": "Wrong email or password.",
-    "validation": "Please check the details you entered.",
+    "network": "Could not connect to the server. Please check your connection.",
+    "badCredentials": "Invalid email or password.",
+    "validation": "Please check the entered data.",
     "unknown": "Something went wrong. Please try again.",
+    "locationDenied": "Location permission denied. Select a city manually.",
     "money": {
-      "nonnegative": "error.money.nonnegative"
+      "nonnegative": "Amount cannot be negative."
     },
     "currency": {
-      "required": "error.currency.required"
+      "required": "Currency is required."
     }
   }
 }

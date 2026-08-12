@@ -1,4 +1,4 @@
-import type { Actor } from '@cerca/contract';
+import type { Actor } from "@cerca/contract";
 
 /**
  * What the session use cases need from storage, and nothing more.

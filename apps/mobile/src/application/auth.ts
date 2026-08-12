@@ -1,4 +1,4 @@
-import type { AuthSignInResponse } from '@cerca/contract';
+import type { AuthSignInResponse } from "@cerca/contract";
 
 export interface SignInCredentials {
   email: string;

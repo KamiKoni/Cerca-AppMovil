@@ -3,14 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.minorUnitDigits = minorUnitDigits;
 exports.formatMoney = formatMoney;
 exports.formatDistance = formatDistance;
-const IMPERIAL_REGIONS = new Set(['US', 'LR', 'MM']);
+const IMPERIAL_REGIONS = new Set(["US", "LR", "MM"]);
 function minorUnitDigits(currency) {
     switch (currency) {
-        case 'JPY':
+        case "JPY":
             return 0;
-        case 'KWD':
+        case "KWD":
             return 3;
-        case 'MXN':
+        case "MXN":
             return 2;
         default:
             return 2;
@@ -19,7 +19,10 @@ function minorUnitDigits(currency) {
 function formatMoney(m, locale) {
     const digits = minorUnitDigits(m.currency);
     const amount = m.amountMinor / 10 ** digits;
-    return new Intl.NumberFormat(locale, { style: 'currency', currency: m.currency }).format(amount);
+    return new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: m.currency,
+    }).format(amount);
 }
 function localeUsesImperialUnits(locale) {
     try {
@@ -32,10 +35,12 @@ function localeUsesImperialUnits(locale) {
 }
 function formatDistance(distanceMeters, locale) {
     const usesImperial = localeUsesImperialUnits(locale);
-    const value = usesImperial ? distanceMeters / 1609.344 : distanceMeters / 1000;
-    const unit = usesImperial ? 'mile' : 'kilometer';
+    const value = usesImperial
+        ? distanceMeters / 1609.344
+        : distanceMeters / 1000;
+    const unit = usesImperial ? "mile" : "kilometer";
     return new Intl.NumberFormat(locale, {
-        style: 'unit',
+        style: "unit",
         unit,
         maximumFractionDigits: 1,
     }).format(value);

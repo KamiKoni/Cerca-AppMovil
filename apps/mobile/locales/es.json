@@ -13,7 +13,26 @@
   "search": {
     "title": "Buscar",
     "placeholder": "¿Qué necesitas?",
-    "empty": "No hay servicios cerca."
+    "emptyInitial": "Todavía no hay servicios en tu zona.",
+    "emptyFilter": "Ningún servicio coincide con estos filtros.",
+    "clearFilters": "Limpiar filtros",
+    "expandRadius": "Ampliar radio a 20 km",
+    "retry": "Reintentar",
+    "selectCity": "Seleccionar ciudad",
+    "citySelectorTitle": "Ubicación manual",
+    "filters": "Filtros",
+    "filterSubtitle": "Ajusta tu búsqueda por categoría y distancia.",
+    "categoryLabel": "Categoría",
+    "radiusLabel": "Distancia",
+    "radiusOption": "{{distance}} km",
+    "applyFilters": "Aplicar filtros",
+    "usingDeviceLocation": "Usando la ubicación de tu dispositivo.",
+    "usingCity": "Mostrando resultados para {{city}}.",
+    "locationDeniedPermanent": "Permiso de ubicación denegado permanentemente. Abre ajustes o elige una ciudad.",
+    "locationUnavailable": "Ubicación no disponible. Selecciona una ciudad manualmente.",
+    "openSettings": "Abrir ajustes",
+    "currentLocation": "Ubicación actual",
+    "allCategories": "Todas las categorías"
   },
   "listing": {
     "title": "Servicio",
@@ -22,18 +41,115 @@
     "from": "Desde",
     "onQuote": "Precio a consultar",
     "noReviews": "Aún sin reseñas",
-    "notFound": "Este servicio ya no está disponible."
+    "notFound": "Este servicio ya no está disponible.",
+    "edit": "Editar anuncio",
+    "editTitle": "Editar servicio",
+    "save": "Guardar cambios",
+    "editUnauthorized": "No estás autorizado para editar este servicio.",
+    "book": "Solicitar reserva",
+    "bookingRequested": "Reserva solicitada",
+    "status": {
+      "draft": "Borrador",
+      "published": "Publicado",
+      "paused": "Pausado",
+      "under_review": "En revisión",
+      "removed": "Retirado"
+    },
+    "blocked": {
+      "not_owner": "No tienes permiso para modificar este anuncio.",
+      "unknown": "No tienes permiso para realizar esta acción."
+    },
+    "emptyReviews": "Aún no hay reseñas. ¡Sé el primero en dejar una!",
+    "withdrawnReview": "Esta reseña fue retirada por moderación.",
+    "reviewsCount_one": "{{count}} reseña",
+    "reviewsCount_other": "{{count}} reseñas"
+  },
+  "review": {
+    "title": "Dejar una reseña",
+    "rating": "Calificación",
+    "comment": "Comentario (opcional)",
+    "submit": "Enviar reseña",
+    "submitting": "Enviando...",
+    "success": "Reseña guardada con éxito",
+    "blocked": {
+      "not_your_booking": "No puedes reseñar un servicio que no contrataste.",
+      "not_completed": "Solo puedes reseñar cuando la reserva esté completada.",
+      "already_reviewed": "Ya reseñaste esta reserva.",
+      "window_closed": "El plazo de 30 días para reseñar ha expirado."
+    }
+  },
+  "booking": {
+    "title": "Mis Reservas",
+    "notes": "Notas para el proveedor",
+    "scheduledFor": "Fecha programada",
+    "submit": "Confirmar reserva",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "complete": "Marcar completada",
+    "cancel": "Cancelar reserva",
+    "status": {
+      "requested": "Solicitada",
+      "accepted": "Aceptada",
+      "declined": "Rechazada",
+      "completed": "Completada",
+      "cancelled": "Cancelada"
+    }
+  },
+  "provider": {
+    "myServices": "Mis Servicios",
+    "becomeProvider": "Conviértete en proveedor",
+    "newListing": "Publicar servicio",
+    "step1": "1. Categoría y detalles",
+    "step2": "2. Modelo de precio",
+    "step3": "3. Ubicación",
+    "step4": "4. Fotografías",
+    "next": "Siguiente",
+    "back": "Anterior",
+    "publish": "Publicar anuncio",
+    "onboardingTitle": "Ofrece tus servicios en Cerca",
+    "onboardingDescription": "Crea una cuenta de proveedor para publicar tus servicios y gestionar solicitudes.",
+    "noListings": "Aún no has publicado ningún servicio.",
+    "pause": "Pausar",
+    "publishListing": "Publicar",
+    "viewDetails": "Ver detalle",
+    "category": "Categoría",
+    "cityId": "Ciudad / Zona",
+    "pricingModel": {
+      "fixed": "Precio fijo",
+      "hourly": "Por hora",
+      "quote": "Presupuesto / A consultar"
+    },
+    "fixedPrice": "Monto fijo",
+    "hourlyRate": "Tarifa por hora",
+    "minimumHours": "Horas mínimas",
+    "startingFrom": "Desde"
+  },
+  "favorites": {
+    "title": "Favoritos",
+    "empty": "Aún no has guardado ningún servicio.",
+    "loginPrompt": "Inicia sesión para guardar servicios favoritos y verlos aquí.",
+    "retry": "Reintentar"
+  },
+  "moderation": {
+    "title": "Cola de Moderación",
+    "openReports": "Reportes pendientes",
+    "underReview": "Poner en revisión",
+    "remove": "Retirar servicio",
+    "resolve": "Resolver reporte",
+    "accessDeniedTitle": "Acceso restringido",
+    "accessDeniedMessage": "Esta sección solo está disponible para moderadores."
   },
   "error": {
-    "network": "No se pudo contactar el servidor. Revisa que estés en la misma Wi-Fi y que la API esté corriendo.",
+    "network": "No se pudo contactar el servidor. Revisa tu conexión a internet.",
     "badCredentials": "Correo o contraseña incorrectos.",
     "validation": "Revisa los datos que ingresaste.",
     "unknown": "Algo salió mal. Inténtalo de nuevo.",
+    "locationDenied": "Ubicación no disponible. Selecciona una ciudad manualmente.",
     "money": {
-      "nonnegative": "error.money.nonnegative"
+      "nonnegative": "El monto no puede ser negativo."
     },
     "currency": {
-      "required": "error.currency.required"
+      "required": "La moneda es requerida."
     }
   }
 }

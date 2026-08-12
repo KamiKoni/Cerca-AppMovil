@@ -1,11 +1,12 @@
-import * as SecureStore from 'expo-secure-store';
-import type { Actor } from '@cerca/contract';
-import type { TokenProvider } from '../../application/ports/token-provider';
-import type { AuthStorage, AuthTokens } from '../auth';
+import * as SecureStore from "expo-secure-store";
+import type { Actor } from "@cerca/contract";
+import type { TokenProvider } from "../../application/ports/token-provider";
+import type { AuthStorage } from "../auth";
+import type { AuthTokens } from "../../application/ports/token-provider";
 
-const ACCESS_KEY = 'cerca.accessToken';
-const REFRESH_KEY = 'cerca.refreshToken';
-const ACTOR_KEY = 'cerca.actor';
+const ACCESS_KEY = "cerca.accessToken";
+const REFRESH_KEY = "cerca.refreshToken";
+const ACTOR_KEY = "cerca.actor";
 
 /**
  * The session, in the OS keystore — Keychain on iOS, EncryptedSharedPreferences
@@ -43,7 +44,11 @@ export const secureTokenStore: AuthStorage & TokenProvider = {
     if (!accessToken || !refreshToken || !rawActor) return null;
 
     try {
-      return { accessToken, refreshToken, actor: JSON.parse(rawActor) as Actor };
+      return {
+        accessToken,
+        refreshToken,
+        actor: JSON.parse(rawActor) as Actor,
+      };
     } catch {
       // A half-written or corrupted actor is not a session. Returning null sends
       // the user to sign-in, which is recoverable; throwing here would crash the
@@ -54,5 +59,9 @@ export const secureTokenStore: AuthStorage & TokenProvider = {
 
   async getAccessToken(): Promise<string | null> {
     return SecureStore.getItemAsync(ACCESS_KEY);
+  },
+
+  async getRefreshToken(): Promise<string | null> {
+    return SecureStore.getItemAsync(REFRESH_KEY);
   },
 };

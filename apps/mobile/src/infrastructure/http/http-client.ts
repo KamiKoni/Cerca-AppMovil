@@ -1,16 +1,24 @@
-import type { z } from 'zod';
-import type { TokenProvider } from '../../application/ports/token-provider';
-import { ApiError } from '../../domain/errors';
-import { toApiError } from './problem';
+import { z } from "zod";
+import { authSignInSchema } from "@cerca/contract";
+import type {
+  AuthTokens,
+  TokenProvider,
+} from "../../application/ports/token-provider";
+import { ApiError } from "../../domain/errors";
+import { toApiError } from "./problem";
 
-export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
+export type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
-export type QueryParams = Record<string, string | number | boolean | undefined | null>;
+export type QueryParams = Record<
+  string,
+  string | number | boolean | undefined | null
+>;
 
 export interface RequestOptions {
   method?: HttpMethod;
   query?: QueryParams;
   body?: unknown;
+  headers?: Record<string, string>;
   /**
    * Required by POST /bookings and POST /bookings/{id}/review; the server answers
    * 422 IDEMPOTENCY_KEY_REQUIRED without it. Deliberately NOT generated here —
@@ -21,7 +29,11 @@ export interface RequestOptions {
 }
 
 export interface HttpClient {
-  request<T>(path: string, schema: z.ZodType<T>, options?: RequestOptions): Promise<T>;
+  request<T>(
+    path: string,
+    schema: z.ZodType<T>,
+    options?: RequestOptions,
+  ): Promise<T>;
 }
 
 export interface HttpClientConfig {
@@ -42,49 +54,134 @@ export interface HttpClientConfig {
  */
 export function createHttpClient(config: HttpClientConfig): HttpClient {
   const doFetch = config.fetchFn ?? globalThis.fetch;
-  const baseUrl = config.baseUrl.replace(/\/+$/, '');
+  const baseUrl = config.baseUrl.replace(/\/+$/, "");
+  let refreshInProgress: Promise<void> | undefined;
 
-  async function request<T>(path: string, schema: z.ZodType<T>, options: RequestOptions = {}): Promise<T> {
-    const url = baseUrl + (path.startsWith('/') ? path : `/${path}`) + buildQuery(options.query);
+  async function request<T>(
+    path: string,
+    schema: z.ZodType<T>,
+    options: RequestOptions = {},
+  ): Promise<T> {
+    return requestInternal(path, schema, options, false);
+  }
+
+  async function requestInternal<T>(
+    path: string,
+    schema: z.ZodType<T>,
+    options: RequestOptions,
+    hasRefreshed: boolean,
+  ): Promise<T> {
+    const url =
+      baseUrl +
+      (path.startsWith("/") ? path : `/${path}`) +
+      buildQuery(options.query);
     const headers = await buildHeaders(options);
 
     let response: Response;
     try {
       response = await doFetch(url, {
-        method: options.method ?? 'GET',
+        method: options.method ?? "GET",
         headers,
-        ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
+        ...(options.body === undefined
+          ? {}
+          : { body: JSON.stringify(options.body) }),
         ...(options.signal ? { signal: options.signal } : {}),
       });
     } catch (cause) {
-      // The request never left the device: airplane mode, DNS, wrong LAN IP.
-      // status 0 marks "no answer", which is not the same as a server error and
-      // must not be treated as one.
       throw new ApiError({
-        kind: 'network',
+        kind: "network",
         status: 0,
-        code: 'NETWORK_ERROR',
-        message: cause instanceof Error ? cause.message : 'The request could not be sent.',
+        code: "NETWORK_ERROR",
+        message:
+          cause instanceof Error
+            ? cause.message
+            : "The request could not be sent.",
       });
     }
 
     const raw = await readBody(response);
 
     if (!response.ok) {
+      if (
+        response.status === 401 &&
+        !hasRefreshed &&
+        shouldAttemptRefresh(path)
+      ) {
+        await refreshAccessToken();
+        return requestInternal(path, schema, options, true);
+      }
       throw toApiError(response.status, raw);
     }
 
-    // The acceptance criterion, in one line. `parse`, never `as`: a cast is a
-    // promise to the compiler that nobody checks, and a renamed field would then
-    // surface three screens later as `undefined` instead of here, by name.
     return schema.parse(raw);
   }
 
-  async function buildHeaders(options: RequestOptions): Promise<Record<string, string>> {
-    const headers: Record<string, string> = { Accept: 'application/json' };
+  function shouldAttemptRefresh(path: string): boolean {
+    return Boolean(config.tokenProvider && !path.startsWith("/auth/"));
+  }
 
-    if (options.body !== undefined) headers['Content-Type'] = 'application/json';
-    if (options.idempotencyKey) headers['Idempotency-Key'] = options.idempotencyKey;
+  async function refreshAccessToken(): Promise<void> {
+    const provider = config.tokenProvider;
+    if (!provider) {
+      throw new ApiError({
+        kind: "unauthorized",
+        status: 401,
+        code: "REFRESH_UNAVAILABLE",
+        message: "No token provider is configured for refresh.",
+      });
+    }
+
+    if (refreshInProgress) {
+      await refreshInProgress;
+      return;
+    }
+
+    refreshInProgress = (async () => {
+      const refreshToken = await provider.getRefreshToken();
+      if (!refreshToken) {
+        throw new ApiError({
+          kind: "unauthorized",
+          status: 401,
+          code: "REFRESH_TOKEN_MISSING",
+          message: "No refresh token is available.",
+        });
+      }
+
+      const url = `${baseUrl}/auth/refresh`;
+      const response = await doFetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      const raw = await readBody(response);
+      if (!response.ok) {
+        throw toApiError(response.status, raw);
+      }
+
+      const tokens = authSignInSchema.parse(raw) as AuthTokens;
+      await provider.saveTokens(tokens);
+    })();
+
+    try {
+      await refreshInProgress;
+    } finally {
+      refreshInProgress = undefined;
+    }
+  }
+
+  async function buildHeaders(
+    options: RequestOptions,
+  ): Promise<Record<string, string>> {
+    const headers: Record<string, string> = { Accept: "application/json" };
+
+    if (options.body !== undefined)
+      headers["Content-Type"] = "application/json";
+    if (options.idempotencyKey)
+      headers["Idempotency-Key"] = options.idempotencyKey;
 
     // Attached whenever a session exists, including on public routes: the server
     // uses it to personalise responses (a listing knows it is your favourite),
@@ -99,16 +196,16 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
 }
 
 function buildQuery(query: QueryParams | undefined): string {
-  if (!query) return '';
+  if (!query) return "";
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(query)) {
     // Absent is absent: sending `?query=` would make an empty filter look like a
     // deliberate search for the empty string.
-    if (value === undefined || value === null || value === '') continue;
+    if (value === undefined || value === null || value === "") continue;
     params.append(key, String(value));
   }
   const serialised = params.toString();
-  return serialised ? `?${serialised}` : '';
+  return serialised ? `?${serialised}` : "";
 }
 
 /**
@@ -141,10 +238,10 @@ async function readBody(response: Response): Promise<unknown> {
  */
 export function createIdempotencyKey(): string {
   const uuid = globalThis.crypto?.randomUUID;
-  if (typeof uuid !== 'function') {
+  if (typeof uuid !== "function") {
     throw new Error(
-      'crypto.randomUUID is unavailable. Install a CSPRNG polyfill (expo-crypto) ' +
-        'rather than weakening idempotency keys to Math.random.',
+      "crypto.randomUUID is unavailable. Install a CSPRNG polyfill (expo-crypto) " +
+        "rather than weakening idempotency keys to Math.random.",
     );
   }
   return globalThis.crypto.randomUUID();

@@ -1,6 +1,6 @@
-import { snapToGrid, type Coords } from '../../domain/geo';
-import type { ListingId } from '../../domain/ids';
-import type { SearchFilters } from '../../domain/search';
+import { snapToGrid, type Coords } from "../../domain/geo";
+import type { ListingId } from "../../domain/ids";
+import type { SearchFilters } from "../../domain/search";
 
 /**
  * The canonical filter object that actually goes into a cache key. Absent and
@@ -33,12 +33,14 @@ interface CanonicalFilters {
  * invalidation is one call, not a loop.
  */
 export const listingKeys = {
-  all: ['listings'] as const,
-  searches: () => [...listingKeys.all, 'search'] as const,
-  search: (filters: SearchFilters) => [...listingKeys.searches(), canonical(filters)] as const,
-  details: () => [...listingKeys.all, 'detail'] as const,
+  all: ["listings"] as const,
+  searches: () => [...listingKeys.all, "search"] as const,
+  search: (filters: SearchFilters) =>
+    [...listingKeys.searches(), canonical(filters)] as const,
+  details: () => [...listingKeys.all, "detail"] as const,
   detail: (id: ListingId) => [...listingKeys.details(), id] as const,
-  mine: () => [...listingKeys.all, 'mine'] as const,
+  mine: () => [...listingKeys.all, "mine"] as const,
+  favorites: () => [...listingKeys.all, "favorites"] as const,
 } as const;
 
 /**

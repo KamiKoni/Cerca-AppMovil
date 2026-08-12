@@ -1,0 +1,134 @@
+{
+  "signIn": {
+    "title": "Anmelden",
+    "description": "Geben Sie Ihre Anmeldedaten ein.",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "submit": "Anmelden",
+    "loading": "Anmeldung läuft..."
+  },
+  "search": {
+    "title": "Suchen",
+    "placeholder": "Was suchen Sie?",
+    "emptyInitial": "In Ihrer Nähe wurden noch keine Dienste gefunden.",
+    "emptyFilter": "Keine Dienste entsprechen diesen Filtern.",
+    "clearFilters": "Filter zurücksetzen",
+    "expandRadius": "Radius auf 20 km erweitern",
+    "retry": "Erneut versuchen",
+    "selectCity": "Stadt auswählen",
+    "citySelectorTitle": "Manuelle Standortauswahl",
+    "usingDeviceLocation": "Verwende den Standort Ihres Geräts.",
+    "usingCity": "Ergebnisse für {{city}}.",
+    "locationDeniedPermanent": "Standortzugriff dauerhaft verweigert. Öffnen Sie die Einstellungen oder wählen Sie eine Stadt.",
+    "locationUnavailable": "Standort nicht verfügbar. Bitte wählen Sie eine Stadt manuell.",
+    "openSettings": "Einstellungen öffnen",
+    "currentLocation": "Aktueller Standort"
+  },
+  "listing": {
+    "title": "Dienstleistung",
+    "perHour": "/Stunde",
+    "minimum": "Mindestdauer",
+    "from": "Ab",
+    "onQuote": "Preis auf Anfrage",
+    "noReviews": "Noch keine Bewertungen",
+    "notFound": "Dieser Dienst ist nicht mehr verfügbar.",
+    "edit": "Angebot bearbeiten",
+    "book": "Buchung anfragen",
+    "bookingRequested": "Buchung angefragt",
+    "status": {
+      "draft": "Entwurf",
+      "published": "Veröffentlicht",
+      "paused": "Pausiert",
+      "under_review": "In Prüfung",
+      "removed": "Entfernt"
+    },
+    "blocked": {
+      "not_owner": "Sie sind nicht berechtigt, diese Aktion für den Dienst auszuführen.",
+      "unknown": "Sie haben keine Berechtigung, diese Aktion auszuführen."
+    },
+    "reviewsCount_one": "{{count}} Bewertung",
+    "reviewsCount_other": "{{count}} Bewertungen"
+  },
+  "review": {
+    "title": "Bewertung abgeben",
+    "rating": "Bewertung",
+    "comment": "Kommentar (optional)",
+    "submit": "Bewertung absenden",
+    "submitting": "Wird gesendet...",
+    "success": "Bewertung erfolgreich gespeichert",
+    "blocked": {
+      "not_your_booking": "Sie können keine Dienste bewerten, die Sie nicht gebucht haben.",
+      "not_completed": "Bewertungen sind erst nach Abschluss der Buchung möglich.",
+      "already_reviewed": "Sie haben diese Buchung bereits bewertet.",
+      "window_closed": "Die 30-Tage-Frist für Bewertungen ist abgelaufen."
+    }
+  },
+  "booking": {
+    "title": "Meine Buchungen",
+    "notes": "Hinweise für den Anbieter",
+    "scheduledFor": "Geplantes Datum",
+    "submit": "Buchung bestätigen",
+    "accept": "Akzeptieren",
+    "decline": "Ablehnen",
+    "complete": "Als abgeschlossen markieren",
+    "cancel": "Buchung stornieren",
+    "status": {
+      "requested": "Angefragt",
+      "accepted": "Bestätigt",
+      "declined": "Abgelehnt",
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert"
+    }
+  },
+  "provider": {
+    "myServices": "Meine Dienste",
+    "becomeProvider": "Anbieter werden",
+    "newListing": "Dienst veröffentlichen",
+    "step1": "1. Kategorie & Details",
+    "step2": "2. Preismodell",
+    "step3": "3. Standort",
+    "step4": "4. Fotos",
+    "next": "Weiter",
+    "back": "Zurück",
+    "publish": "Angebot veröffentlichen",
+    "onboardingTitle": "Biete deine Services auf Cerca an",
+    "onboardingDescription": "Erstelle ein Anbieterprofil, um Services zu veröffentlichen und Anfragen zu verwalten.",
+    "noListings": "Du hast noch keine Services veröffentlicht.",
+    "pause": "Pausieren",
+    "publishListing": "Veröffentlichen",
+    "viewDetails": "Details anzeigen",
+    "pricingModel": {
+      "fixed": "Festpreis",
+      "hourly": "Stundensatz",
+      "quote": "Individuelles Angebot"
+    }
+  },
+  "favorites": {
+    "title": "Favoriten",
+    "empty": "Du hast noch keine Services gespeichert.",
+    "loginPrompt": "Melde dich an, um Favoriten zu speichern und anzusehen.",
+    "retry": "Erneut versuchen"
+  },
+  "moderation": {
+    "title": "Moderationswarteschlange",
+    "openReports": "Offene Meldungen",
+    "underReview": "In Prüfung stellen",
+    "remove": "Dienst entfernen",
+    "resolve": "Meldung abschließen",
+    "accessDeniedTitle": "Zugriff verweigert",
+    "accessDeniedMessage": "Dieser Bereich ist nur für Moderatoren verfügbar."
+  },
+  "error": {
+    "network": "Verbindung zum Server fehlgeschlagen.",
+    "badCredentials": "E-Mail oder Passwort ungültig.",
+    "validation": "Bitte überprüfen Sie Ihre Eingaben.",
+    "unknown": "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
+    "locationDenied": "Standortzugriff verweigert. Bitte wählen Sie eine Stadt manuell.",
+    "money": {
+      "nonnegative": "Betrag darf nicht negativ sein."
+    },
+    "currency": {
+      "required": "Währung ist erforderlich."
+    }
+  }
+}
