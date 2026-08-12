@@ -33,7 +33,10 @@ export default function RootLayout() {
       <SessionProvider>
         <SafeAreaProvider>
           <StatusBar barStyle="dark-content" />
-          <Stack screenOptions={{ headerTitleStyle: { fontWeight: '700' } }} />
+          {/* Headers belong to the group stacks: each group knows its own titles
+              and, once signed in, carries the sign-out control. A header here as
+              well would render a second bar stacked above theirs. */}
+          <Stack screenOptions={{ headerShown: false }} />
         </SafeAreaProvider>
       </SessionProvider>
     </QueryClientProvider>
