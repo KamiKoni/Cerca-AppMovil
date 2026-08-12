@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { SessionGuard } from '../../src/presentation/SessionGuard';
+import { SignOutButton } from '../../src/presentation/SignOutButton';
 
 /**
  * A session is necessary here but not sufficient: these routes are for
@@ -11,7 +12,12 @@ import { SessionGuard } from '../../src/presentation/SessionGuard';
 export default function ProviderLayout() {
   return (
     <SessionGuard group="protected">
-      <Stack screenOptions={{ headerTitleStyle: { fontWeight: '700' } }} />
+      <Stack
+        screenOptions={{
+          headerTitleStyle: { fontWeight: '700' },
+          headerRight: () => <SignOutButton />,
+        }}
+      />
     </SessionGuard>
   );
 }
