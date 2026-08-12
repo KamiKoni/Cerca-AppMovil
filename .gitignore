@@ -4,3 +4,6 @@ node_modules
 # Machine-specific: holds the LAN IP of whoever is running the API.
 # The committed template is .env.example.
 .env
+
+# JetBrains IDE settings are per-developer, not per-project.
+.idea/
