@@ -1,9 +1,14 @@
-import { Text, View } from 'react-native';
+import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { SearchScreen } from '../../src/presentation/SearchScreen';
 
 export default function SearchPage() {
+  const { t } = useTranslation();
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Search screen placeholder</Text>
-    </View>
+    <>
+      <Stack.Screen options={{ title: t('search.title') }} />
+      <SearchScreen />
+    </>
   );
 }

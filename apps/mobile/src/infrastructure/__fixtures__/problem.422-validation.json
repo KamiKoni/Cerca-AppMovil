@@ -1,0 +1,19 @@
+{
+  "type": "https://cerca.app/errors/VALIDATION_ERROR",
+  "status": 422,
+  "code": "VALIDATION_ERROR",
+  "title": "Validation failed",
+  "detail": "One or more fields are invalid.",
+  "instance": "/v1/auth/sign-in",
+  "traceId": "eead6297-a352-430c-895c-57164651daba",
+  "errors": [
+    {
+      "path": "email",
+      "message": "Invalid email address"
+    },
+    {
+      "path": "password",
+      "message": "Too small: expected string to have >=1 characters"
+    }
+  ]
+}

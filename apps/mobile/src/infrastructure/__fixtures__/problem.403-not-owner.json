@@ -1,0 +1,10 @@
+{
+  "type": "https://cerca.app/errors/LISTING_EDIT_FORBIDDEN",
+  "status": 403,
+  "code": "LISTING_EDIT_FORBIDDEN",
+  "title": "Listing Edit Forbidden",
+  "detail": "You cannot edit this listing.",
+  "instance": "/v1/listings/ef4c91a8-5ac6-4173-9272-b77f381dbc85",
+  "traceId": "0873182d-8ea2-494b-8796-357e13172b86",
+  "reason": "not_owner"
+}

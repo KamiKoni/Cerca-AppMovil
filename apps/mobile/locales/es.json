@@ -7,7 +7,25 @@
     "submit": "Iniciar sesión",
     "loading": "Iniciando sesión..."
   },
+  "search": {
+    "title": "Buscar",
+    "placeholder": "¿Qué necesitas?",
+    "empty": "No hay servicios cerca."
+  },
+  "listing": {
+    "title": "Servicio",
+    "perHour": "/hora",
+    "minimum": "mínimo",
+    "from": "Desde",
+    "onQuote": "Precio a consultar",
+    "noReviews": "Aún sin reseñas",
+    "notFound": "Este servicio ya no está disponible."
+  },
   "error": {
+    "network": "No se pudo contactar el servidor. Revisa que estés en la misma Wi-Fi y que la API esté corriendo.",
+    "badCredentials": "Correo o contraseña incorrectos.",
+    "validation": "Revisa los datos que ingresaste.",
+    "unknown": "Algo salió mal. Inténtalo de nuevo.",
     "money": {
       "nonnegative": "error.money.nonnegative"
     },

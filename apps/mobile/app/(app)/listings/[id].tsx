@@ -1,12 +1,15 @@
-import { Text, View } from 'react-native';
-import { useSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { ListingDetailScreen } from '../../../src/presentation/ListingDetailScreen';
 
 export default function ListingDetailPage() {
-  const { id } = useSearchParams();
+  const { t } = useTranslation();
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Listing detail: {id}</Text>
-    </View>
+    <>
+      <Stack.Screen options={{ title: t('listing.title') }} />
+      <ListingDetailScreen id={id} />
+    </>
   );
 }

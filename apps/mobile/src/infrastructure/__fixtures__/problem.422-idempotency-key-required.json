@@ -1,0 +1,9 @@
+{
+  "type": "https://cerca.app/errors/IDEMPOTENCY_KEY_REQUIRED",
+  "status": 422,
+  "code": "IDEMPOTENCY_KEY_REQUIRED",
+  "title": "Idempotency Key Required",
+  "detail": "The Idempotency-Key header is required for this operation.",
+  "instance": "/v1/bookings",
+  "traceId": "98b7522b-4837-410b-80b1-fafb0a49e52a"
+}
