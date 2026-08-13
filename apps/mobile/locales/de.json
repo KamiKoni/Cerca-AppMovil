@@ -5,7 +5,24 @@
     "email": "E-Mail-Adresse",
     "password": "Passwort",
     "submit": "Anmelden",
-    "loading": "Anmeldung läuft..."
+    "loading": "Anmeldung läuft...",
+    "noAccount": "Noch kein Konto? Registrieren"
+  },
+  "signUp": {
+    "title": "Konto erstellen",
+    "description": "Ein paar Angaben und Sie sind dabei.",
+    "displayName": "Ihr Name",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "passwordHint": "Mindestens 8 Zeichen.",
+    "submit": "Konto erstellen",
+    "haveAccount": "Sie haben bereits ein Konto? Anmelden",
+    "emailTaken": "Für diese E-Mail existiert bereits ein Konto. Bitte anmelden.",
+    "errors": {
+      "displayName": "Geben Sie den Namen ein, der angezeigt werden soll.",
+      "email": "Das sieht nicht nach einer E-Mail-Adresse aus.",
+      "password": "Verwenden Sie mindestens 8 Zeichen."
+    }
   },
   "search": {
     "title": "Suchen",
