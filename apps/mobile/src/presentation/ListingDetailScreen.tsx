@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useLocaleTag } from "./useLocaleTag";
 import { useRouter } from "expo-router";
 import {
   canEditListing,
@@ -32,10 +33,10 @@ import { mapProblemReasonToI18nKey } from "./authorizationMapper";
 import { useCan } from "./authorization";
 
 export function ListingDetailScreen({ id }: { id: ListingId }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const router = useRouter();
   const actor = useActor();
-  const locale = i18n.language || "es-CO";
+  const locale = useLocaleTag();
 
   const detail = useListingDetail(id);
   const toggleFavorite = useToggleFavorite();
