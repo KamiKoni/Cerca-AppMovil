@@ -13,7 +13,7 @@ import type {
 } from "@cerca/contract";
 import type { ListingId } from "../../domain/ids";
 import type { SearchFilters } from "../../domain/search";
-import { signIn, signOut } from "../gateways/auth-gateway";
+import { signIn, signOut, signUp } from "../gateways/auth-gateway";
 import {
   acceptBooking,
   cancelBooking,
@@ -341,6 +341,18 @@ export function useSignIn() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: signIn,
+    onSuccess: () => queryClient.clear(),
+  });
+}
+
+/**
+ * Clears the cache for the same reason signing in does: the app is now somebody
+ * else, and anything cached from before belonged to the previous session.
+ */
+export function useSignUp() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: signUp,
     onSuccess: () => queryClient.clear(),
   });
 }

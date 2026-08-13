@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import { Link } from "expo-router";
 import { ApiError } from "../domain/errors";
 import { useSignIn } from "../infrastructure/query/hooks";
 import { useSession } from "./SessionProvider";
@@ -75,6 +76,10 @@ export function SignInScreen() {
           <Text style={styles.primaryButtonText}>{t("signIn.submit")}</Text>
         )}
       </Pressable>
+
+      <Link href="/sign-up" style={styles.link}>
+        <Text style={styles.linkText}>{t("signIn.noAccount")}</Text>
+      </Link>
     </View>
   );
 }
@@ -135,5 +140,14 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.6,
+  },
+  link: {
+    marginTop: 20,
+    alignSelf: "center",
+  },
+  linkText: {
+    color: "#2563eb",
+    fontSize: 15,
+    fontWeight: "600",
   },
 });

@@ -43,6 +43,16 @@ export interface HttpClientConfig {
   tokenProvider?: TokenProvider;
   /** Injected so tests never touch the network. Defaults to global fetch. */
   fetchFn?: typeof fetch;
+  /**
+   * Called once when the server refuses to refresh the session, meaning the
+   * stored credentials are no longer worth anything.
+   *
+   * Not called when the refresh fails for a transient reason. A blink of the
+   * Wi-Fi is not the same event as a revoked token, and signing someone out
+   * because a request timed out loses their place for a problem that fixes
+   * itself.
+   */
+  onSessionExpired?: () => void;
 }
 
 /**
@@ -164,7 +174,10 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
 
       const tokens = authSignInSchema.parse(raw) as AuthTokens;
       await provider.saveTokens(tokens);
-    })();
+    })().catch((error: unknown) => {
+      if (isSessionRejected(error)) config.onSessionExpired?.();
+      throw error;
+    });
 
     try {
       await refreshInProgress;
@@ -193,6 +206,23 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
   }
 
   return { request };
+}
+
+/**
+ * Distinguishes "the server says these credentials are dead" from "the request
+ * did not arrive".
+ *
+ * Only the first justifies ending the session. A refresh that fails with a 500
+ * or with no network at all leaves the refresh token perfectly valid, and the
+ * next attempt may well succeed.
+ */
+function isSessionRejected(error: unknown): boolean {
+  if (!(error instanceof ApiError)) return false;
+  if (error.kind === "network") return false;
+
+  // REFRESH_TOKEN_MISSING is raised locally, without a request: there is no
+  // credential left to refresh, which is the same dead end as a rejection.
+  return error.status >= 400 && error.status < 500;
 }
 
 function buildQuery(query: QueryParams | undefined): string {

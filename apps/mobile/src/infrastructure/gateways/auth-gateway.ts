@@ -2,7 +2,9 @@ import {
   authSignInSchema,
   refreshSchema,
   signOutSchema,
+  signUpSchema,
   type AuthSignInResponse,
+  type SignUpInput,
 } from "@cerca/contract";
 import { z } from "zod";
 import type { SignInCredentials } from "../../application/auth";
@@ -22,6 +24,28 @@ export async function signIn(
   const response = await apiClient.request("/auth/sign-in", authSignInSchema, {
     method: "POST",
     body: credentials,
+  });
+
+  await secureTokenStore.saveTokens(response);
+  return response;
+}
+
+/**
+ * POST /v1/auth/sign-up.
+ *
+ * Answers with the same shape as signing in, and is persisted the same way: a
+ * new account that then asked for credentials would be a sign-up that did not
+ * sign anyone up.
+ */
+export async function signUp(input: SignUpInput): Promise<AuthSignInResponse> {
+  // Parsed before sending, not only in the form: the schema fills `capacities`
+  // with its default, and a caller that skipped the form would otherwise post a
+  // body the server rejects with a 422 nobody expected.
+  const body = signUpSchema.parse(input);
+
+  const response = await apiClient.request("/auth/sign-up", authSignInSchema, {
+    method: "POST",
+    body,
   });
 
   await secureTokenStore.saveTokens(response);

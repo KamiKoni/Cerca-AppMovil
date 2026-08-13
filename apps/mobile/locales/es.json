@@ -5,7 +5,24 @@
     "email": "Correo electrónico",
     "password": "Contraseña",
     "submit": "Iniciar sesión",
-    "loading": "Iniciando sesión..."
+    "loading": "Iniciando sesión...",
+    "noAccount": "¿Aún no tienes cuenta? Regístrate"
+  },
+  "signUp": {
+    "title": "Crear cuenta",
+    "description": "Unos pocos datos y listo.",
+    "displayName": "Tu nombre",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "passwordHint": "Mínimo 8 caracteres.",
+    "submit": "Crear cuenta",
+    "haveAccount": "¿Ya tienes cuenta? Inicia sesión",
+    "emailTaken": "Ese correo ya tiene una cuenta. Inicia sesión.",
+    "errors": {
+      "displayName": "Escribe el nombre que quieres mostrar.",
+      "email": "Eso no parece un correo electrónico.",
+      "password": "Usa al menos 8 caracteres."
+    }
   },
   "session": {
     "signOut": "Cerrar sesión"

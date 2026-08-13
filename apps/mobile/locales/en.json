@@ -5,7 +5,24 @@
     "email": "Email address",
     "password": "Password",
     "submit": "Sign In",
-    "loading": "Signing in..."
+    "loading": "Signing in...",
+    "noAccount": "No account yet? Sign up"
+  },
+  "signUp": {
+    "title": "Create account",
+    "description": "A few details and you are in.",
+    "displayName": "Your name",
+    "email": "Email address",
+    "password": "Password",
+    "passwordHint": "At least 8 characters.",
+    "submit": "Create account",
+    "haveAccount": "Already have an account? Sign in",
+    "emailTaken": "That email already has an account. Sign in instead.",
+    "errors": {
+      "displayName": "Enter the name you want to be shown.",
+      "email": "That does not look like an email address.",
+      "password": "Use at least 8 characters."
+    }
   },
   "session": {
     "signOut": "Sign out"
