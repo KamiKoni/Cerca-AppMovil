@@ -15,6 +15,7 @@ import {
   type SessionState,
 } from "../application/session";
 import { secureTokenStore } from "../infrastructure/auth/secure-token-store";
+import { sessionExpiry } from "../infrastructure/auth/session-expiry";
 import { signOut as clearStoredSession } from "../infrastructure/gateways/auth-gateway";
 
 interface SessionContextValue {
@@ -52,6 +53,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       cancelled = true;
     };
   }, []);
+
+  /**
+   * The other way a session ends: the server refuses to refresh it while the
+   * app is open. The keystore has already been emptied by then, so the only
+   * thing left is to say so on screen and drop the cache the old session filled
+   * — the guards turn that into a redirect to sign-in.
+   */
+  useEffect(
+    () =>
+      sessionExpiry.subscribe(() => {
+        setState(ANONYMOUS);
+        queryClient.clear();
+      }),
+    [queryClient],
+  );
 
   async function signedIn(actor: Actor): Promise<void> {
     const stored = await secureTokenStore.getTokens();
