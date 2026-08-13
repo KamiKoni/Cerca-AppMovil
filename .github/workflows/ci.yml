@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop]
+  push:
+    branches: [develop]
+
+# A new push supersedes the run in flight for the same branch. Reviewers only
+# ever care about the latest commit's result.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck and tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The repo pins pnpm 11 through devEngines, and pnpm 10 rewrites the whole
+      # lockfile instead of reading it. Pinning the exact version here means CI
+      # resolves the same tree a developer does.
+      - name: Enable pnpm 11
+        run: corepack enable && corepack prepare pnpm@11.21.0 --activate
+
+      # --frozen-lockfile fails the build when package.json and pnpm-lock.yaml
+      # disagree, which is the only way to notice a dependency added without its
+      # lockfile entry before it breaks someone else's install.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The app imports @cerca/contract from its build output, so nothing else
+      # can be checked until this exists.
+      - name: Build the contract package
+        run: pnpm --filter @cerca/contract build
+
+      - name: Typecheck the app
+        run: pnpm --filter cerca-mobile typecheck
+
+      # The root script, not `pnpm -r test`: the contract package's own `test`
+      # script is `vitest` in watch mode, which never exits. The root runs
+      # `vitest run` across the workspace and covers both packages.
+      - name: Run the test suite
+        run: pnpm test
