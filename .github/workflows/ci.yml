@@ -52,6 +52,11 @@ jobs:
       - name: Typecheck the app
         run: corepack pnpm@11.21.0 --filter cerca-mobile typecheck
 
+      # Added once develop was clean. It was left out of the first version
+      # deliberately: a gate that is red from its first run gets ignored.
+      - name: Lint
+        run: corepack pnpm@11.21.0 lint
+
       # The root script, not `pnpm -r test`: the contract package's own `test`
       # script is `vitest` in watch mode, which never exits. The root runs
       # `vitest run` across the workspace and covers both packages.

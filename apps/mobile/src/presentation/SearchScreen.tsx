@@ -19,7 +19,7 @@ import {
 import type { Coords } from "../domain/geo";
 import type { LocationResult } from "../application/ports/location-provider";
 import { ApiError } from "../domain/errors";
-import { useCan, Can } from "./authorization";
+import { Can } from "./authorization";
 import { useSession } from "./SessionProvider";
 import { useAppStateChange } from "./useForegroundLocationRetry";
 import { DEFAULT_SEARCH_COORDS } from "../infrastructure/config";
@@ -67,9 +67,7 @@ export function SearchScreen() {
   const query = useDebounced(text, 350);
   const locale = i18n.language || "es-CO";
 
-  const isProvider = withCapacity("provider");
-  const isModerator = useCan("listing:moderate");
-  const isLoading = becomeProvider.isPending;
+  const isProvider = withCapacity("provider");  const isLoading = becomeProvider.isPending;
   const useDeviceLocation =
     locationStatus === "granted" && deviceCoords !== null;
   const searchCoords = useDeviceLocation

@@ -15,12 +15,6 @@ export type ReviewEligibility =
 
 export const REVIEW_WINDOW_DAYS = 30;
 
-function daysBetween(a: string, b: Date): number {
-  const da = new Date(a).getTime();
-  const db = b.getTime();
-  return Math.floor((db - da) / (1000 * 60 * 60 * 24));
-}
-
 export function canReviewBooking(
   actor: Actor,
   booking: BookingForReview,

@@ -11,9 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import {
   formatDistance,
-  formatMoney,
-  type ListingSummary,
-} from "@cerca/contract";
+  formatMoney,} from "@cerca/contract";
 import { useSession } from "./SessionProvider";
 import { useFavoriteListings } from "../infrastructure/query/hooks";
 

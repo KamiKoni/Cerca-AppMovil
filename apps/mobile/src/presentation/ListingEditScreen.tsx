@@ -145,7 +145,7 @@ export function ListingEditScreen({ id }: { id: string }) {
   function handleSave() {
     updateMutation.mutate(buildPayload(), {
       onSuccess: () => {
-        router.replace(`/listings/${id}` as any);
+        router.replace(`/listings/${id}` as never);
       },
     });
   }
