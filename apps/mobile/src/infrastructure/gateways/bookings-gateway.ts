@@ -28,12 +28,12 @@ export async function createBooking(
   // names the offending field instead of leaving a generic validation error.
   const body = createBookingSchema.parse(input);
 
+  // The typed option, not a raw header: the client owns the header name, and
+  // routing it through `headers` is how it went missing in the first place.
   return apiClient.request("/bookings", bookingSchema, {
     method: "POST",
     body,
-    headers: {
-      "Idempotency-Key": idempotencyKey,
-    },
+    idempotencyKey,
   });
 }
 
@@ -117,8 +117,6 @@ export async function submitReview(
   return apiClient.request(`/bookings/${bookingId}/review`, reviewSchema, {
     method: "POST",
     body,
-    headers: {
-      "Idempotency-Key": idempotencyKey,
-    },
+    idempotencyKey,
   });
 }

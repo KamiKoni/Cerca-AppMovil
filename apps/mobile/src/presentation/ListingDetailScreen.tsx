@@ -29,6 +29,7 @@ import {
   useToggleFavorite,
 } from "../infrastructure/query/hooks";
 import { useActor } from "./SessionProvider";
+import { createIdempotencyKey } from "../infrastructure/http/http-client";
 import { mapProblemReasonToI18nKey } from "./authorizationMapper";
 import { useCan } from "./authorization";
 
@@ -75,7 +76,11 @@ export function ListingDetailScreen({ id }: { id: ListingId }) {
     reviewsQuery.data?.pages.flatMap((page) => page.items) ?? [];
 
   function handleRequestBooking() {
-    const idempotencyKey = `booking-${listing.id}-${Date.now()}`;
+    // Was `booking-${id}-${Date.now()}`, which defeated the header: it changed
+    // on every attempt, so a retry after a dropped connection would have
+    // created a second booking — the exact thing the key exists to prevent —
+    // and it was guessable, which the CSPRNG helper refuses to be.
+    const idempotencyKey = createIdempotencyKey();
     createBooking.mutate(
       {
         input: {
