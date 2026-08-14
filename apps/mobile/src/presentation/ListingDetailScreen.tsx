@@ -30,7 +30,7 @@ import {
   useToggleFavorite,
 } from "../infrastructure/query/hooks";
 import { useActor } from "./SessionProvider";
-import { createIdempotencyKey } from "../infrastructure/http/http-client";
+import { createIdempotencyKey } from "../infrastructure/idempotency";
 import { mapProblemReasonToI18nKey } from "./authorizationMapper";
 import { useCan } from "./authorization";
 
