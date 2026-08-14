@@ -3,11 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.REVIEW_WINDOW_DAYS = void 0;
 exports.canReviewBooking = canReviewBooking;
 exports.REVIEW_WINDOW_DAYS = 30;
-function daysBetween(a, b) {
-    const da = new Date(a).getTime();
-    const db = b.getTime();
-    return Math.floor((db - da) / (1000 * 60 * 60 * 24));
-}
 function canReviewBooking(actor, booking, now) {
     if (booking.customerId !== actor.id)
         return { ok: false, reason: "not_your_booking" };

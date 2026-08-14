@@ -10,7 +10,7 @@ const MXN_LISTING = { amountMinor: 129990, currency: "MXN" };
  * NBSP is correct and deliberate — it stops a currency from wrapping onto the
  * next line — so the test normalises instead of asking for it to be removed.
  */
-const spaces = (text: string) => text.replace(/ /g, " ");
+const spaces = (text: string) => text.replace(/\u00A0/g, " ");
 
 describe("resolveLocale", () => {
   it("keeps the country the device reported", () => {
