@@ -15,7 +15,6 @@ import {
   usePublishListing,
 } from "../infrastructure/query/hooks";
 import { withCapacity } from "./authorization";
-import { LoadingScreen } from "./LoadingScreen";
 
 export function MyListingsScreen() {
   const { t } = useTranslation();

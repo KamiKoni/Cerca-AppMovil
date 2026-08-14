@@ -1,4 +1,4 @@
-import React, { createElement, Fragment, type ReactNode } from "react";
+import { createElement, Fragment, type ReactNode } from "react";
 import { can, type Capacity, type Permission } from "@cerca/contract";
 import { useActor } from "./SessionProvider";
 

@@ -27,10 +27,6 @@ function mapPermission(
   return "unavailable";
 }
 
-function mapDeniedStatus(status: Location.PermissionStatus): boolean {
-  return status !== Location.PermissionStatus.UNDETERMINED;
-}
-
 export class ExpoLocationAdapter implements LocationProvider {
   async getLocation(): Promise<LocationResult> {
     try {
