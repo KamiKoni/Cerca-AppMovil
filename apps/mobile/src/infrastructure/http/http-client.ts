@@ -263,25 +263,9 @@ async function readBody(response: Response): Promise<unknown> {
   }
 }
 
-/**
- * Creates one key per user INTENT — call it when the user taps "Book", not on
- * every attempt.
- *
- * That distinction is the whole feature. A key generated per HTTP request would
- * differ on a retry, and the server would treat the retry as a new booking,
- * which is precisely what the header exists to prevent.
- *
- * Uses the platform CSPRNG and refuses to fall back to Math.random: the server
- * files these under `idem:<route>:<key>` without the user id, so a guessable key
- * could replay somebody else's stored response.
+/*
+ * `createIdempotencyKey` used to live here and read `globalThis.crypto`, which
+ * does not exist on Hermes. It moved to `infrastructure/idempotency`, which
+ * uses expo-crypto — and which cannot live in this file, because this one is
+ * imported by the node test runner and a native module would break it.
  */
-export function createIdempotencyKey(): string {
-  const uuid = globalThis.crypto?.randomUUID;
-  if (typeof uuid !== "function") {
-    throw new Error(
-      "crypto.randomUUID is unavailable. Install a CSPRNG polyfill (expo-crypto) " +
-        "rather than weakening idempotency keys to Math.random.",
-    );
-  }
-  return globalThis.crypto.randomUUID();
-}

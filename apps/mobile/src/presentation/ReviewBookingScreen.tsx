@@ -18,7 +18,7 @@ import {
 } from "../infrastructure/query/hooks";
 import { useActor } from "./SessionProvider";
 import { mapProblemReasonToI18nKey } from "./authorizationMapper";
-import { createIdempotencyKey } from "../infrastructure/http/http-client";
+import { createIdempotencyKey } from "../infrastructure/idempotency";
 
 export function ReviewBookingScreen({ bookingId }: { bookingId: string }) {
   const { t } = useTranslation();
