@@ -3,3 +3,5 @@ packages:
   - 'packages/*'
 allowBuilds:
   esbuild: true
+minimumReleaseAgeExclude:
+  - expo-location@57.0.10
