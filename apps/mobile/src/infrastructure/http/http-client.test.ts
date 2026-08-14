@@ -113,6 +113,55 @@ describe("createHttpClient", () => {
     expect(headersOf(withoutKey)["Idempotency-Key"]).toBeUndefined();
   });
 
+  it("sends the headers a caller passes", async () => {
+    // `headers` was declared on RequestOptions and never read. Both gateways
+    // that need an Idempotency-Key passed it this way, so it was dropped and
+    // the server answered 422 IDEMPOTENCY_KEY_REQUIRED — booking a service and
+    // writing a review both failed, with nothing in the client to explain why.
+    const fetchFn = fakeFetch({ ok: true });
+    const client = createHttpClient({
+      baseUrl: "http://localhost:3333/v1",
+      fetchFn,
+    });
+
+    await client.request("/bookings", z.object({ ok: z.boolean() }), {
+      method: "POST",
+      body: { listingId: "l1" },
+      headers: { "X-Trace": "abc123" },
+    });
+
+    expect(headersOf(fetchFn)["X-Trace"]).toBe("abc123");
+  });
+
+  it("does not let a caller header override one the client owns", async () => {
+    // Merging is for adding, not for smuggling a different bearer token or a
+    // Content-Type the body does not match.
+    const fetchFn = fakeFetch({ ok: true });
+    const client = createHttpClient({
+      baseUrl: "http://localhost:3333/v1",
+      fetchFn,
+      tokenProvider: {
+        getAccessToken: async () => "real-token",
+        getRefreshToken: async () => null,
+        saveTokens: async () => {},
+      },
+    });
+
+    await client.request("/bookings", z.object({ ok: z.boolean() }), {
+      method: "POST",
+      body: { listingId: "l1" },
+      idempotencyKey: "the-real-key",
+      headers: {
+        Authorization: "Bearer someone-elses-token",
+        "Idempotency-Key": "a-different-key",
+      },
+    });
+
+    const sent = headersOf(fetchFn);
+    expect(sent.Authorization).toBe("Bearer real-token");
+    expect(sent["Idempotency-Key"]).toBe("the-real-key");
+  });
+
   it("turns an error response into a typed domain error", async () => {
     const fetchFn = fakeFetch(problem403, {
       status: 403,

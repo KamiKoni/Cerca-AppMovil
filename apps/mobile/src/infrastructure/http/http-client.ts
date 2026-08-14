@@ -189,7 +189,16 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
   async function buildHeaders(
     options: RequestOptions,
   ): Promise<Record<string, string>> {
-    const headers: Record<string, string> = { Accept: "application/json" };
+    // Caller headers go in first so the client's own always win. `headers` was
+    // declared on RequestOptions and then never read, so two gateways passed
+    // their Idempotency-Key through it and it was dropped without a word —
+    // requesting a booking and writing a review both failed with 422
+    // IDEMPOTENCY_KEY_REQUIRED, and an option that is quietly ignored is worse
+    // than one that does not exist.
+    const headers: Record<string, string> = {
+      ...options.headers,
+      Accept: "application/json",
+    };
 
     if (options.body !== undefined)
       headers["Content-Type"] = "application/json";
