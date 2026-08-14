@@ -10,13 +10,11 @@ const STATUSES = {
     acceptedAt: "2026-08-13T11:00:00.000Z",
     scheduledFor: "2026-08-20T15:00:00.000Z",
   },
-  declined: { kind: "declined", reason: "unavailable" },
+  // declined and cancelled carry nothing: the endpoint sends no declineReason
+  // and no cancelledAt, so the union does not claim to know them.
+  declined: { kind: "declined" },
   completed: { kind: "completed", completedAt: "2026-08-21T09:00:00.000Z" },
-  cancelled: {
-    kind: "cancelled",
-    cancelledBy: "user-1",
-    at: "2026-08-14T08:00:00.000Z",
-  },
+  cancelled: { kind: "cancelled" },
 } satisfies Record<BookingStatus["kind"], BookingStatus>;
 
 const ALL = Object.values(STATUSES) as BookingStatus[];
