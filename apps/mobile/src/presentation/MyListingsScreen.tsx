@@ -62,6 +62,15 @@ export function MyListingsScreen() {
         <View style={styles.headerActions}>
           <Pressable
             style={styles.secondaryButton}
+            onPress={() => router.push("/bookings" as never)}
+            accessibilityRole="button"
+          >
+            <Text style={styles.secondaryButtonText}>
+              {t("provider.receivedBookings")}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.secondaryButton}
             onPress={() => router.push("/favorites" as never)}
             accessibilityRole="button"
           >

@@ -110,6 +110,21 @@
       "declined": "Declined",
       "completed": "Completed",
       "cancelled": "Cancelled"
+    },
+    "receivedTitle": "Bookings received",
+    "empty": "You have not received any requests yet.",
+    "providerOnly": "This section is for providers only.",
+    "unknownListing": "Service",
+    "back": "Back",
+    "chooseDate": "When will you schedule it?",
+    "chooseReason": "Why are you declining?",
+    "requestedOn": "Requested on {{date}}",
+    "scheduledOn": "Scheduled for {{date}}",
+    "completedOn": "Completed on {{date}}",
+    "declineReason": {
+      "unavailable": "I am not available",
+      "not_a_fit": "Not what I offer",
+      "other": "Another reason"
     }
   },
   "provider": {
@@ -139,7 +154,8 @@
     "fixedPrice": "Fixed amount",
     "hourlyRate": "Hourly rate",
     "minimumHours": "Minimum hours",
-    "startingFrom": "Starting from"
+    "startingFrom": "Starting from",
+    "receivedBookings": "Bookings received"
   },
   "favorites": {
     "title": "Favorites",
