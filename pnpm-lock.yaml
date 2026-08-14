@@ -253,8 +253,8 @@ importers:
         specifier: ^57.0.1
         version: 57.0.1(expo@57.0.12)(react@19.2.3)
       expo-location:
-        specifier: ^15.0.0
-        version: 15.3.0(expo@57.0.12)
+        specifier: ^57.0.10
+        version: 57.0.10(expo@57.0.12)(supports-color@8.1.1)(typescript@6.0.3)
       expo-router:
         specifier: ^57.0.12
         version: 57.0.12(52b0467165995f6b9cc042904a791dab)
@@ -264,6 +264,9 @@ importers:
       i18next:
         specifier: ^23.0.0
         version: 23.16.8
+      intl-pluralrules:
+        specifier: ^2.0.1
+        version: 2.0.1
       react:
         specifier: ^19.2.3
         version: 19.2.3
@@ -2830,8 +2833,8 @@ packages:
       expo: '*'
       react: '*'
 
-  expo-location@15.3.0:
-    resolution: {integrity: sha512-c/HHfnZEq1aIWkZ7w58ZOLABbUZYrpygVahMpJpfl3a0Y0RAFFq92GWeK3SkssATNzmSwttdnZLcrGP6EsmXdQ==}
+  expo-location@57.0.10:
+    resolution: {integrity: sha512-E/NdVxmd2+lODFgMc8CC6L0Zl+w20L1VEwPBGdJXblGew6Sv70FA3NlVP73Hi/QWmjECvbYTjkKR7OnrVnmaLA==}
     peerDependencies:
       expo: '*'
 
@@ -3243,6 +3246,9 @@ packages:
   internal-slot@1.1.0:
     resolution: {integrity: sha512-4gd7VpWNQNB4UKKCFFVcp1AVv+FMOgs9NKzjHKusc8jTMhd5eL1NqQqOpE0KzMds804/yHlglp3uxgluOqAPLw==}
     engines: {node: '>= 0.4'}
+
+  intl-pluralrules@2.0.1:
+    resolution: {integrity: sha512-astxTLzIdXPeN0K9Rumi6LfMpm3rvNO0iJE+h/k8Kr/is+wPbRe4ikyDjlLr6VTh/mEfNv8RjN+gu3KwDiuhqg==}
 
   invariant@2.2.4:
     resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
@@ -8281,9 +8287,13 @@ snapshots:
       react: 19.2.3
       rtl-detect: 1.1.2
 
-  expo-location@15.3.0(expo@57.0.12):
+  expo-location@57.0.10(expo@57.0.12)(supports-color@8.1.1)(typescript@6.0.3):
     dependencies:
+      '@expo/image-utils': 0.11.4(supports-color@8.1.1)(typescript@6.0.3)
       expo: 57.0.12(7326a86c9d95cfe29de3a2386c18fce6)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
 
   expo-modules-autolinking@57.0.9(supports-color@8.1.1)(typescript@6.0.3):
     dependencies:
@@ -8743,6 +8753,8 @@ snapshots:
       es-errors: 1.3.0
       hasown: 2.0.4
       side-channel: 1.1.1
+
+  intl-pluralrules@2.0.1: {}
 
   invariant@2.2.4:
     dependencies:
