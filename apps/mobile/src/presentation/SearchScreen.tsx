@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useLocaleTag } from "./useLocaleTag";
 import { useRouter } from "expo-router";
 import {
   formatDistance,
@@ -46,7 +47,7 @@ import { withCapacity } from "./authorization";
 const locationAdapter = new ExpoLocationAdapter();
 
 export function SearchScreen() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const router = useRouter();
   const { signedIn } = useSession();
   const becomeProvider = useAddProviderCapacity();
@@ -65,7 +66,7 @@ export function SearchScreen() {
   const [locationMessage, setLocationMessage] = useState<string | null>(null);
 
   const query = useDebounced(text, 350);
-  const locale = i18n.language || "es-CO";
+  const locale = useLocaleTag();
 
   const isProvider = withCapacity("provider");  const isLoading = becomeProvider.isPending;
   const useDeviceLocation =
@@ -820,7 +821,9 @@ const styles = StyleSheet.create({
     color: "#1d4ed8",
     flex: 1,
     fontSize: 14,
-    marginRight: 12,
+    // Start/End rather than Left/Right: the gap belongs after the text, which
+    // is not the right-hand side in a right-to-left layout.
+    marginEnd: 12,
   },
   locationBannerButton: {
     paddingHorizontal: 12,

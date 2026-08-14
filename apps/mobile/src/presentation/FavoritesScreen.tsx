@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useLocaleTag } from "./useLocaleTag";
 import { useRouter } from "expo-router";
 import {
   formatDistance,
@@ -16,7 +17,7 @@ import { useSession } from "./SessionProvider";
 import { useFavoriteListings } from "../infrastructure/query/hooks";
 
 export function FavoritesScreen() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const router = useRouter();
   // Both reads come from the one session: this screen sits behind the guard, so
   // in practice it only ever renders authenticated, but keeping the two branches
@@ -25,7 +26,7 @@ export function FavoritesScreen() {
   const actor = state.status === "authenticated" ? state.actor : null;
   const isLoading = state.status === "bootstrapping";
   const favorites = useFavoriteListings(Boolean(actor));
-  const locale = i18n.language || "es-CO";
+  const locale = useLocaleTag();
 
   const items = favorites.data?.pages.flatMap((page) => page.items) ?? [];
 
