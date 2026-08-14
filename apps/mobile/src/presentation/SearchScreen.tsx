@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import { FAVOURITES_ENABLED } from "../infrastructure/features";
 import { useLocaleTag } from "./useLocaleTag";
 import { useRouter } from "expo-router";
 import {
@@ -68,7 +69,8 @@ export function SearchScreen() {
   const query = useDebounced(text, 350);
   const locale = useLocaleTag();
 
-  const isProvider = withCapacity("provider");  const isLoading = becomeProvider.isPending;
+  const isProvider = withCapacity("provider");
+  const isLoading = becomeProvider.isPending;
   const useDeviceLocation =
     locationStatus === "granted" && deviceCoords !== null;
   const searchCoords = useDeviceLocation
@@ -223,13 +225,15 @@ export function SearchScreen() {
       </View>
 
       <View style={styles.actionRowTop}>
-        <Pressable
-          style={styles.actionButton}
-          onPress={() => router.push("/favorites" as never)}
-          accessibilityRole="button"
-        >
-          <Text style={styles.actionText}>{t("favorites.title")}</Text>
-        </Pressable>
+        {FAVOURITES_ENABLED ? (
+          <Pressable
+            style={styles.actionButton}
+            onPress={() => router.push("/favorites" as never)}
+            accessibilityRole="button"
+          >
+            <Text style={styles.actionText}>{t("favorites.title")}</Text>
+          </Pressable>
+        ) : null}
 
         <Pressable
           style={styles.actionButton}
