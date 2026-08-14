@@ -15,6 +15,7 @@ import {
   formatMoney,} from "@cerca/contract";
 import { useSession } from "./SessionProvider";
 import { useFavoriteListings } from "../infrastructure/query/hooks";
+import { FAVOURITES_ENABLED } from "../infrastructure/features";
 
 export function FavoritesScreen() {
   const { t } = useTranslation();
@@ -25,7 +26,9 @@ export function FavoritesScreen() {
   const { state } = useSession();
   const actor = state.status === "authenticated" ? state.actor : null;
   const isLoading = state.status === "bootstrapping";
-  const favorites = useFavoriteListings(Boolean(actor));
+  // Not merely hidden behind a flag — the query is switched off, so a deep link
+  // to this route does not fire a request that can only 404.
+  const favorites = useFavoriteListings(FAVOURITES_ENABLED && Boolean(actor));
   const locale = useLocaleTag();
 
   const items = favorites.data?.pages.flatMap((page) => page.items) ?? [];

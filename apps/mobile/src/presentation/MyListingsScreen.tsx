@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import { FAVOURITES_ENABLED } from "../infrastructure/features";
 import { useRouter } from "expo-router";
 import {
   useMyListings,
@@ -69,15 +70,17 @@ export function MyListingsScreen() {
               {t("provider.receivedBookings")}
             </Text>
           </Pressable>
-          <Pressable
-            style={styles.secondaryButton}
-            onPress={() => router.push("/favorites" as never)}
-            accessibilityRole="button"
-          >
-            <Text style={styles.secondaryButtonText}>
-              {t("favorites.title")}
-            </Text>
-          </Pressable>
+          {FAVOURITES_ENABLED ? (
+            <Pressable
+              style={styles.secondaryButton}
+              onPress={() => router.push("/favorites" as never)}
+              accessibilityRole="button"
+            >
+              <Text style={styles.secondaryButtonText}>
+                {t("favorites.title")}
+              </Text>
+            </Pressable>
+          ) : null}
           <Pressable
             style={styles.newButton}
             onPress={() => router.push("/(provider)/listings/new" as never)}

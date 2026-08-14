@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import { FAVOURITES_ENABLED } from "../infrastructure/features";
 import { useLocaleTag } from "./useLocaleTag";
 import { useRouter } from "expo-router";
 import {
@@ -195,8 +196,8 @@ export function ListingDetailScreen({ id }: { id: ListingId }) {
           </Pressable>
         ) : null}
 
-        {/* Favorite Toggle Button (US-18) */}
-        {actor ? (
+        {/* Favorite Toggle Button (US-18) — hidden until the API has it */}
+        {FAVOURITES_ENABLED && actor ? (
           <Pressable
             style={styles.favoriteButton}
             onPress={() =>
