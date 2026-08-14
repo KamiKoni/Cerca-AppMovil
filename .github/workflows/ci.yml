@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop]
+  push:
+    branches: [develop]
+
+# A new push supersedes the run in flight for the same branch. Reviewers only
+# ever care about the latest commit's result.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck and tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable corepack
+        run: corepack enable
+
+      # Every pnpm call names its version explicitly, as `corepack pnpm@11.21.0`.
+      #
+      # A bare `pnpm` — even after `corepack prepare --activate` — resolves the
+      # version by reading package.json, where `devEngines.packageManager` is the
+      # range `^11.20.0`. Corepack wants an exact version there and fails with
+      # "Invalid package manager specification". Naming it here skips that lookup.
+      #
+      # 11 rather than whatever is newest: pnpm 10 rewrites the whole lockfile
+      # instead of reading it, so a CI on the wrong major resolves a different
+      # tree than any developer has.
+      #
+      # --frozen-lockfile fails the build when package.json and pnpm-lock.yaml
+      # disagree, which is the only way to notice a dependency added without its
+      # lockfile entry before it breaks someone else's install.
+      - name: Install dependencies
+        run: corepack pnpm@11.21.0 install --frozen-lockfile
+
+      # The app imports @cerca/contract from its build output, so nothing else
+      # can be checked until this exists.
+      - name: Build the contract package
+        run: corepack pnpm@11.21.0 --filter @cerca/contract build
+
+      - name: Typecheck the app
+        run: corepack pnpm@11.21.0 --filter cerca-mobile typecheck
+
+      # The root script, not `pnpm -r test`: the contract package's own `test`
+      # script is `vitest` in watch mode, which never exits. The root runs
+      # `vitest run` across the workspace and covers both packages.
+      - name: Run the test suite
+        run: corepack pnpm@11.21.0 test
