@@ -9,6 +9,7 @@ import type {
   CreateBookingInput,
   CreateListingInput,
   CreateReviewInput,
+  DeclineReason,
   ListingDetail,
 } from "@cerca/contract";
 import type { ListingId } from "../../domain/ids";
@@ -221,8 +222,9 @@ export function useCreateBooking() {
 export function useAcceptBooking() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => acceptBooking(id),
-    onSuccess: (_, id) => {
+    mutationFn: ({ id, scheduledFor }: { id: string; scheduledFor: string }) =>
+      acceptBooking(id, scheduledFor),
+    onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
       queryClient.invalidateQueries({ queryKey: ["bookings", "detail", id] });
     },
@@ -232,7 +234,7 @@ export function useAcceptBooking() {
 export function useDeclineBooking() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+    mutationFn: ({ id, reason }: { id: string; reason: DeclineReason }) =>
       declineBooking(id, reason),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });

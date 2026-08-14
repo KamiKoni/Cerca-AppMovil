@@ -80,7 +80,7 @@ export function ListingDetailScreen({ id }: { id: ListingId }) {
       {
         input: {
           listingId: listing.id,
-          notes: bookingNotes,
+          note: bookingNotes,
         },
         idempotencyKey,
       },
@@ -267,7 +267,7 @@ export function ListingDetailScreen({ id }: { id: ListingId }) {
                   accessibilityLabel={`Reseña de ${review.rating} estrellas. ${
                     isWithdrawn
                       ? t("listing.withdrawnReview")
-                      : review.comment || ""
+                      : review.body || ""
                   }`}
                 >
                   <View style={styles.reviewCardHeader}>
@@ -280,8 +280,8 @@ export function ListingDetailScreen({ id }: { id: ListingId }) {
                     <Text style={styles.withdrawnText}>
                       ⚠️ {t("listing.withdrawnReview")}
                     </Text>
-                  ) : review.comment ? (
-                    <Text style={styles.reviewComment}>{review.comment}</Text>
+                  ) : review.body ? (
+                    <Text style={styles.reviewComment}>{review.body}</Text>
                   ) : null}
                 </View>
               );

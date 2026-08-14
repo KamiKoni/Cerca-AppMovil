@@ -69,7 +69,7 @@
   "review": {
     "title": "Bewertung abgeben",
     "rating": "Bewertung",
-    "comment": "Kommentar (optional)",
+    "comment": "Kommentar",
     "submit": "Bewertung absenden",
     "submitting": "Wird gesendet...",
     "success": "Bewertung erfolgreich gespeichert",

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { BookingStatus } from "./status";
 
 export const moneySchema = z.object({
   amountMinor: z
@@ -45,20 +46,27 @@ export const listingStatusSchema = z.enum([
   "removed",
 ]);
 
-export const bookingStatusSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("requested"), requestedAt: z.string() }),
-  z.object({
-    kind: z.literal("accepted"),
-    acceptedAt: z.string(),
-    scheduledFor: z.string(),
-  }),
-  z.object({ kind: z.literal("declined"), reason: z.string() }),
-  z.object({ kind: z.literal("completed"), completedAt: z.string() }),
-  z.object({
-    kind: z.literal("cancelled"),
-    cancelledBy: z.string(),
-    at: z.string(),
-  }),
+/**
+ * The status field exactly as the API sends it: one of five strings.
+ *
+ * It used to be modelled here as a discriminated union, which meant
+ * `bookingSchema.parse` rejected every real response with
+ * "Expected object, received string" — the booking list could not read its own
+ * data. The union still exists, as `BookingStatus`, on the far side of
+ * `toBookingStatus`.
+ */
+export const bookingStatusKindSchema = z.enum([
+  "requested",
+  "accepted",
+  "declined",
+  "completed",
+  "cancelled",
+]);
+
+export const declineReasonSchema = z.enum([
+  "unavailable",
+  "not_a_fit",
+  "other",
 ]);
 
 export const actorSchema = z.object({
@@ -127,14 +135,19 @@ export const listingsSearchResponseSchema = z.object({
 
 export const myListingsResponseSchema = z.array(listingDetailSchema);
 
+/**
+ * A booking as it arrives. Flat, with the timestamps beside the status rather
+ * than inside it, and no `providerId` — the API does not send one.
+ */
 export const bookingSchema = z.object({
   id: z.string(),
   listingId: z.string(),
   customerId: z.string(),
-  providerId: z.string(),
-  status: bookingStatusSchema,
+  status: bookingStatusKindSchema,
+  requestedAt: z.string(),
+  scheduledFor: z.string().nullable(),
+  completedAt: z.string().nullable(),
   reviewId: z.string().nullable(),
-  createdAt: z.string().optional(),
 });
 
 export const bookingsResponseSchema = z.object({
@@ -142,13 +155,19 @@ export const bookingsResponseSchema = z.object({
   nextCursor: z.string().nullable(),
 });
 
+/**
+ * `body`, not `comment`. The API calls it `body` on the way in and on the way
+ * out; this schema said `comment` and, because it is not strict, silently
+ * accepted every response and dropped the text. Reviews rendered blank and
+ * nothing reported an error.
+ */
 export const reviewSchema = z.object({
   id: z.string(),
   bookingId: z.string(),
   listingId: z.string(),
   authorId: z.string(),
   rating: z.number().min(1).max(5),
-  comment: z.string().optional(),
+  body: z.string(),
   createdAt: z.string(),
 });
 
@@ -180,15 +199,32 @@ export const problemDetailsSchema = z.object({
   reason: z.string().optional(),
 });
 
+/**
+ * `note`, singular, and no `scheduledFor`.
+ *
+ * The API's own schema is `.strict()`, so the extra key this used to send came
+ * back as `422 Unrecognized key: "notes"` on every single booking request. The
+ * date is not the customer's to propose: it is set by the provider when they
+ * accept.
+ */
 export const createBookingSchema = z.object({
   listingId: z.string().min(1),
-  scheduledFor: z.string().optional(),
-  notes: z.string().optional(),
+  note: z.string().max(500).optional(),
+});
+
+/** Body of `POST /bookings/{id}/accept`. The server rejects a 422 without it. */
+export const acceptBookingSchema = z.object({
+  scheduledFor: z.string().min(1),
+});
+
+/** Body of `POST /bookings/{id}/decline`. Free text is rejected. */
+export const declineBookingSchema = z.object({
+  reason: declineReasonSchema,
 });
 
 export const createReviewSchema = z.object({
   rating: z.number().min(1).max(5),
-  comment: z.string().optional(),
+  body: z.string().min(1).max(2000),
 });
 
 export const createListingSchema = z.object({
@@ -233,3 +269,64 @@ export type CreateReviewInput = z.infer<typeof createReviewSchema>;
 export type CreateListingInput = z.infer<typeof createListingSchema>;
 export type UpdateListingInput = z.infer<typeof updateListingSchema>;
 export type PresignPhotoResponse = z.infer<typeof presignPhotoResponseSchema>;
+
+export type BookingStatusKind = z.infer<typeof bookingStatusKindSchema>;
+export type DeclineReason = z.infer<typeof declineReasonSchema>;
+export type AcceptBookingInput = z.infer<typeof acceptBookingSchema>;
+export type DeclineBookingInput = z.infer<typeof declineBookingSchema>;
+
+/**
+ * The one crossing between the wire and the domain.
+ *
+ * The API leaves `scheduledFor` and `completedAt` nullable regardless of the
+ * status, so `{ status: "accepted", scheduledFor: null }` is a value it can
+ * technically produce. The union exists precisely so the rest of the app never
+ * has to consider that combination, and this function is where it is ruled out:
+ * a state whose timestamp is missing is reported as the state before it, rather
+ * than as an accepted booking with no date.
+ */
+export function toBookingStatus(booking: BookingResponse): BookingStatus {
+  switch (booking.status) {
+    case "requested":
+      return { kind: "requested", requestedAt: booking.requestedAt };
+
+    case "accepted":
+      return booking.scheduledFor
+        ? {
+            kind: "accepted",
+            acceptedAt: booking.requestedAt,
+            scheduledFor: booking.scheduledFor,
+          }
+        : { kind: "requested", requestedAt: booking.requestedAt };
+
+    case "completed":
+      return booking.completedAt
+        ? { kind: "completed", completedAt: booking.completedAt }
+        : { kind: "requested", requestedAt: booking.requestedAt };
+
+    case "declined":
+      return { kind: "declined" };
+
+    case "cancelled":
+      return { kind: "cancelled" };
+  }
+}
+
+/** A booking with its status as the union, which is what screens work with. */
+export interface Booking {
+  readonly id: string;
+  readonly listingId: string;
+  readonly customerId: string;
+  readonly status: BookingStatus;
+  readonly reviewId: string | null;
+}
+
+export function toBooking(response: BookingResponse): Booking {
+  return {
+    id: response.id,
+    listingId: response.listingId,
+    customerId: response.customerId,
+    status: toBookingStatus(response),
+    reviewId: response.reviewId,
+  };
+}

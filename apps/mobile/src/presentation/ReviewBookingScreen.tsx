@@ -26,7 +26,7 @@ export function ReviewBookingScreen({ bookingId }: { bookingId: string }) {
   const actor = useActor();
 
   const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState("");
+  const [body, setBody] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
@@ -65,7 +65,7 @@ export function ReviewBookingScreen({ bookingId }: { bookingId: string }) {
     if (isBlocked) return;
     setValidationError(null);
 
-    const parsed = createReviewSchema.safeParse({ rating, comment });
+    const parsed = createReviewSchema.safeParse({ rating, body });
     if (!parsed.success) {
       setValidationError(t("error.validation"));
       return;
@@ -132,8 +132,8 @@ export function ReviewBookingScreen({ bookingId }: { bookingId: string }) {
             style={[styles.textArea, isBlocked && styles.disabledInput]}
             multiline
             numberOfLines={4}
-            value={comment}
-            onChangeText={setComment}
+            value={body}
+            onChangeText={setBody}
             editable={!isBlocked}
             placeholder="..."
           />

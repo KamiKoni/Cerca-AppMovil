@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { BookingStatus } from "./status";
 export declare const moneySchema: z.ZodObject<{
     amountMinor: z.ZodNumber;
     currency: z.ZodString;
@@ -171,58 +172,17 @@ export declare const pricingSchema: z.ZodUnion<[z.ZodObject<{
  * conflating them is what made every listing response fail to parse.
  */
 export declare const listingStatusSchema: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
-export declare const bookingStatusSchema: z.ZodDiscriminatedUnion<"kind", [z.ZodObject<{
-    kind: z.ZodLiteral<"requested">;
-    requestedAt: z.ZodString;
-}, "strip", z.ZodTypeAny, {
-    kind: "requested";
-    requestedAt: string;
-}, {
-    kind: "requested";
-    requestedAt: string;
-}>, z.ZodObject<{
-    kind: z.ZodLiteral<"accepted">;
-    acceptedAt: z.ZodString;
-    scheduledFor: z.ZodString;
-}, "strip", z.ZodTypeAny, {
-    kind: "accepted";
-    acceptedAt: string;
-    scheduledFor: string;
-}, {
-    kind: "accepted";
-    acceptedAt: string;
-    scheduledFor: string;
-}>, z.ZodObject<{
-    kind: z.ZodLiteral<"declined">;
-    reason: z.ZodString;
-}, "strip", z.ZodTypeAny, {
-    kind: "declined";
-    reason: string;
-}, {
-    kind: "declined";
-    reason: string;
-}>, z.ZodObject<{
-    kind: z.ZodLiteral<"completed">;
-    completedAt: z.ZodString;
-}, "strip", z.ZodTypeAny, {
-    kind: "completed";
-    completedAt: string;
-}, {
-    kind: "completed";
-    completedAt: string;
-}>, z.ZodObject<{
-    kind: z.ZodLiteral<"cancelled">;
-    cancelledBy: z.ZodString;
-    at: z.ZodString;
-}, "strip", z.ZodTypeAny, {
-    kind: "cancelled";
-    cancelledBy: string;
-    at: string;
-}, {
-    kind: "cancelled";
-    cancelledBy: string;
-    at: string;
-}>]>;
+/**
+ * The status field exactly as the API sends it: one of five strings.
+ *
+ * It used to be modelled here as a discriminated union, which meant
+ * `bookingSchema.parse` rejected every real response with
+ * "Expected object, received string" — the booking list could not read its own
+ * data. The union still exists, as `BookingStatus`, on the far side of
+ * `toBookingStatus`.
+ */
+export declare const bookingStatusKindSchema: z.ZodEnum<["requested", "accepted", "declined", "completed", "cancelled"]>;
+export declare const declineReasonSchema: z.ZodEnum<["unavailable", "not_a_fit", "other"]>;
 export declare const actorSchema: z.ZodObject<{
     id: z.ZodString;
     capacities: z.ZodArray<z.ZodEnum<["customer", "provider"]>, "atleastone">;
@@ -774,292 +734,106 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
     isFavorite?: boolean | undefined;
     cityId?: string | undefined;
 }>, "many">;
+/**
+ * A booking as it arrives. Flat, with the timestamps beside the status rather
+ * than inside it, and no `providerId` — the API does not send one.
+ */
 export declare const bookingSchema: z.ZodObject<{
     id: z.ZodString;
     listingId: z.ZodString;
     customerId: z.ZodString;
-    providerId: z.ZodString;
-    status: z.ZodDiscriminatedUnion<"kind", [z.ZodObject<{
-        kind: z.ZodLiteral<"requested">;
-        requestedAt: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        kind: "requested";
-        requestedAt: string;
-    }, {
-        kind: "requested";
-        requestedAt: string;
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"accepted">;
-        acceptedAt: z.ZodString;
-        scheduledFor: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        kind: "accepted";
-        acceptedAt: string;
-        scheduledFor: string;
-    }, {
-        kind: "accepted";
-        acceptedAt: string;
-        scheduledFor: string;
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"declined">;
-        reason: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        kind: "declined";
-        reason: string;
-    }, {
-        kind: "declined";
-        reason: string;
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"completed">;
-        completedAt: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        kind: "completed";
-        completedAt: string;
-    }, {
-        kind: "completed";
-        completedAt: string;
-    }>, z.ZodObject<{
-        kind: z.ZodLiteral<"cancelled">;
-        cancelledBy: z.ZodString;
-        at: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        kind: "cancelled";
-        cancelledBy: string;
-        at: string;
-    }, {
-        kind: "cancelled";
-        cancelledBy: string;
-        at: string;
-    }>]>;
+    status: z.ZodEnum<["requested", "accepted", "declined", "completed", "cancelled"]>;
+    requestedAt: z.ZodString;
+    scheduledFor: z.ZodNullable<z.ZodString>;
+    completedAt: z.ZodNullable<z.ZodString>;
     reviewId: z.ZodNullable<z.ZodString>;
-    createdAt: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    status: {
-        kind: "requested";
-        requestedAt: string;
-    } | {
-        kind: "accepted";
-        acceptedAt: string;
-        scheduledFor: string;
-    } | {
-        kind: "declined";
-        reason: string;
-    } | {
-        kind: "completed";
-        completedAt: string;
-    } | {
-        kind: "cancelled";
-        cancelledBy: string;
-        at: string;
-    };
+    status: "requested" | "accepted" | "declined" | "completed" | "cancelled";
     id: string;
     listingId: string;
     customerId: string;
-    providerId: string;
+    requestedAt: string;
+    scheduledFor: string | null;
+    completedAt: string | null;
     reviewId: string | null;
-    createdAt?: string | undefined;
 }, {
-    status: {
-        kind: "requested";
-        requestedAt: string;
-    } | {
-        kind: "accepted";
-        acceptedAt: string;
-        scheduledFor: string;
-    } | {
-        kind: "declined";
-        reason: string;
-    } | {
-        kind: "completed";
-        completedAt: string;
-    } | {
-        kind: "cancelled";
-        cancelledBy: string;
-        at: string;
-    };
+    status: "requested" | "accepted" | "declined" | "completed" | "cancelled";
     id: string;
     listingId: string;
     customerId: string;
-    providerId: string;
+    requestedAt: string;
+    scheduledFor: string | null;
+    completedAt: string | null;
     reviewId: string | null;
-    createdAt?: string | undefined;
 }>;
 export declare const bookingsResponseSchema: z.ZodObject<{
     items: z.ZodArray<z.ZodObject<{
         id: z.ZodString;
         listingId: z.ZodString;
         customerId: z.ZodString;
-        providerId: z.ZodString;
-        status: z.ZodDiscriminatedUnion<"kind", [z.ZodObject<{
-            kind: z.ZodLiteral<"requested">;
-            requestedAt: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            kind: "requested";
-            requestedAt: string;
-        }, {
-            kind: "requested";
-            requestedAt: string;
-        }>, z.ZodObject<{
-            kind: z.ZodLiteral<"accepted">;
-            acceptedAt: z.ZodString;
-            scheduledFor: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            kind: "accepted";
-            acceptedAt: string;
-            scheduledFor: string;
-        }, {
-            kind: "accepted";
-            acceptedAt: string;
-            scheduledFor: string;
-        }>, z.ZodObject<{
-            kind: z.ZodLiteral<"declined">;
-            reason: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            kind: "declined";
-            reason: string;
-        }, {
-            kind: "declined";
-            reason: string;
-        }>, z.ZodObject<{
-            kind: z.ZodLiteral<"completed">;
-            completedAt: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            kind: "completed";
-            completedAt: string;
-        }, {
-            kind: "completed";
-            completedAt: string;
-        }>, z.ZodObject<{
-            kind: z.ZodLiteral<"cancelled">;
-            cancelledBy: z.ZodString;
-            at: z.ZodString;
-        }, "strip", z.ZodTypeAny, {
-            kind: "cancelled";
-            cancelledBy: string;
-            at: string;
-        }, {
-            kind: "cancelled";
-            cancelledBy: string;
-            at: string;
-        }>]>;
+        status: z.ZodEnum<["requested", "accepted", "declined", "completed", "cancelled"]>;
+        requestedAt: z.ZodString;
+        scheduledFor: z.ZodNullable<z.ZodString>;
+        completedAt: z.ZodNullable<z.ZodString>;
         reviewId: z.ZodNullable<z.ZodString>;
-        createdAt: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        status: {
-            kind: "requested";
-            requestedAt: string;
-        } | {
-            kind: "accepted";
-            acceptedAt: string;
-            scheduledFor: string;
-        } | {
-            kind: "declined";
-            reason: string;
-        } | {
-            kind: "completed";
-            completedAt: string;
-        } | {
-            kind: "cancelled";
-            cancelledBy: string;
-            at: string;
-        };
+        status: "requested" | "accepted" | "declined" | "completed" | "cancelled";
         id: string;
         listingId: string;
         customerId: string;
-        providerId: string;
+        requestedAt: string;
+        scheduledFor: string | null;
+        completedAt: string | null;
         reviewId: string | null;
-        createdAt?: string | undefined;
     }, {
-        status: {
-            kind: "requested";
-            requestedAt: string;
-        } | {
-            kind: "accepted";
-            acceptedAt: string;
-            scheduledFor: string;
-        } | {
-            kind: "declined";
-            reason: string;
-        } | {
-            kind: "completed";
-            completedAt: string;
-        } | {
-            kind: "cancelled";
-            cancelledBy: string;
-            at: string;
-        };
+        status: "requested" | "accepted" | "declined" | "completed" | "cancelled";
         id: string;
         listingId: string;
         customerId: string;
-        providerId: string;
+        requestedAt: string;
+        scheduledFor: string | null;
+        completedAt: string | null;
         reviewId: string | null;
-        createdAt?: string | undefined;
     }>, "many">;
     nextCursor: z.ZodNullable<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     items: {
-        status: {
-            kind: "requested";
-            requestedAt: string;
-        } | {
-            kind: "accepted";
-            acceptedAt: string;
-            scheduledFor: string;
-        } | {
-            kind: "declined";
-            reason: string;
-        } | {
-            kind: "completed";
-            completedAt: string;
-        } | {
-            kind: "cancelled";
-            cancelledBy: string;
-            at: string;
-        };
+        status: "requested" | "accepted" | "declined" | "completed" | "cancelled";
         id: string;
         listingId: string;
         customerId: string;
-        providerId: string;
+        requestedAt: string;
+        scheduledFor: string | null;
+        completedAt: string | null;
         reviewId: string | null;
-        createdAt?: string | undefined;
     }[];
     nextCursor: string | null;
 }, {
     items: {
-        status: {
-            kind: "requested";
-            requestedAt: string;
-        } | {
-            kind: "accepted";
-            acceptedAt: string;
-            scheduledFor: string;
-        } | {
-            kind: "declined";
-            reason: string;
-        } | {
-            kind: "completed";
-            completedAt: string;
-        } | {
-            kind: "cancelled";
-            cancelledBy: string;
-            at: string;
-        };
+        status: "requested" | "accepted" | "declined" | "completed" | "cancelled";
         id: string;
         listingId: string;
         customerId: string;
-        providerId: string;
+        requestedAt: string;
+        scheduledFor: string | null;
+        completedAt: string | null;
         reviewId: string | null;
-        createdAt?: string | undefined;
     }[];
     nextCursor: string | null;
 }>;
+/**
+ * `body`, not `comment`. The API calls it `body` on the way in and on the way
+ * out; this schema said `comment` and, because it is not strict, silently
+ * accepted every response and dropped the text. Reviews rendered blank and
+ * nothing reported an error.
+ */
 export declare const reviewSchema: z.ZodObject<{
     id: z.ZodString;
     bookingId: z.ZodString;
     listingId: z.ZodString;
     authorId: z.ZodString;
     rating: z.ZodNumber;
-    comment: z.ZodOptional<z.ZodString>;
+    body: z.ZodString;
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     id: string;
@@ -1068,7 +842,7 @@ export declare const reviewSchema: z.ZodObject<{
     bookingId: string;
     authorId: string;
     rating: number;
-    comment?: string | undefined;
+    body: string;
 }, {
     id: string;
     createdAt: string;
@@ -1076,7 +850,7 @@ export declare const reviewSchema: z.ZodObject<{
     bookingId: string;
     authorId: string;
     rating: number;
-    comment?: string | undefined;
+    body: string;
 }>;
 export declare const reviewsResponseSchema: z.ZodObject<{
     items: z.ZodArray<z.ZodObject<{
@@ -1085,7 +859,7 @@ export declare const reviewsResponseSchema: z.ZodObject<{
         listingId: z.ZodString;
         authorId: z.ZodString;
         rating: z.ZodNumber;
-        comment: z.ZodOptional<z.ZodString>;
+        body: z.ZodString;
         createdAt: z.ZodString;
     }, "strip", z.ZodTypeAny, {
         id: string;
@@ -1094,7 +868,7 @@ export declare const reviewsResponseSchema: z.ZodObject<{
         bookingId: string;
         authorId: string;
         rating: number;
-        comment?: string | undefined;
+        body: string;
     }, {
         id: string;
         createdAt: string;
@@ -1102,7 +876,7 @@ export declare const reviewsResponseSchema: z.ZodObject<{
         bookingId: string;
         authorId: string;
         rating: number;
-        comment?: string | undefined;
+        body: string;
     }>, "many">;
     nextCursor: z.ZodNullable<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
@@ -1113,7 +887,7 @@ export declare const reviewsResponseSchema: z.ZodObject<{
         bookingId: string;
         authorId: string;
         rating: number;
-        comment?: string | undefined;
+        body: string;
     }[];
     nextCursor: string | null;
 }, {
@@ -1124,7 +898,7 @@ export declare const reviewsResponseSchema: z.ZodObject<{
         bookingId: string;
         authorId: string;
         rating: number;
-        comment?: string | undefined;
+        body: string;
     }[];
     nextCursor: string | null;
 }>;
@@ -1137,18 +911,18 @@ export declare const reportSchema: z.ZodObject<{
     status: z.ZodEnum<["open", "resolved"]>;
 }, "strip", z.ZodTypeAny, {
     status: "open" | "resolved";
-    reason: string;
     id: string;
     createdAt: string;
     listingId: string;
     reporterId: string;
+    reason: string;
 }, {
     status: "open" | "resolved";
-    reason: string;
     id: string;
     createdAt: string;
     listingId: string;
     reporterId: string;
+    reason: string;
 }>;
 export declare const reportsResponseSchema: z.ZodObject<{
     items: z.ZodArray<z.ZodObject<{
@@ -1160,38 +934,38 @@ export declare const reportsResponseSchema: z.ZodObject<{
         status: z.ZodEnum<["open", "resolved"]>;
     }, "strip", z.ZodTypeAny, {
         status: "open" | "resolved";
-        reason: string;
         id: string;
         createdAt: string;
         listingId: string;
         reporterId: string;
+        reason: string;
     }, {
         status: "open" | "resolved";
-        reason: string;
         id: string;
         createdAt: string;
         listingId: string;
         reporterId: string;
+        reason: string;
     }>, "many">;
     nextCursor: z.ZodNullable<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     items: {
         status: "open" | "resolved";
-        reason: string;
         id: string;
         createdAt: string;
         listingId: string;
         reporterId: string;
+        reason: string;
     }[];
     nextCursor: string | null;
 }, {
     items: {
         status: "open" | "resolved";
-        reason: string;
         id: string;
         createdAt: string;
         listingId: string;
         reporterId: string;
+        reason: string;
     }[];
     nextCursor: string | null;
 }>;
@@ -1217,28 +991,49 @@ export declare const problemDetailsSchema: z.ZodObject<{
     detail?: string | undefined;
     instance?: string | undefined;
 }>;
+/**
+ * `note`, singular, and no `scheduledFor`.
+ *
+ * The API's own schema is `.strict()`, so the extra key this used to send came
+ * back as `422 Unrecognized key: "notes"` on every single booking request. The
+ * date is not the customer's to propose: it is set by the provider when they
+ * accept.
+ */
 export declare const createBookingSchema: z.ZodObject<{
     listingId: z.ZodString;
-    scheduledFor: z.ZodOptional<z.ZodString>;
-    notes: z.ZodOptional<z.ZodString>;
+    note: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     listingId: string;
-    scheduledFor?: string | undefined;
-    notes?: string | undefined;
+    note?: string | undefined;
 }, {
     listingId: string;
-    scheduledFor?: string | undefined;
-    notes?: string | undefined;
+    note?: string | undefined;
+}>;
+/** Body of `POST /bookings/{id}/accept`. The server rejects a 422 without it. */
+export declare const acceptBookingSchema: z.ZodObject<{
+    scheduledFor: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    scheduledFor: string;
+}, {
+    scheduledFor: string;
+}>;
+/** Body of `POST /bookings/{id}/decline`. Free text is rejected. */
+export declare const declineBookingSchema: z.ZodObject<{
+    reason: z.ZodEnum<["unavailable", "not_a_fit", "other"]>;
+}, "strip", z.ZodTypeAny, {
+    reason: "unavailable" | "not_a_fit" | "other";
+}, {
+    reason: "unavailable" | "not_a_fit" | "other";
 }>;
 export declare const createReviewSchema: z.ZodObject<{
     rating: z.ZodNumber;
-    comment: z.ZodOptional<z.ZodString>;
+    body: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     rating: number;
-    comment?: string | undefined;
+    body: string;
 }, {
     rating: number;
-    comment?: string | undefined;
+    body: string;
 }>;
 export declare const createListingSchema: z.ZodObject<{
     title: z.ZodString;
@@ -1549,3 +1344,27 @@ export type CreateReviewInput = z.infer<typeof createReviewSchema>;
 export type CreateListingInput = z.infer<typeof createListingSchema>;
 export type UpdateListingInput = z.infer<typeof updateListingSchema>;
 export type PresignPhotoResponse = z.infer<typeof presignPhotoResponseSchema>;
+export type BookingStatusKind = z.infer<typeof bookingStatusKindSchema>;
+export type DeclineReason = z.infer<typeof declineReasonSchema>;
+export type AcceptBookingInput = z.infer<typeof acceptBookingSchema>;
+export type DeclineBookingInput = z.infer<typeof declineBookingSchema>;
+/**
+ * The one crossing between the wire and the domain.
+ *
+ * The API leaves `scheduledFor` and `completedAt` nullable regardless of the
+ * status, so `{ status: "accepted", scheduledFor: null }` is a value it can
+ * technically produce. The union exists precisely so the rest of the app never
+ * has to consider that combination, and this function is where it is ruled out:
+ * a state whose timestamp is missing is reported as the state before it, rather
+ * than as an accepted booking with no date.
+ */
+export declare function toBookingStatus(booking: BookingResponse): BookingStatus;
+/** A booking with its status as the union, which is what screens work with. */
+export interface Booking {
+    readonly id: string;
+    readonly listingId: string;
+    readonly customerId: string;
+    readonly status: BookingStatus;
+    readonly reviewId: string | null;
+}
+export declare function toBooking(response: BookingResponse): Booking;
