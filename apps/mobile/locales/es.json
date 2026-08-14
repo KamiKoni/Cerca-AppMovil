@@ -110,6 +110,21 @@
       "declined": "Rechazada",
       "completed": "Completada",
       "cancelled": "Cancelada"
+    },
+    "receivedTitle": "Reservas recibidas",
+    "empty": "Todavía no has recibido ninguna solicitud.",
+    "providerOnly": "Esta sección es solo para proveedores.",
+    "unknownListing": "Servicio",
+    "back": "Volver",
+    "chooseDate": "¿Para cuándo la agendas?",
+    "chooseReason": "¿Por qué la rechazas?",
+    "requestedOn": "Solicitada el {{date}}",
+    "scheduledOn": "Agendada para el {{date}}",
+    "completedOn": "Completada el {{date}}",
+    "declineReason": {
+      "unavailable": "No tengo disponibilidad",
+      "not_a_fit": "No es lo que ofrezco",
+      "other": "Otro motivo"
     }
   },
   "provider": {
@@ -139,7 +154,8 @@
     "fixedPrice": "Monto fijo",
     "hourlyRate": "Tarifa por hora",
     "minimumHours": "Horas mínimas",
-    "startingFrom": "Desde"
+    "startingFrom": "Desde",
+    "receivedBookings": "Reservas recibidas"
   },
   "favorites": {
     "title": "Favoritos",

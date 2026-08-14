@@ -95,6 +95,21 @@
       "declined": "Abgelehnt",
       "completed": "Abgeschlossen",
       "cancelled": "Storniert"
+    },
+    "receivedTitle": "Erhaltene Buchungen",
+    "empty": "Sie haben noch keine Anfragen erhalten.",
+    "providerOnly": "Dieser Bereich ist nur für Anbieter.",
+    "unknownListing": "Dienstleistung",
+    "back": "Zurück",
+    "chooseDate": "Für wann planen Sie sie ein?",
+    "chooseReason": "Warum lehnen Sie ab?",
+    "requestedOn": "Angefragt am {{date}}",
+    "scheduledOn": "Geplant für {{date}}",
+    "completedOn": "Abgeschlossen am {{date}}",
+    "declineReason": {
+      "unavailable": "Ich bin nicht verfügbar",
+      "not_a_fit": "Das biete ich nicht an",
+      "other": "Anderer Grund"
     }
   },
   "provider": {
@@ -118,7 +133,8 @@
       "fixed": "Festpreis",
       "hourly": "Stundensatz",
       "quote": "Individuelles Angebot"
-    }
+    },
+    "receivedBookings": "Erhaltene Buchungen"
   },
   "favorites": {
     "title": "Favoriten",
