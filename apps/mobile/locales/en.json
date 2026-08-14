@@ -84,7 +84,7 @@
   "review": {
     "title": "Leave a Review",
     "rating": "Rating",
-    "comment": "Comment (optional)",
+    "comment": "Comment",
     "submit": "Submit Review",
     "submitting": "Submitting...",
     "success": "Review saved successfully",

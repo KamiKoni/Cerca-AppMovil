@@ -84,7 +84,7 @@
   "review": {
     "title": "Dejar una reseña",
     "rating": "Calificación",
-    "comment": "Comentario (opcional)",
+    "comment": "Comentario",
     "submit": "Enviar reseña",
     "submitting": "Enviando...",
     "success": "Reseña guardada con éxito",
