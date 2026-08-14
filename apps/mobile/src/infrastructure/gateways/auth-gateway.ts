@@ -8,6 +8,7 @@ import {
 } from "@cerca/contract";
 import { z } from "zod";
 import type { SignInCredentials } from "../../application/auth";
+import { signOut as signOutUseCase } from "../../application/sign-out";
 import { apiClient } from "../api-client";
 import { secureTokenStore } from "../auth/secure-token-store";
 
@@ -69,7 +70,13 @@ export async function refreshSession(): Promise<AuthSignInResponse> {
   return response;
 }
 
-export async function signOut(): Promise<void> {
+/**
+ * POST /v1/auth/sign-out — revokes the refresh token, and nothing else.
+ *
+ * Clearing the device is deliberately not here: this call is allowed to fail
+ * and the `signOut` use case decides what that means. See `application/sign-out`.
+ */
+export async function revokeSession(): Promise<void> {
   const tokens = await secureTokenStore.getTokens();
   if (!tokens) return;
 
@@ -79,5 +86,11 @@ export async function signOut(): Promise<void> {
     method: "POST",
     body,
   });
-  await secureTokenStore.clear();
+}
+
+export async function signOut(): Promise<void> {
+  return signOutUseCase({
+    revokeSession,
+    clearStorage: () => secureTokenStore.clear(),
+  });
 }

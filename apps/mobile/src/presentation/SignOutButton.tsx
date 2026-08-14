@@ -17,7 +17,11 @@ export function SignOutButton() {
   return (
     <Pressable
       onPress={() => {
-        void signOut();
+        // Only the keystore can reject now — the server call is best effort —
+        // and there is nothing the user could do about that. Swallowing it here
+        // keeps a rare failure from surfacing as an unhandled rejection; the
+        // session is left intact rather than pretending it ended.
+        void signOut().catch(() => {});
       }}
       accessibilityRole="button"
       accessibilityLabel={t("session.signOut")}
