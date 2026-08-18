@@ -18,7 +18,12 @@ export function ListingFormWizard() {
   const router = useRouter();
   const createListing = useCreateListing();
 
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  // Three steps, not four. The fourth collected "photos" by typing a filename
+  // into a text box and fabricating a key from it — no picker, no file, no
+  // upload. It could not have worked: the API exposes no photo endpoints at all,
+  // so `presignPhoto` in the gateway targets a route that answers 404, and
+  // `createListingSchema` is `.strict()` and rejects `photoKeys` outright.
+  const [step, setStep] = useState<1 | 2 | 3>(1);
 
   // Form State
   const [title, setTitle] = useState("");
@@ -31,8 +36,6 @@ export function ListingFormWizard() {
   const [startingAmount, setStartingAmount] = useState("");
   const [currency, setCurrency] = useState("MXN");
   const [cityId, setCityId] = useState("cdmx");
-  const [photoKeys, setPhotoKeys] = useState<string[]>([]);
-  const [simulatedPhotoName, setSimulatedPhotoName] = useState("");
 
   function buildPricingPayload() {
     if (model === "fixed") {
@@ -72,7 +75,6 @@ export function ListingFormWizard() {
       categoryId,
       pricing: buildPricingPayload(),
       cityId,
-      photoKeys,
     };
 
     createListing.mutate(payload, {
@@ -82,18 +84,11 @@ export function ListingFormWizard() {
     });
   }
 
-  function handleAddPhoto() {
-    if (!simulatedPhotoName.trim()) return;
-    const key = `photos/${Date.now()}-${simulatedPhotoName.trim()}`;
-    setPhotoKeys((prev) => [...prev, key]);
-    setSimulatedPhotoName("");
-  }
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Wizard Header / Indicator */}
       <View style={styles.stepIndicatorRow}>
-        {[1, 2, 3, 4].map((s) => (
+        {[1, 2, 3].map((s) => (
           <View
             key={s}
             style={[
@@ -118,7 +113,6 @@ export function ListingFormWizard() {
         {step === 1 && t("provider.step1")}
         {step === 2 && t("provider.step2")}
         {step === 3 && t("provider.step3")}
-        {step === 4 && t("provider.step4")}
       </Text>
 
       {/* Step 1: Category & Details */}
@@ -249,31 +243,6 @@ export function ListingFormWizard() {
         </View>
       ) : null}
 
-      {/* Step 4: Photos Upload */}
-      {step === 4 ? (
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Adjuntar Fotografías (Presigned URL)</Text>
-
-          <View style={styles.photoAddRow}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder="nombre-foto.jpg"
-              value={simulatedPhotoName}
-              onChangeText={setSimulatedPhotoName}
-            />
-            <Pressable style={styles.secondaryButton} onPress={handleAddPhoto}>
-              <Text style={styles.secondaryButtonText}>Subir</Text>
-            </Pressable>
-          </View>
-
-          {photoKeys.map((key, idx) => (
-            <View key={idx} style={styles.photoItem}>
-              <Text style={styles.photoText}>📷 {key}</Text>
-            </View>
-          ))}
-        </View>
-      ) : null}
-
       {createListing.error ? (
         <Text style={styles.errorText}>{t("error.unknown")}</Text>
       ) : null}
@@ -283,7 +252,7 @@ export function ListingFormWizard() {
         {step > 1 ? (
           <Pressable
             style={styles.secondaryButton}
-            onPress={() => setStep((s) => (s > 1 ? s - 1 : s) as 1 | 2 | 3 | 4)}
+            onPress={() => setStep((s) => (s > 1 ? s - 1 : s) as 1 | 2 | 3)}
           >
             <Text style={styles.secondaryButtonText}>{t("provider.back")}</Text>
           </Pressable>
@@ -291,10 +260,10 @@ export function ListingFormWizard() {
           <View />
         )}
 
-        {step < 4 ? (
+        {step < 3 ? (
           <Pressable
             style={styles.primaryButton}
-            onPress={() => setStep((s) => (s < 4 ? s + 1 : s) as 1 | 2 | 3 | 4)}
+            onPress={() => setStep((s) => (s < 3 ? s + 1 : s) as 1 | 2 | 3)}
             disabled={step === 1 && !title.trim()}
           >
             <Text style={styles.primaryButtonText}>{t("provider.next")}</Text>
@@ -414,19 +383,6 @@ const styles = StyleSheet.create({
   },
   modelChipTextActive: {
     color: "#ffffff",
-  },
-  photoAddRow: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  photoItem: {
-    padding: 10,
-    backgroundColor: "#f3f4f6",
-    borderRadius: 6,
-  },
-  photoText: {
-    fontSize: 14,
-    color: "#374151",
   },
   errorText: {
     color: "#dc2626",
