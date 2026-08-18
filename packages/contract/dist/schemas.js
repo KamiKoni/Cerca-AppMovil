@@ -119,7 +119,17 @@ exports.listingsSearchResponseSchema = zod_1.z.object({
     items: zod_1.z.array(exports.listingSummarySchema),
     nextCursor: zod_1.z.string().nullable(),
 });
-exports.myListingsResponseSchema = zod_1.z.array(exports.listingDetailSchema);
+/**
+ * GET /v1/me/listings answers with the same cursor-paginated envelope as the
+ * search endpoint, not a bare array. It was typed as an array here, so Zod
+ * rejected every response and `MyListingsScreen` — which had no error branch —
+ * rendered the empty state instead. A provider with 191 listings was told they
+ * had published none.
+ */
+exports.myListingsResponseSchema = zod_1.z.object({
+    items: zod_1.z.array(exports.listingDetailSchema),
+    nextCursor: zod_1.z.string().nullable(),
+});
 /**
  * A booking as it arrives. Flat, with the timestamps beside the status rather
  * than inside it, and no `providerId` — the API does not send one.

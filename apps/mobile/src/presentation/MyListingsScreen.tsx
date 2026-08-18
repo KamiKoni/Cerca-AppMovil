@@ -10,6 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { FAVOURITES_ENABLED } from "../infrastructure/features";
 import { useRouter } from "expo-router";
+import { ApiError } from "../domain/errors";
 import {
   useMyListings,
   usePauseListing,
@@ -54,7 +55,26 @@ export function MyListingsScreen() {
     );
   }
 
-  const items = myListings.data ?? [];
+  // A failed request is not an empty list. Without this branch a rejected
+  // response left `data` undefined, fell through to the empty state, and told a
+  // provider with listings that they had published none.
+  if (myListings.error) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.title}>{t("provider.myServices")}</Text>
+        <Text style={styles.subtitle}>{describe(myListings.error, t)}</Text>
+        <Pressable
+          style={styles.primaryButton}
+          onPress={() => myListings.refetch()}
+          accessibilityRole="button"
+        >
+          <Text style={styles.primaryButtonText}>{t("search.retry")}</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  const items = myListings.data?.items ?? [];
 
   return (
     <View style={styles.container}>
@@ -147,6 +167,12 @@ export function MyListingsScreen() {
       />
     </View>
   );
+}
+
+function describe(error: unknown, t: (key: string) => string): string {
+  if (error instanceof ApiError && error.kind === "network")
+    return t("error.network");
+  return t("error.unknown");
 }
 
 const styles = StyleSheet.create({

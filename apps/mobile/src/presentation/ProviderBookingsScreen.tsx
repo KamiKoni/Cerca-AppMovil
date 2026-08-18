@@ -55,7 +55,8 @@ export function ProviderBookingsScreen() {
 
   const titles = useMemo(() => {
     const byId = new Map<string, string>();
-    for (const listing of listings.data ?? []) byId.set(listing.id, listing.title);
+    for (const listing of listings.data?.items ?? [])
+      byId.set(listing.id, listing.title);
     return byId;
   }, [listings.data]);
 

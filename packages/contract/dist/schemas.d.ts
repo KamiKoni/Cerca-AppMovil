@@ -563,67 +563,98 @@ export declare const listingsSearchResponseSchema: z.ZodObject<{
     }[];
     nextCursor: string | null;
 }>;
-export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
-    id: z.ZodString;
-    ownerId: z.ZodString;
-    categoryId: z.ZodString;
-    title: z.ZodString;
-    description: z.ZodString;
-    cityId: z.ZodOptional<z.ZodString>;
-    pricing: z.ZodUnion<[z.ZodObject<{
-        model: z.ZodLiteral<"fixed">;
-        price: z.ZodObject<{
-            amountMinor: z.ZodNumber;
-            currency: z.ZodString;
+/**
+ * GET /v1/me/listings answers with the same cursor-paginated envelope as the
+ * search endpoint, not a bare array. It was typed as an array here, so Zod
+ * rejected every response and `MyListingsScreen` — which had no error branch —
+ * rendered the empty state instead. A provider with 191 listings was told they
+ * had published none.
+ */
+export declare const myListingsResponseSchema: z.ZodObject<{
+    items: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        ownerId: z.ZodString;
+        categoryId: z.ZodString;
+        title: z.ZodString;
+        description: z.ZodString;
+        cityId: z.ZodOptional<z.ZodString>;
+        pricing: z.ZodUnion<[z.ZodObject<{
+            model: z.ZodLiteral<"fixed">;
+            price: z.ZodObject<{
+                amountMinor: z.ZodNumber;
+                currency: z.ZodString;
+            }, "strip", z.ZodTypeAny, {
+                amountMinor: number;
+                currency: string;
+            }, {
+                amountMinor: number;
+                currency: string;
+            }>;
         }, "strip", z.ZodTypeAny, {
-            amountMinor: number;
-            currency: string;
+            model: "fixed";
+            price: {
+                amountMinor: number;
+                currency: string;
+            };
         }, {
-            amountMinor: number;
-            currency: string;
-        }>;
-    }, "strip", z.ZodTypeAny, {
-        model: "fixed";
-        price: {
-            amountMinor: number;
-            currency: string;
-        };
-    }, {
-        model: "fixed";
-        price: {
-            amountMinor: number;
-            currency: string;
-        };
-    }>, z.ZodObject<{
-        model: z.ZodLiteral<"hourly">;
-        hourlyRate: z.ZodObject<{
-            amountMinor: z.ZodNumber;
-            currency: z.ZodString;
+            model: "fixed";
+            price: {
+                amountMinor: number;
+                currency: string;
+            };
+        }>, z.ZodObject<{
+            model: z.ZodLiteral<"hourly">;
+            hourlyRate: z.ZodObject<{
+                amountMinor: z.ZodNumber;
+                currency: z.ZodString;
+            }, "strip", z.ZodTypeAny, {
+                amountMinor: number;
+                currency: string;
+            }, {
+                amountMinor: number;
+                currency: string;
+            }>;
+            minimumHours: z.ZodNumber;
         }, "strip", z.ZodTypeAny, {
-            amountMinor: number;
-            currency: string;
+            model: "hourly";
+            hourlyRate: {
+                amountMinor: number;
+                currency: string;
+            };
+            minimumHours: number;
         }, {
-            amountMinor: number;
-            currency: string;
-        }>;
-        minimumHours: z.ZodNumber;
-    }, "strip", z.ZodTypeAny, {
-        model: "hourly";
-        hourlyRate: {
-            amountMinor: number;
-            currency: string;
-        };
-        minimumHours: number;
-    }, {
-        model: "hourly";
-        hourlyRate: {
-            amountMinor: number;
-            currency: string;
-        };
-        minimumHours: number;
-    }>, z.ZodObject<{
-        model: z.ZodLiteral<"quote">;
-        startingFrom: z.ZodOptional<z.ZodObject<{
+            model: "hourly";
+            hourlyRate: {
+                amountMinor: number;
+                currency: string;
+            };
+            minimumHours: number;
+        }>, z.ZodObject<{
+            model: z.ZodLiteral<"quote">;
+            startingFrom: z.ZodOptional<z.ZodObject<{
+                amountMinor: z.ZodNumber;
+                currency: z.ZodString;
+            }, "strip", z.ZodTypeAny, {
+                amountMinor: number;
+                currency: string;
+            }, {
+                amountMinor: number;
+                currency: string;
+            }>>;
+        }, "strip", z.ZodTypeAny, {
+            model: "quote";
+            startingFrom?: {
+                amountMinor: number;
+                currency: string;
+            } | undefined;
+        }, {
+            model: "quote";
+            startingFrom?: {
+                amountMinor: number;
+                currency: string;
+            } | undefined;
+        }>]>;
+        priceFrom: z.ZodNullable<z.ZodObject<{
             amountMinor: z.ZodNumber;
             currency: z.ZodString;
         }, "strip", z.ZodTypeAny, {
@@ -633,107 +664,164 @@ export declare const myListingsResponseSchema: z.ZodArray<z.ZodObject<{
             amountMinor: number;
             currency: string;
         }>>;
+        status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
+        ratingAvg: z.ZodNumber;
+        ratingCount: z.ZodNumber;
+        isFavorite: z.ZodOptional<z.ZodBoolean>;
+        createdAt: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        model: "quote";
-        startingFrom?: {
+        status: "draft" | "published" | "paused" | "under_review" | "removed";
+        id: string;
+        title: string;
+        categoryId: string;
+        priceFrom: {
             amountMinor: number;
             currency: string;
-        } | undefined;
+        } | null;
+        ratingAvg: number;
+        ratingCount: number;
+        ownerId: string;
+        description: string;
+        pricing: {
+            model: "fixed";
+            price: {
+                amountMinor: number;
+                currency: string;
+            };
+        } | {
+            model: "hourly";
+            hourlyRate: {
+                amountMinor: number;
+                currency: string;
+            };
+            minimumHours: number;
+        } | {
+            model: "quote";
+            startingFrom?: {
+                amountMinor: number;
+                currency: string;
+            } | undefined;
+        };
+        createdAt: string;
+        isFavorite?: boolean | undefined;
+        cityId?: string | undefined;
     }, {
-        model: "quote";
-        startingFrom?: {
+        status: "draft" | "published" | "paused" | "under_review" | "removed";
+        id: string;
+        title: string;
+        categoryId: string;
+        priceFrom: {
             amountMinor: number;
             currency: string;
-        } | undefined;
-    }>]>;
-    priceFrom: z.ZodNullable<z.ZodObject<{
-        amountMinor: z.ZodNumber;
-        currency: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        amountMinor: number;
-        currency: string;
-    }, {
-        amountMinor: number;
-        currency: string;
-    }>>;
-    status: z.ZodEnum<["draft", "published", "paused", "under_review", "removed"]>;
-    ratingAvg: z.ZodNumber;
-    ratingCount: z.ZodNumber;
-    isFavorite: z.ZodOptional<z.ZodBoolean>;
-    createdAt: z.ZodString;
+        } | null;
+        ratingAvg: number;
+        ratingCount: number;
+        ownerId: string;
+        description: string;
+        pricing: {
+            model: "fixed";
+            price: {
+                amountMinor: number;
+                currency: string;
+            };
+        } | {
+            model: "hourly";
+            hourlyRate: {
+                amountMinor: number;
+                currency: string;
+            };
+            minimumHours: number;
+        } | {
+            model: "quote";
+            startingFrom?: {
+                amountMinor: number;
+                currency: string;
+            } | undefined;
+        };
+        createdAt: string;
+        isFavorite?: boolean | undefined;
+        cityId?: string | undefined;
+    }>, "many">;
+    nextCursor: z.ZodNullable<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    status: "draft" | "published" | "paused" | "under_review" | "removed";
-    id: string;
-    title: string;
-    categoryId: string;
-    priceFrom: {
-        amountMinor: number;
-        currency: string;
-    } | null;
-    ratingAvg: number;
-    ratingCount: number;
-    ownerId: string;
-    description: string;
-    pricing: {
-        model: "fixed";
-        price: {
+    items: {
+        status: "draft" | "published" | "paused" | "under_review" | "removed";
+        id: string;
+        title: string;
+        categoryId: string;
+        priceFrom: {
             amountMinor: number;
             currency: string;
+        } | null;
+        ratingAvg: number;
+        ratingCount: number;
+        ownerId: string;
+        description: string;
+        pricing: {
+            model: "fixed";
+            price: {
+                amountMinor: number;
+                currency: string;
+            };
+        } | {
+            model: "hourly";
+            hourlyRate: {
+                amountMinor: number;
+                currency: string;
+            };
+            minimumHours: number;
+        } | {
+            model: "quote";
+            startingFrom?: {
+                amountMinor: number;
+                currency: string;
+            } | undefined;
         };
-    } | {
-        model: "hourly";
-        hourlyRate: {
-            amountMinor: number;
-            currency: string;
-        };
-        minimumHours: number;
-    } | {
-        model: "quote";
-        startingFrom?: {
-            amountMinor: number;
-            currency: string;
-        } | undefined;
-    };
-    createdAt: string;
-    isFavorite?: boolean | undefined;
-    cityId?: string | undefined;
+        createdAt: string;
+        isFavorite?: boolean | undefined;
+        cityId?: string | undefined;
+    }[];
+    nextCursor: string | null;
 }, {
-    status: "draft" | "published" | "paused" | "under_review" | "removed";
-    id: string;
-    title: string;
-    categoryId: string;
-    priceFrom: {
-        amountMinor: number;
-        currency: string;
-    } | null;
-    ratingAvg: number;
-    ratingCount: number;
-    ownerId: string;
-    description: string;
-    pricing: {
-        model: "fixed";
-        price: {
+    items: {
+        status: "draft" | "published" | "paused" | "under_review" | "removed";
+        id: string;
+        title: string;
+        categoryId: string;
+        priceFrom: {
             amountMinor: number;
             currency: string;
+        } | null;
+        ratingAvg: number;
+        ratingCount: number;
+        ownerId: string;
+        description: string;
+        pricing: {
+            model: "fixed";
+            price: {
+                amountMinor: number;
+                currency: string;
+            };
+        } | {
+            model: "hourly";
+            hourlyRate: {
+                amountMinor: number;
+                currency: string;
+            };
+            minimumHours: number;
+        } | {
+            model: "quote";
+            startingFrom?: {
+                amountMinor: number;
+                currency: string;
+            } | undefined;
         };
-    } | {
-        model: "hourly";
-        hourlyRate: {
-            amountMinor: number;
-            currency: string;
-        };
-        minimumHours: number;
-    } | {
-        model: "quote";
-        startingFrom?: {
-            amountMinor: number;
-            currency: string;
-        } | undefined;
-    };
-    createdAt: string;
-    isFavorite?: boolean | undefined;
-    cityId?: string | undefined;
-}>, "many">;
+        createdAt: string;
+        isFavorite?: boolean | undefined;
+        cityId?: string | undefined;
+    }[];
+    nextCursor: string | null;
+}>;
 /**
  * A booking as it arrives. Flat, with the timestamps beside the status rather
  * than inside it, and no `providerId` — the API does not send one.
